@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+members = [
+    "services/agent-core",
+    "services/gateway",
+    "services/knowledge-core",
+    "services/mcp-registry",
+    "services/speech",
+    "crates/identity"
+]
+
+[workspace.lints.clippy]
+undocumented_unsafe_blocks = "deny"
+multiple_unsafe_ops_per_block = "deny"
+
+[workspace.dependencies]
+# --- Internal (FIXED) ---
+agent-core     = { path = "services/agent-core" }
+gateway        = { path = "services/gateway" }
+knowledge-core = { path = "services/knowledge-core" }
+mcp-registry   = { path = "services/mcp-registry" }
+speech         = { path = "services/speech" }
+identity       = { path = "crates/identity" }
+
+tonic                 = { version = "0.14.6" }
+prost                 = { version = "0.14.4" }
+tokio                 = { version = "1.53.1" }
+tracing               = { version = "0.1.44" }
+tracing-opentelemetry = { version = "0.33.0" }
