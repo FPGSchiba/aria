@@ -27,8 +27,9 @@ session works through. **Nothing here may be invented** — if it is not decided
   changes or the tool disappears. Sharpened by the per-tool Keycloak scope decision — drift now
   requires a Keycloak write.
 - Whether consent grants expire.
-- Registry failure policies: reconnect/circuit-breaking for unreachable servers, audit-write
-  failure behaviour on *allowed* calls, timeout and streaming semantics for long tool calls.
+- Registry failure policies: reconnect/circuit-breaking for unreachable servers, timeout and
+  streaming semantics for long tool calls. *(The audit-write failure clause was closed by
+  [D57](../decisions/0010-retention-audit.md) on 2026-08-20.)*
 - May `user_id` appear in telemetry, or must it be pseudonymised? At ARIA's scale a stable ID is
   very nearly identifying.
 - Scrubbing failure mode: fail-closed (drop the payload, lose observability during an incident)
@@ -38,9 +39,6 @@ session works through. **Nothing here may be invented** — if it is not decided
   interesting hop.
 - A named fallback OTLP target if AppSignal's beta Rust support proves unworkable.
 - Whether the end-to-end leak test blocks merges from day one or starts advisory.
-- **Retention policies, generally** — `consent_audit_log`, the unrecognized-request log,
-  conversation history, and telemetry. A security audit trail normally outlives operational
-  telemetry, so stored trace IDs may resolve to traces that no longer exist.
 - Alerting is entirely undecided and no story delivers any.
 - Design the actual delegation UX for `consent_grants.granted_by` (a circle member consenting on
   behalf of another) — the schema hook exists but the flow doesn't yet.
@@ -132,6 +130,20 @@ Kept as a pointer for one revision so a reader mid-edit is not confused by the d
 
 Still open from the same batch: whether the GPU node's LXC config drops `bind,optional` (a host
 configuration choice on shared homelab infrastructure, deliberately not folded into D50).
+
+## Resolved 2026-08-20 — moved to the Decision Log
+
+| Was | Now |
+|---|---|
+| What an unrecognized-request record contains | **[D55](../decisions/0010-retention-audit.md)** — raw utterance, 90-day window, ARIA-108's query accessor as the review path |
+| **Retention policies, generally** (audit log, unknown log, conversation history, telemetry) — *and* whether a transcript is retained in `aria-speech` | **[D56](../decisions/0010-retention-audit.md)** — one schedule, one row per data class: history and audit **indefinite**, unknown log **90 days**, Speech keeps **nothing**, telemetry **forward-only** |
+| Whether the audit append is synchronous on the tool-call path, and whether a failed write on an *allowed* call fails closed | **[D57](../decisions/0010-retention-audit.md)** — two rows through a durable local outbox; fail closed only if durability fails everywhere |
+| What happens to a trace ID in an audit row after the trace is gone | **[D58](../decisions/0010-retention-audit.md)** — the row is self-contained; the trace ID is a best-effort hint |
+
+**Deliberately not decided in that batch, though each was adjacent:** the **D41 re-examination**
+(above), **whether consent grants expire** (above), **ARIA-74's scrubbing fail-closed vs fail-open**
+(above), and **whether conversation history gets a derived Qdrant index** (D48's amendment). D56
+states its dependence on each without settling any of them.
 
 ## 🔴 Reopened / newly surfaced 2026-08-19 (cluster access work)
 

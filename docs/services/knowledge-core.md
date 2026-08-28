@@ -14,6 +14,27 @@
   old), never a dual-write. On conflict **typed wins**, and the stale free-text point is flagged
   rather than merged. **Qdrant-primary list, for ARIA-96:** free-text preferences and learned
   facts. Still open: whether conversation history gets a *derived* (rebuildable) Qdrant index.
+- **[D55](../decisions/0010-retention-audit.md)** — the unrecognized-request record holds the **raw
+  utterance** plus `user_id`, timestamp and serving backend, bounded by a 90-day window (D56) rather
+  than by redaction, with ARIA-108's query accessor as the documented review path. ARIA-63's payload
+  criterion stands unchanged.
+- **[D56](../decisions/0010-retention-audit.md)** — **one retention schedule, one row per data
+  class.** In this service: **conversation history — indefinite** (a deliberate choice, with a
+  permanent verbatim record of the household named as the accepted cost);
+  **`consent_audit_log` — indefinite** (it is the only place a conversationally-granted permission's
+  origin is reconstructable, per D42); **unrecognized-request log — 90 days**. Exactly **one** store
+  is pruned, by a single CronJob in the umbrella chart reading one config surface. Because history
+  is not pruned, the pruner never touches Qdrant — the derived-index question above is **untouched**
+  and stays open.
+- **[D57](../decisions/0010-retention-audit.md)** — `consent_audit_log` takes **two rows per
+  invocation**: an attempt row written before forwarding and an outcome row after, correlated by an
+  attempt key. The schema gains that key and an entry-kind discriminator. Audit volume roughly
+  doubles against an indefinite window, so ARIA-73's write-volume criterion is now load-bearing —
+  and the volume figure is a **measured tail**, not a number this decision invented.
+- **[D58](../decisions/0010-retention-audit.md)** — the audit row is **self-contained**; the trace
+  ID stays as best-effort correlation expected to dangle. The column list is therefore load-bearing
+  for a second reason: a future schema change must not quietly drop one of the fields the row's
+  independence rests on.
 
 ---
 
@@ -69,7 +90,6 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 - **Cross-owner person deduplication** — per-row ownership means the same real person may exist as
   several `person` rows under different owners (ARIA-59)
 - Calendar cache invalidation and refresh cadence; who builds the calendar MCP server (ARIA-120)
-- Retention policies for `consent_audit_log`, the unrecognized-request log and conversation history
 
 ## Jira stories
 

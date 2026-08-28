@@ -77,8 +77,8 @@ https://github.com/FPGSchiba/aria/blob/main/docs/decisions/0003-knowledge-model.
 
 Link to files, not heading anchors — anchors break when a document is reorganised.
 
-**If the docs move has not happened yet, stop and say so** — rewriting every description with dead
-links, then rewriting them again, is exactly the double work this sequencing exists to avoid.
+The move happened on 2026-08-19 and the links are live. **Spot-check one before generating 111** —
+open the URL above; if it 404s, stop and say so rather than writing dead links into every story.
 
 ## Also do
 

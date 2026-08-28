@@ -6,6 +6,22 @@
 
 ---
 
+## Amendments since 2026-08-12
+
+- **[D57](../decisions/0010-retention-audit.md)** — the audit write is **two rows per invocation**:
+  an **attempt** row appended **synchronously to durable local storage in this service before the
+  call is forwarded**, and an **outcome** row appended after it returns; a background task drains
+  the local outbox into the Knowledge Core. On an *allowed* call the write retries, then falls back
+  to the durable queue, and **fails the call closed only if durability cannot be achieved anywhere**
+  — loudly. **Consequence: this service is no longer stateless.** It needs durable local storage
+  (a PVC or equivalent) plus drain, ordering and duplicate handling, which `04-deployment.md`'s
+  "can run on any node" line did not anticipate. Closes ARIA-95's audit-write-failure clause; its
+  reconnect/circuit-breaking and long-call timeout clauses stay open.
+- **[D58](../decisions/0010-retention-audit.md)** — audit rows are **self-contained**; the trace ID
+  is best-effort correlation, expected to dangle beyond the telemetry window.
+
+---
+
 ## Purpose
 
 The **only** component that speaks MCP. Holds the list of connected MCP servers, aggregates their
@@ -28,13 +44,14 @@ Nothing in the 2021 design — this is where the extensibility claim is actually
 - Injecting the reserved `_aria_user_id` argument — stripped from the schemas shown to the model
   and overwritten unconditionally if present (D9)
 - Filtering `ListTools` **by server, not by tool** (D46)
-- Writing every invocation attempt to `consent_audit_log`, allowed or denied
+- Writing every invocation attempt to `consent_audit_log`, allowed or denied — as an attempt row
+  before forwarding and an outcome row after, through a durable local outbox (D57)
 - Calling `aria-kc-broker` to provision per-tool scopes (D8) — it never holds the Keycloak admin
   credential itself
 
 ## Binding decisions
 
-D7 (per-tool scopes) · D8 (broker, not self) · D9 (reserved argument) · D11 (`mcp-client` crate) · D42 (`consent required` outcome) · D43 (30 s TTL, fail-closed) · D44 (approval artifact) · D45 (image digest identity) · D46 (server-level filtering) · D39 (never auto-retry)
+D7 (per-tool scopes) · D8 (broker, not self) · D9 (reserved argument) · D11 (`mcp-client` crate) · D42 (`consent required` outcome) · D43 (30 s TTL, fail-closed) · D44 (approval artifact) · D45 (image digest identity) · D46 (server-level filtering) · D39 (never auto-retry) · D57 (two-row audit through a durable outbox)
 
 See [the Decision Log](../decisions/README.md) for the full reasoning and rejected alternatives.
 
@@ -48,8 +65,8 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
   the exact Keycloak API exposing a user's granted consents (ARIA-88)
 - Tool-list drift: refresh cadence, and what happens to a grant when a tool's schema changes or the
   tool disappears — sharpened by D7, since drift now requires a Keycloak write (ARIA-75)
-- Failure policies: reconnect/circuit-breaking for unreachable servers, audit-write failure on
-  *allowed* calls, timeout and streaming semantics for long tool calls (ARIA-95)
+- Failure policies: reconnect/circuit-breaking for unreachable servers, timeout and streaming
+  semantics for long tool calls (ARIA-95). *The audit-write failure clause is closed by D57.*
 - The `consent required` status in the proto contract, and how suspend-and-retry interacts with a
   streaming `Decide` mid-turn (ARIA-118)
 - How declared tools get a risk tier (ARIA-100) — needed for a useful consent prompt

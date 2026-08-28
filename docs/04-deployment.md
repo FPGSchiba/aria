@@ -45,8 +45,9 @@ conversation content or knowledge-base content leaves except as ciphertext under
   release, one `values.yaml` holding all image tags, atomic upgrade and rollback of the namespace
   as a unit. Each MCP server, living outside the monorepo, gets its own small chart following the
   same convention; that convention is also the template `deploy_service` generates.
-- **Scheduling:** stateless services (Gateway, Agent Core, MCP Registry, KC broker) can run on any
-  node. Speech is pinned (nodeSelector/toleration) to the GPU node, reusing whatever GPU runtime
+- **Scheduling:** stateless services (Gateway, Agent Core, KC broker) can run on any
+  node. **The MCP Registry is no longer among them (D57):** its audit outbox requires durable local
+  storage, so it needs a volume and the scheduling constraints that follow from one. Speech is pinned (nodeSelector/toleration) to the GPU node, reusing whatever GPU runtime
   config already makes Ollama work there (NVIDIA device plugin or ROCm, whichever is set up).
 - **MCP servers as workloads:** each MCP server (e.g. a future Sonos controller, the calendar
   server, or the Self-Extension server) is deployed as its own Deployment + Service in the cluster
@@ -59,7 +60,11 @@ conversation content or knowledge-base content leaves except as ciphertext under
   cluster turns out to be multi-node, voice audio crosses the LAN in plaintext between nodes and
   this decision must be revisited rather than inherited.
 - **Backups:** Postgres operator backups and Qdrant snapshots to local storage, replicated to
-  off-site object storage with **client-side encryption** under a locally-held key. Qdrant holds
+  off-site object storage with **client-side encryption** under a locally-held key. **Retention
+  interaction (D56):** conversation history and `consent_audit_log` are kept indefinitely, so no
+  backup rotation can outlive their retention. Exactly one store is pruned — the
+  unrecognized-request log at 90 days — and a row deleted there **does** survive in any older dump.
+  Reconciling that is handed to ARIA-96 / ARIA-119; it is not solved here. Qdrant holds
   primary data (section 2) and is **not** re-derivable from Postgres, so it must be backed up as a
   source of truth. The sealed-secrets controller's private key is likewise critical state.
 - **External/remote access** (phone away from home, etc.) is explicitly **not designed yet** —

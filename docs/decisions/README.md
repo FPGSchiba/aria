@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D55**.
+- Next number to allocate: **D59**.
 
 ---
 
@@ -103,6 +103,16 @@ Taken 2026-08-19. Three of the four were informed by measurements taken the same
 - **D52** — Supersedes D51: same outcome, corrected reasoning (Harbor already exists and was a strawman)
 - **D53** (ARIA-19) — ARIA registers in the **master** realm — ⚠️ raises D8's residual risk
 - **D54** — The docs library moves into the `aria` monorepo; GitHub is the canonical link target
+
+### [Retention & the audit record](0010-retention-audit.md) · D55–D58
+
+Taken 2026-08-20 (decision batch 1). Closed eleven open items across six issues; six of them were
+the same retention question asked about five stores, answered here as one schedule.
+
+- **D55** (ARIA-108) — An unrecognized-request record holds the raw utterance, under a short window, with a review path
+- **D56** — One retention schedule, with a row per data class (closes the "retention policies, generally" item)
+- **D57** (ARIA-73 / ARIA-85) — Two audit rows per invocation: a durable attempt row before forwarding, an outcome row after
+- **D58** (ARIA-83) — The audit row stands alone; the trace ID is a best-effort hint expected to dangle
 
 ### [Session 1 summary](0008-session-1-summary.md)
 

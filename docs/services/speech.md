@@ -14,6 +14,13 @@
   entirely healthy — API responsive, ~50× too slow, no signal any monitor would catch. A crash is
   strictly better than a silent capability loss. Affects this service's scaffold (ARIA-42) and its
   readiness probe (ARIA-93).
+- **[D56](../decisions/0010-retention-audit.md)** — **Speech is stateless with respect to text.**
+  No transcript is persisted or logged at any level, and **partial hypotheses are never persisted at
+  all** (they are wrong by construction). One exception, written as an explicit and testable rule
+  rather than left implicit: an **off-by-default, time-boxed capture mode** for debugging a bad
+  transcription — loud in logs when enabled, never on in a normal deploy, and a named exception in
+  ARIA-74's allow-list reasoning so the two do not contradict each other. Closes ARIA-49's retention
+  item; its partials-timing item is untouched.
 - **GPU node facts (preliminary)** — RTX 2070, **8 GB**; roughly **2.6 GB** left with `qwen3:8b`
   resident, measured at a 4096-token context and at rest. See
   [the ARIA-27 brief](../spikes/ARIA-27-gpu-baseline.md); the budget is not yet published.
@@ -55,6 +62,7 @@ Streaming `Transcribe` and `Synthesize` — `proto/speech/v1/speech.proto`
   (ARIA-30, ARIA-33); GPU VRAM headroom next to Ollama (ARIA-27); resident vs. load-on-demand
   (a pure function of the ARIA-27 number)
 - Model-facing sample rate falls out of ARIA-30
+- Whether partial hypotheses are emitted on a timer, on decoder-stable output, or per chunk (ARIA-49)
 - **Acoustic echo cancellation / half-duplex gating is unowned** and plausibly belongs on the
   client — which sits awkwardly with the thin-client reasoning behind D26 (ARIA-116)
 

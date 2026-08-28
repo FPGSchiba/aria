@@ -28,6 +28,18 @@ first where they overlap.
   internal tool-call shape is **ARIA's own type**, modelled close to OpenAI's; both backends adapt
   into it. Measured constraint behind it: Ollama's OpenAI-compatible endpoint **cannot disable a
   model's thinking phase**, so the Ollama backend needs the native API and neither adapter is free.
+- **[D56](decisions/0010-retention-audit.md)** amends *Knowledge Core* and *Consent & permissions*
+  with a **retention schedule**: conversation history and `consent_audit_log` are kept
+  **indefinitely** as deliberate choices; the unrecognized-request log is pruned at **90 days**;
+  `aria-speech` keeps **no** transcript at any level; telemetry is **forward-only** with a bounded
+  disk-backed outage buffer, its retention a property of the destination.
+- **[D57](decisions/0010-retention-audit.md)** amends *Consent & permissions*: `consent_audit_log`
+  records **two rows per invocation** — an attempt row written to a **durable local outbox in the
+  MCP Registry before the call is forwarded**, and an outcome row after it returns, drained
+  asynchronously into the Knowledge Core. On an allowed call the write retries, then queues, and
+  fails the call closed **only if durability cannot be achieved anywhere**. This is deliberately a
+  weaker posture than D43's consent fail-closed, and the entry argues why: D43 protects the user's
+  control, this protects the record. **The MCP Registry is stateful as a result.**
 
 ---
 
