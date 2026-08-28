@@ -1,0 +1,19 @@
+#!/bin/sh
+# ARIA repo gate. Runs before every commit once enabled (see docs/05-conventions.md).
+# Enable once per clone with:
+#   git config core.hooksPath .githooks
+set -e
+
+echo "== cargo fmt --check =="
+cargo fmt --all -- --check
+
+echo "== cargo clippy =="
+cargo clippy --workspace --all-targets -- -D warnings
+
+echo "== cargo test =="
+cargo test --workspace
+
+echo "== cargo llvm-cov (line coverage, min 80%) =="
+cargo llvm-cov --workspace --fail-under-lines 80
+
+echo "All checks passed."

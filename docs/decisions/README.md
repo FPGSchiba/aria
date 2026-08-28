@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D59**.
+- Next number to allocate: **D60**.
 
 ---
 
@@ -113,6 +113,12 @@ the same retention question asked about five stores, answered here as one schedu
 - **D56** — One retention schedule, with a row per data class (closes the "retention policies, generally" item)
 - **D57** (ARIA-73 / ARIA-85) — Two audit rows per invocation: a durable attempt row before forwarding, an outcome row after
 - **D58** (ARIA-83) — The audit row stands alone; the trace ID is a best-effort hint expected to dangle
+
+### [Identity wire encoding](0011-identity-wire-encoding.md) · D59
+
+Taken 2026-08-27, during ARIA-28 implementation review.
+
+- **D59** (ARIA-28) — The Gateway-signed context keeps four standard JWT claims beyond D1's minimum
 
 ### [Session 1 summary](0008-session-1-summary.md)
 

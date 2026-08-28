@@ -6,7 +6,8 @@ members = [
     "services/knowledge-core",
     "services/mcp-registry",
     "services/speech",
-    "crates/identity"
+    "crates/identity",
+    "crates/shared"
 ]
 
 [workspace.lints.clippy]
@@ -21,6 +22,7 @@ knowledge-core = { path = "services/knowledge-core" }
 mcp-registry   = { path = "services/mcp-registry" }
 speech         = { path = "services/speech" }
 identity       = { path = "crates/identity" }
+shared         = { path = "crates/shared" }
 
 tonic                 = { version = "0.14.6" }
 prost                 = { version = "0.14.4" }

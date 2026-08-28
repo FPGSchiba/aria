@@ -51,6 +51,19 @@ Confluence page (children of "ARIA — Architecture & Hosting").
 - Container images per service, published from GitHub Actions; deployed to the `aria` namespace on
   the existing k3s cluster via **one umbrella Helm chart** for the namespace (section 4). Each
   out-of-monorepo MCP server carries its own small chart following the same convention.
+- **Repo gate**: `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D
+  warnings`, `cargo test --workspace`, and the coverage gate below must all pass before a commit
+  lands. Enforced locally via a checked-in pre-commit hook (`.githooks/pre-commit`) — enable it
+  once per clone with `git config core.hooksPath .githooks`. Requires `cargo install
+  cargo-llvm-cov` and `rustup component add llvm-tools-preview` once per machine. Not yet mirrored
+  in CI (no GitHub Actions workflow exists yet, D13); the local hook is the only enforcement until
+  one is added.
+- **Coverage rule (Jann's call, 2026-08-28): 80% minimum, for all automated testing.** Measured as
+  line coverage via `cargo llvm-cov --workspace --fail-under-lines 80` — that's what "coverage"
+  means in this repo unless stated otherwise, to avoid the term drifting between line/function/
+  region coverage across crates. Applies workspace-wide as each crate gains real code; enforced by
+  the same pre-commit hook as the repo gate above, so it's a hard floor per commit, not an
+  aspirational target.
 
 ---
 
