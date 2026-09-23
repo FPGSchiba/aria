@@ -128,13 +128,14 @@ both. **Note:** that pointer now resolves to this `docs/` library rather than a 
 
 ## Conventions
 
-- **[`story-style.md`](story-style.md)** — the house style for Jira story and epic descriptions.
-  ~150–200 words; testable criteria; decisions as **one-line** citations with links, never
-  paragraphs; never quote the architecture docs. Established 2026-08-19 because the original
-  descriptions were written for an LLM needing maximum context and run 500–900 words.
-- **[`story-rework-prompt.md`](story-rework-prompt.md)** — a ready-to-paste session prompt that
-  applies that style to all 111 existing descriptions, one epic first for review, then nine
-  subagents in parallel. **Prerequisite: the docs move (D54)**, or the rewrites get dead links.
+- **[`jira-rulebook.md`](jira-rulebook.md)** — how a Jira issue is written: issue types, story
+  anatomy, acceptance criteria, subtasks, points, Definition of Done and of Ready. Supersedes
+  `story-style.md`, removed 2026-09-23.
+- **[`sprint-guideline.md`](sprint-guideline.md)** — how a sprint is planned, sized, created and
+  closed.
+- **[`story-rework-prompt.md`](story-rework-prompt.md)** — **obsolete.** It targeted the
+  pre-2026-09 backlog, which was deleted and is archived in
+  [`archive/backlog-2026-09.json`](archive/backlog-2026-09.json).
 
 ## Derived documents
 

@@ -53,13 +53,13 @@ These are load-bearing. Each exists because its absence already cost this projec
 6. **Keep the three surfaces consistent** — this library, Confluence, and Jira. A decision landing
    in only one is worse than one recorded nowhere, because it looks authoritative.
 
-7. **No story points, dates, or velocity estimates.** Ordering comes from dependencies only.
+7. **No dates or estimates on the roadmap.** Themes are ordered by dependency only. Story points
+   and sprint capacity exist, and follow [`docs/backlog/sprint-guideline.md`](docs/backlog/sprint-guideline.md).
 
-8. **Write Jira stories to the house style** — [`docs/backlog/story-style.md`](docs/backlog/story-style.md).
-   A story is ~150–200 words: goal, "not this story", testable criteria, decisions as **one-line**
-   citations, open items, links. **A decision in a story is one sentence and a D-number, never a
-   paragraph** — the reasoning lives in `docs/decisions/` and the story links to it. Never quote
-   the architecture docs into a story; quotes go stale silently.
+8. **Write Jira issues to the rulebook** — [`docs/backlog/jira-rulebook.md`](docs/backlog/jira-rulebook.md).
+   A story is under 120 words: goal, "Not this story", 2–4 testable criteria, open items, links.
+   **Closed decisions are never cited in a story; open ones are, with the interim instruction.**
+   Never quote the architecture docs into a story; quotes go stale silently.
 
 9. **Ask before any large batch write or anything hard to undo.**
 

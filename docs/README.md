@@ -72,7 +72,7 @@ Is it a choice between real alternatives?
    ├─ Is it the output of a spike?               → spikes/ARIA-NN-<topic>.md
    ├─ Is it internal to one service?             → services/<service>.md
    ├─ Is it about the backlog itself?            → backlog/
-   └─ Is it how we write stories?                → backlog/story-style.md
+   └─ Is it how we write stories or sprints?     → backlog/jira-rulebook.md, backlog/sprint-guideline.md
 ```
 
 ---
