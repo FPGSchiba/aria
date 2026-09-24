@@ -74,7 +74,7 @@ service.
 
 Core Web shell, a chat view over the turn log, native clients.
 
-- **Ready when:** a persisted turn can be read back through the Gateway's HTTP door. Native
+- **Ready when:** a persisted turn can be read back through the Gateway's Service router. Native
   clients also wait on what they are built with
   ([needs-decision](../open-questions/needs-decision.md)).
 - **Status:** waiting.
