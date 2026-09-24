@@ -18,7 +18,7 @@ record, and not a place to explain the system. Everything explanatory lives in `
 No Epics. The roadmap in `docs/backlog/roadmap.md` holds the hierarchy; duplicating it in Jira
 guarantees the two drift. Each story carries exactly one label naming its roadmap theme
 (`theme-foundations`, `theme-identity`, `theme-data`, `theme-conversation`, `theme-tools`,
-`theme-clients`, `theme-notify`, `theme-observability`, `theme-selfext`, `theme-ops`).
+`theme-speech`, `theme-clients`, `theme-notify`, `theme-observability`, `theme-selfext`, `theme-ops`).
 
 ## Story anatomy
 

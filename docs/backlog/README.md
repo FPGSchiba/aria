@@ -128,6 +128,8 @@ both. **Note:** that pointer now resolves to this `docs/` library rather than a 
 
 ## Conventions
 
+- **[`roadmap.md`](roadmap.md)** — the themes in dependency order, each with its gate and status.
+  Sprints are planned from it.
 - **[`jira-rulebook.md`](jira-rulebook.md)** — how a Jira issue is written: issue types, story
   anatomy, acceptance criteria, subtasks, points, Definition of Done and of Ready. Supersedes
   `story-style.md`, removed 2026-09-23.
