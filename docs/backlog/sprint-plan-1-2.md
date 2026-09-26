@@ -2,13 +2,15 @@
 
 [Library index](../README.md) · [Roadmap](roadmap.md) · [Jira rulebook](jira-rulebook.md) · [Sprint guideline](sprint-guideline.md) · [Open questions](../open-questions/README.md)
 
-**Status: proposal for review. Nothing below exists in Jira yet.** Once approved, each story
-becomes a Jira issue with its subtasks, point value and theme label, and only the Blocks links
-listed here are created (15 in total). The story text is generated from one source, and every
-description has been checked for the rulebook's limits: under 120 words, 2–4 criteria, 2–6
-subtasks, points from 1/2/3/5, and no D-numbers.
+**Status: approved 2026-09-26.** Sprint 1 is kept as written. The briefed sprint 2 is split: its
+identity stories form sprint 2, and its data and clients stories wait in the backlog. Open
+questions follow the guideline's *decide at the last responsible moment* rule (see
+[below](#how-the-open-questions-are-handled)). **Jira creation: pending.** That will be 21
+issues, 79 subtasks and 16 Blocks links, and nothing else.
 
-Story IDs (`S1-01` …) are local to this document; Jira assigns the real keys.
+The story text is generated from one source. Every description is checked against the rulebook's
+limits: under 120 words, 2–4 criteria, 2–6 subtasks, points from 1/2/3/5, and no D-numbers. Story
+IDs (`S1-01` …) are local to this document; Jira assigns the real keys.
 
 ---
 
@@ -49,15 +51,15 @@ goal sentence.
 | S1-09 | Story | Install the sealed-secrets controller and seal the LLM API key | `theme-ops` | 2 | — |
 | S1-10 | Story | Deploy the Gateway and Agent Core with the umbrella Helm chart | `theme-foundations` | 3 | S1-04 |
 
-**Capacity — read this before approving.** The guideline asks for a deliberately low first
-number. 22 points is not that: the previous sprint 1 ran six weeks and closed five of nine
-issues. The goal as briefed needs every story above, so no story can be cut and still leave the
-goal sentence true. The only cut that keeps a runnable sprint is **dropping "running on the
-cluster"**. That removes S1-04, S1-09 and S1-10 (7 points), leaving 15 points that run
-locally, and those three stories open the next sprint.
+**Capacity.** 22 points is above the guideline's "deliberately low" first number; the
+previous sprint 1 ran six weeks and closed five of nine issues. It is kept as briefed. Record what
+actually completes, because that figure is sprint 2's capacity.
 
-**Sequencing note.** The service stories can't be deployed until S1-10 lands, so within this
-sprint they are demonstrated locally and deployed together by S1-10.
+**Two sprint-1-only exceptions.**
+- **The spike blocks a story in the same sprint.** S1-01 blocks S1-06 because there is no earlier
+  sprint for it to run in. Run the spike first — it is four hours, and its harness already exists.
+- **Deployment comes last.** The service stories can't be deployed until S1-10 lands, so within
+  this sprint they are demonstrated locally and deployed together by S1-10.
 
 ### S1-01 · Measure the hosted LLM candidates with the probe harness
 
@@ -322,11 +324,14 @@ sprint they are demonstrated locally and deployed together by S1-10.
 
 ---
 
-## Sprint 2 — as briefed
+## Sprint 2 — `ARIA Sprint 2 — Authenticated CLI turn`
 
-**Goal:** The same turn, but authenticated, persisted, and visible in the browser.
+**Goal:** Only a logged-in CLI user gets a reply, and the Agent Core knows who they are.
 
-**Size:** 36 points across three themes — identity, data and clients.
+**Focus theme:** `theme-identity`. **Size:** 12 points plus one 4-hour spike, to be
+checked against sprint 1's completed points at planning. **The spike prepares the next sprint:**
+S2-11 answers the one open question that would be expensive to guess before the turn log is
+persisted (S2-08).
 
 | ID | Type | Summary | Label | Size | Blocked by |
 |---|---|---|---|---|---|
@@ -334,29 +339,7 @@ sprint they are demonstrated locally and deployed together by S1-10.
 | S2-02 | Story | Log the CLI in with the device authorization flow | `theme-identity` | 2 | S2-01 |
 | S2-03 | Story | Reject unauthenticated Converse streams at the Gateway | `theme-identity` | 3 | S2-01 |
 | S2-04 | Story | Mint the signed context at the Gateway and verify it in the Agent Core | `theme-identity` | 5 | S2-03 |
-| S2-05 | Story | Provision the Postgres VM with verify-full TLS | `theme-data` | 3 | — |
-| S2-06 | Story | Run the Knowledge Core against its own database with Vault credentials | `theme-data` | 5 | S2-05 |
-| S2-07 | Story | Store and list turn-log events in the Knowledge Core | `theme-data` | 3 | S2-06 |
-| S2-08 | Story | Persist every turn from the Agent Core to the Knowledge Core | `theme-conversation` | 3 | S2-07, S2-04 |
-| S2-09 | Story | Route browser calls to the Knowledge Core through the Service router | `theme-clients` | 5 | S2-07, S2-04 |
-| S2-10 | Story | Build the Core Web shell with PKCE login and a turn history view | `theme-clients` | 5 | — |
-
-### Recommendation: make this three sprints
-
-The guideline gives each sprint **one focus theme**, sizes it from **the previous sprint's
-completed points**, and schedules **nothing beyond the sprint being planned**. The briefed
-sprint 2 breaks all three rules: 36 points over three themes, sized before sprint 1 has
-produced a capacity figure. The stories don't change — only the sprint they land in:
-
-| Sprint | Runnable goal | Stories | Points |
-|---|---|---|---|
-| **2 — Authenticated CLI turn** | Only a logged-in CLI user gets a reply, and the Agent Core knows who they are | S2-01 … S2-04 | 12 |
-| next — Turns survive restarts | A CLI turn is stored and survives an Agent Core restart | S2-05 … S2-08 | 14 |
-| after that — History in the browser | The CLI's turns appear in the web shell | S2-09, S2-10 | 10 |
-
-The walking skeleton then runs at the end of the third of these. **If you agree:** Jira gets
-sprint 1 and a sprint 2 holding S2-01 … S2-04; S2-05 … S2-10 go into the backlog, fully written,
-for the next two plannings. **If you prefer the brief:** one sprint 2 with all ten.
+| S2-11 | Spike | Prototype how the end-user context crosses a second service hop | `theme-identity` | 4 h | — |
 
 ### S2-01 · Register the ARIA client and its roles in Keycloak
 
@@ -463,6 +446,57 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 3. Mint and attach the context on each `Decide` call
 4. Verify it in the Agent Core with an interceptor
 
+### S2-11 · Prototype how the end-user context crosses a second service hop
+
+*Spike · `theme-identity` · timebox 4 h · 93 words*
+
+**Goal** — Evidence exists for how a service acting for the user passes on a context the next service accepts, so the audience question can be decided before the turn log is persisted.
+
+**Not this story:**
+- implementing the chosen option
+- service-to-service client credentials
+
+**Acceptance criteria:**
+- Each candidate option is prototyped as a throwaway test against `aria-identity`
+- The finding states, per option, what a compromised caller could do with a context it holds
+- The choice is recorded in `docs/decisions/`
+
+**Open items:**
+- None.
+
+**Timebox:** 4 h. **Output:** `docs/spikes/context-second-hop.md`.
+
+**Links:** [docs/services/identity.md](https://github.com/FPGSchiba/aria/blob/main/docs/services/identity.md)
+
+**Subtasks:**
+1. List the candidate options
+2. Prototype each as a throwaway test
+3. Write the finding and the decision entry
+
+---
+
+## Backlog — written, not scheduled
+
+These stories were briefed as part of sprint 2. They're fully written so the next two plannings
+start from text rather than from nothing, but they go into **no sprint**. The guideline schedules
+nothing beyond the sprint being planned, and each carries an open question that's answered first.
+
+| Intended next | Runnable goal | Stories | Points |
+|---|---|---|---|
+| Turns survive restarts (`theme-data`) | A CLI turn is stored and survives an Agent Core restart | S2-05, S2-06, S2-07, S2-08 | 14 |
+| History in the browser (`theme-clients`) | The CLI's turns appear in the web shell | S2-09, S2-10 | 10 |
+
+The walking skeleton runs at the end of the second of these.
+
+| ID | Type | Summary | Label | Size | Blocked by |
+|---|---|---|---|---|---|
+| S2-05 | Story | Provision the Postgres VM with verify-full TLS | `theme-data` | 3 | — |
+| S2-06 | Story | Run the Knowledge Core against its own database with Vault credentials | `theme-data` | 5 | S2-05 |
+| S2-07 | Story | Store and list turn-log events in the Knowledge Core | `theme-data` | 3 | S2-06, S2-04 |
+| S2-08 | Story | Persist every turn from the Agent Core to the Knowledge Core | `theme-conversation` | 3 | S2-07, S2-11 |
+| S2-09 | Story | Route browser calls to the Knowledge Core through the Service router | `theme-clients` | 5 | S2-07, S2-04 |
+| S2-10 | Story | Build the Core Web shell with PKCE login and a turn history view | `theme-clients` | 5 | — |
+
 ### S2-05 · Provision the Postgres VM with verify-full TLS
 
 *Story · `theme-data` · 3 points · 101 words*
@@ -520,7 +554,7 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 
 ### S2-07 · Store and list turn-log events in the Knowledge Core
 
-*Story · `theme-data` · 3 points · blocked by S2-06 · 84 words*
+*Story · `theme-data` · 3 points · blocked by S2-06, S2-04 · 84 words*
 
 **Goal** — The Knowledge Core appends turn-log events per session and owner, and returns them in order to their owner.
 
@@ -546,7 +580,7 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 
 ### S2-08 · Persist every turn from the Agent Core to the Knowledge Core
 
-*Story · `theme-conversation` · 3 points · blocked by S2-07, S2-04 · 114 words*
+*Story · `theme-conversation` · 3 points · blocked by S2-07, S2-11 · 112 words*
 
 **Goal** — The Agent Core writes each turn's user text and reply to the Knowledge Core under the caller's user id, and rebuilds history from it.
 
@@ -560,7 +594,7 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 - A failed write does not break the reply stream and is logged
 
 **Open items:**
-- The context's audience on a second hop is undecided — interim: the Gateway mints it for both services.
+- The context's audience on a second hop is open — answered by the second-hop spike first.
 - Behaviour on a failed history write is undecided — interim: the third criterion.
 
 **Links:** [docs/services/agent-core.md](https://github.com/FPGSchiba/aria/blob/main/docs/services/agent-core.md)
@@ -586,7 +620,7 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 - The HTTPS host presents a certificate that verifies against `fpg-ca`
 
 **Open items:**
-- nginx-ingress or Envoy for routing is undecided — interim: nginx-ingress with an auth request to the Gateway.
+- Where the Service router runs is open — a spike answers it before this story is planned.
 - Whether cert-manager can issue from `fpg-ca` is unknown — interim: issue it like `keycloak.fpg`'s.
 
 **Links:** [docs/services/gateway.md](https://github.com/FPGSchiba/aria/blob/main/docs/services/gateway.md)
@@ -599,7 +633,7 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 
 ### S2-10 · Build the Core Web shell with PKCE login and a turn history view
 
-*Story · `theme-clients` · 5 points · 101 words*
+*Story · `theme-clients` · 5 points · 103 words*
 
 **Goal** — A browser user logs in with PKCE and sees their past turns replayed in order.
 
@@ -613,8 +647,8 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 - A second user sees none of the first user's turns
 
 **Open items:**
-- The shell's framework is undecided — interim: plain TypeScript, no framework.
-- Where the shell's files are served from is undecided — interim: the Gateway's HTTPS host.
+- The shell's framework is open — decided when this story is planned.
+- Where the shell's files are served from is open — answered with the Service router spike.
 
 **Links:** [docs/03-architecture.md](https://github.com/FPGSchiba/aria/blob/main/docs/03-architecture.md)
 
@@ -627,20 +661,28 @@ for the next two plannings. **If you prefer the brief:** one sprint 2 with all t
 
 ---
 
-## Open questions the interims lean on hardest
+## How the open questions are handled
 
-Every open item above has an interim, so every story is implementable today. These six interims
-would be the most expensive to reverse. Each deserves a decision before the sprint that first
-uses it:
+Per the guideline's *decide at the last responsible moment* rule, every open item above gets one
+of three treatments:
 
-| Open question | First used by | Interim in the story |
+- **Interim** — the story carries it because reversing it later is cheap.
+- **Spike** — it runs in the sprint before the first story that needs the answer.
+- **Decision at planning** — for a question of preference rather than evidence.
+
+| Open question | First needed by | Treatment |
 |---|---|---|
-| Where the Service router runs — nginx-ingress or Envoy | S2-09 | nginx-ingress with an auth request to the Gateway |
-| The Core Web shell's framework, and where its files are served from | S2-10 | plain TypeScript, served from the Gateway's HTTPS host |
-| How the context's audience works when one service calls another for the user | S2-08 | the Gateway mints it for both services |
-| Gateway signing-key generation, storage and rotation | S2-04 | one hand-made key, sealed |
-| How pods trust `fpg-ca` | S2-03 | a ConfigMap in the umbrella chart |
-| How releases reach the cluster | S1-10 | `helm` run by hand |
+| Hosted LLM provider and model | S1-06 | **Spike S1-01** (sprint 1 — the one same-sprint exception) |
+| How the context's audience works on a second hop | S2-08 | **Spike S2-11**, in sprint 2 |
+| Where the Service router runs — nginx-ingress or Envoy | S2-09 | **Spike**, created when the data sprint is planned; it also answers where the web shell's files are served |
+| The Core Web shell's framework | S2-10 | **Decision** when that story is planned — a spike only if a prototype is wanted |
+| Vault dynamic leases vs static roles | S2-06 | Interim: static roles. Contained to one service; revisit when that sprint is planned |
+| Signing-key generation, storage and rotation | S2-04 | Interim: one hand-made key, sealed. Replacing the key source later touches only the Gateway |
+| How pods trust `fpg-ca` | S2-03 | Interim: a ConfigMap in the chart |
+| How releases reach the cluster | S1-10 | Interim: `helm` by hand |
+| Service-to-service mTLS | S1-10 | Interim: plaintext gRPC; adding mTLS later removes nothing |
+| `traceparent` on the hosted call; stream caps; key-cache refresh; token vs stream lifetime; freshness window; turn-log trace ID; failed history write; sealed-key location | various | Interim, each stated in its story |
+| Node capacity; Postgres VM size | S1-10, S2-05 | Measured by the story itself: record the footprint |
 
 ## New open questions this plan surfaced
 
@@ -650,7 +692,7 @@ your uncommitted D60–D84 edits, so they belong in it when that batch is commit
 1. **How releases reach the cluster.** GitHub-hosted runners can't reach the LAN, so CI can
    build images but can't deploy them.
 2. **The context's audience on a second hop.** `aud` names one intended callee, but a turn reaches
-   the Agent Core and then the Knowledge Core on the same user's behalf.
+   the Agent Core and then the Knowledge Core on the same user's behalf. S2-11 answers it.
 3. **The Core Web shell's framework.** The existing item covers the native clients only.
 4. **Where the Core Web shell's static files are served from**, given the Gateway is the only
    component exposed to clients.
@@ -672,8 +714,7 @@ your uncommitted D60–D84 edits, so they belong in it when that batch is commit
 - **Issue types:** Story, Spike (created 2026-09-24) and Subtask. Points go in *Story point
   estimate*, and each issue gets exactly one theme label. A spike's timebox lives in its
   description.
-- **Links:** only the 15 Blocks edges in the tables above.
-- **Sprints:** named `ARIA Sprint <n> — <goal>` and created through the Agile API without dates;
-  dates are set when you start a sprint from the board. The guideline's "sprint id = 472 + n"
-  mapping won't hold for the new sprints, since ids 473–488 are already taken. The guideline line
-  should change to "record the id at creation".
+- **Links:** only the 16 Blocks edges in the tables above.
+- **Sprints:** named `ARIA Sprint <n> — <goal>` and created without dates; dates are set when you
+  start a sprint from the board. The guideline's "sprint id = 472 + n" mapping won't hold for the
+  new sprints, since ids 473–488 are already taken.

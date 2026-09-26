@@ -48,7 +48,9 @@ Rules:
 - **No references to closed decisions.** A closed decision is already clear; repeating it
   inflates the story. Traceability lives in `docs/decisions/` and the roadmap, not in Jira.
 - **Open decisions are referenced** — by name or question, plus the interim instruction, so the
-  story is implementable today rather than blocked on a discussion.
+  story is implementable today rather than blocked on a discussion. An interim must be cheap to
+  reverse; when it would not be, the story waits for a Spike or a decision instead
+  ([sprint guideline](sprint-guideline.md)).
 - No rationale, no rejected alternatives, no architecture description, no quoted docs.
 
 ## Acceptance criteria
