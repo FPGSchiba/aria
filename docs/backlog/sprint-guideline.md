@@ -68,7 +68,9 @@ The Atlassian MCP cannot create sprints. Use Claude in Chrome with the Agile API
 - Move issues with `POST /rest/agile/1.0/sprint/{sprintId}/issue`.
 - Start the sprint from the board UI.
 
-Name sprints `ARIA Sprint <n> — <goal in three or four words>`.
+Name sprints `ARIA Sprint <n> — <goal in two or three words>`. Jira rejects sprint names of 30
+characters or more, so the words must fit in 13 characters; the full goal goes in the sprint's
+*goal* field.
 
 ## Carry-over
 

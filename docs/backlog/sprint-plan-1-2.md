@@ -2,15 +2,20 @@
 
 [Library index](../README.md) · [Roadmap](roadmap.md) · [Jira rulebook](jira-rulebook.md) · [Sprint guideline](sprint-guideline.md) · [Open questions](../open-questions/README.md)
 
-**Status: approved 2026-09-26.** Sprint 1 is kept as written. The briefed sprint 2 is split: its
-identity stories form sprint 2, and its data and clients stories wait in the backlog. Open
-questions follow the guideline's *decide at the last responsible moment* rule (see
-[below](#how-the-open-questions-are-handled)). **Jira creation: pending.** That will be 21
-issues, 79 subtasks and 16 Blocks links, and nothing else.
+**Status: approved and created in Jira, 2026-09-26.** Sprint 1 is kept as written. The briefed
+sprint 2 is split: its identity stories form sprint 2, and its data and clients stories wait in the
+backlog. Open questions follow the guideline's *decide at the last responsible moment* rule (see
+[below](#how-the-open-questions-are-handled)).
 
-The story text is generated from one source. Every description is checked against the rulebook's
-limits: under 120 words, 2–4 criteria, 2–6 subtasks, points from 1/2/3/5, and no D-numbers. Story
-IDs (`S1-01` …) are local to this document; Jira assigns the real keys.
+**In Jira:** 21 issues and 79 subtasks (keys ARIA-122 … ARIA-221, listed below),
+16 Blocks links, and sprints 521 and 522. Everything was read back from Jira afterwards: summaries,
+types, labels, points, sprints, descriptions, subtask lists and link directions all match this
+document. The subtasks follow their parent's sprint, which Jira does automatically.
+
+**Live Jira wins from here on.** This page is the record of what was planned; edits after
+2026-09-26 happen in Jira. The story text was generated from one source and checked against the
+rulebook's limits: under 120 words, 2–4 criteria, 2–6 subtasks, points from 1/2/3/5, and no
+D-numbers.
 
 ---
 
@@ -29,7 +34,7 @@ redoes finished work:
 
 ---
 
-## Sprint 1 — `ARIA Sprint 1 — CLI turn streams back`
+## Sprint 1 — `ARIA Sprint 1 — CLI streaming` (Jira sprint 521)
 
 **Goal:** A typed message from a throwaway CLI client reaches the hosted LLM and streams back,
 running on the cluster.
@@ -38,18 +43,18 @@ running on the cluster.
 them. **Size:** 22 points plus one 4-hour spike. **Demo:** S1-10's second criterion is the
 goal sentence.
 
-| ID | Type | Summary | Label | Size | Blocked by |
-|---|---|---|---|---|---|
-| S1-01 | Spike | Measure the hosted LLM candidates with the probe harness | `theme-conversation` | 4 h | — |
-| S1-02 | Story | Add the proto crate with text-only Converse and Decide schemas | `theme-foundations` | 3 | — |
-| S1-03 | Story | Add a CI workflow that runs the repo gate on every push | `theme-foundations` | 2 | — |
-| S1-04 | Story | Publish Gateway and Agent Core images to ghcr.io from CI | `theme-foundations` | 2 | — |
-| S1-05 | Story | Stream Decide from the Agent Core with in-memory session history | `theme-conversation` | 3 | S1-02 |
-| S1-06 | Story | Add the hosted LLM backend to the Agent Core | `theme-conversation` | 3 | S1-01, S1-05 |
-| S1-07 | Story | Serve a text-only Converse stream from the Gateway | `theme-conversation` | 3 | S1-02 |
-| S1-08 | Story | Add a throwaway CLI client for Converse | `theme-conversation` | 1 | S1-02 |
-| S1-09 | Story | Install the sealed-secrets controller and seal the LLM API key | `theme-ops` | 2 | — |
-| S1-10 | Story | Deploy the Gateway and Agent Core with the umbrella Helm chart | `theme-foundations` | 3 | S1-04 |
+| ID | Jira | Type | Summary | Label | Size | Blocked by |
+|---|---|---|---|---|---|---|
+| S1-01 | [ARIA-122](https://firephoenixgames.atlassian.net/browse/ARIA-122) | Spike | Measure the hosted LLM candidates with the probe harness | `theme-conversation` | 4 h | — |
+| S1-02 | [ARIA-130](https://firephoenixgames.atlassian.net/browse/ARIA-130) | Story | Add the proto crate with text-only Converse and Decide schemas | `theme-foundations` | 3 | — |
+| S1-03 | [ARIA-140](https://firephoenixgames.atlassian.net/browse/ARIA-140) | Story | Add a CI workflow that runs the repo gate on every push | `theme-foundations` | 2 | — |
+| S1-04 | [ARIA-123](https://firephoenixgames.atlassian.net/browse/ARIA-123) | Story | Publish Gateway and Agent Core images to ghcr.io from CI | `theme-foundations` | 2 | — |
+| S1-05 | [ARIA-131](https://firephoenixgames.atlassian.net/browse/ARIA-131) | Story | Stream Decide from the Agent Core with in-memory session history | `theme-conversation` | 3 | S1-02 |
+| S1-06 | [ARIA-143](https://firephoenixgames.atlassian.net/browse/ARIA-143) | Story | Add the hosted LLM backend to the Agent Core | `theme-conversation` | 3 | S1-01, S1-05 |
+| S1-07 | [ARIA-151](https://firephoenixgames.atlassian.net/browse/ARIA-151) | Story | Serve a text-only Converse stream from the Gateway | `theme-conversation` | 3 | S1-02 |
+| S1-08 | [ARIA-161](https://firephoenixgames.atlassian.net/browse/ARIA-161) | Story | Add a throwaway CLI client for Converse | `theme-conversation` | 1 | S1-02 |
+| S1-09 | [ARIA-169](https://firephoenixgames.atlassian.net/browse/ARIA-169) | Story | Install the sealed-secrets controller and seal the LLM API key | `theme-ops` | 2 | — |
+| S1-10 | [ARIA-177](https://firephoenixgames.atlassian.net/browse/ARIA-177) | Story | Deploy the Gateway and Agent Core with the umbrella Helm chart | `theme-foundations` | 3 | S1-04 |
 
 **Capacity.** 22 points is above the guideline's "deliberately low" first number; the
 previous sprint 1 ran six weeks and closed five of nine issues. It is kept as briefed. Record what
@@ -61,7 +66,7 @@ actually completes, because that figure is sprint 2's capacity.
 - **Deployment comes last.** The service stories can't be deployed until S1-10 lands, so within
   this sprint they are demonstrated locally and deployed together by S1-10.
 
-### S1-01 · Measure the hosted LLM candidates with the probe harness
+### S1-01 · ARIA-122 · Measure the hosted LLM candidates with the probe harness
 
 *Spike · `theme-conversation` · timebox 4 h · 84 words*
 
@@ -88,7 +93,7 @@ actually completes, because that figure is sprint 2's capacity.
 2. Run the probe with `--repeats 5` per candidate
 3. Write the results section and the decision entry
 
-### S1-02 · Add the proto crate with text-only Converse and Decide schemas
+### S1-02 · ARIA-130 · Add the proto crate with text-only Converse and Decide schemas
 
 *Story · `theme-foundations` · 3 points · 74 words*
 
@@ -114,7 +119,7 @@ actually completes, because that figure is sprint 2's capacity.
 3. Write `proto/agent-core/v1/agent_core.proto` with a text-only `Decide`
 4. Add the round-trip tests
 
-### S1-03 · Add a CI workflow that runs the repo gate on every push
+### S1-03 · ARIA-140 · Add a CI workflow that runs the repo gate on every push
 
 *Story · `theme-foundations` · 2 points · 79 words*
 
@@ -140,7 +145,7 @@ actually completes, because that figure is sprint 2's capacity.
 3. Prove red and green with a deliberately broken commit
 4. Make the check required on `main`
 
-### S1-04 · Publish Gateway and Agent Core images to ghcr.io from CI
+### S1-04 · ARIA-123 · Publish Gateway and Agent Core images to ghcr.io from CI
 
 *Story · `theme-foundations` · 2 points · 70 words*
 
@@ -164,7 +169,7 @@ actually completes, because that figure is sprint 2's capacity.
 2. Add a publish job on `main` using `GITHUB_TOKEN`
 3. Make the packages pullable from the cluster
 
-### S1-05 · Stream Decide from the Agent Core with in-memory session history
+### S1-05 · ARIA-131 · Stream Decide from the Agent Core with in-memory session history
 
 *Story · `theme-conversation` · 3 points · blocked by S1-02 · 115 words*
 
@@ -191,7 +196,7 @@ actually completes, because that figure is sprint 2's capacity.
 4. Add a shared tracing setup in `crates/shared` and spans on `Decide`
 5. Add gRPC health
 
-### S1-06 · Add the hosted LLM backend to the Agent Core
+### S1-06 · ARIA-143 · Add the hosted LLM backend to the Agent Core
 
 *Story · `theme-conversation` · 3 points · blocked by S1-01, S1-05 · 114 words*
 
@@ -218,7 +223,7 @@ actually completes, because that figure is sprint 2's capacity.
 3. Add the key-gated integration test
 4. Add spans around the provider call
 
-### S1-07 · Serve a text-only Converse stream from the Gateway
+### S1-07 · ARIA-151 · Serve a text-only Converse stream from the Gateway
 
 *Story · `theme-conversation` · 3 points · blocked by S1-02 · 90 words*
 
@@ -244,7 +249,7 @@ actually completes, because that figure is sprint 2's capacity.
 3. Test against a stub `Decide` server
 4. Add gRPC health and spans per turn
 
-### S1-08 · Add a throwaway CLI client for Converse
+### S1-08 · ARIA-161 · Add a throwaway CLI client for Converse
 
 *Story · `theme-conversation` · 1 point · blocked by S1-02 · 69 words*
 
@@ -269,7 +274,7 @@ actually completes, because that figure is sprint 2's capacity.
 2. Send stdin lines on one stream
 3. Print chunks as they arrive
 
-### S1-09 · Install the sealed-secrets controller and seal the LLM API key
+### S1-09 · ARIA-169 · Install the sealed-secrets controller and seal the LLM API key
 
 *Story · `theme-ops` · 2 points · 98 words*
 
@@ -294,7 +299,7 @@ actually completes, because that figure is sprint 2's capacity.
 2. Seal the API key and add it to the umbrella chart
 3. Export and store the controller's key
 
-### S1-10 · Deploy the Gateway and Agent Core with the umbrella Helm chart
+### S1-10 · ARIA-177 · Deploy the Gateway and Agent Core with the umbrella Helm chart
 
 *Story · `theme-foundations` · 3 points · blocked by S1-04 · 115 words*
 
@@ -324,7 +329,7 @@ actually completes, because that figure is sprint 2's capacity.
 
 ---
 
-## Sprint 2 — `ARIA Sprint 2 — Authenticated CLI turn`
+## Sprint 2 — `ARIA Sprint 2 — Logged-in CLI` (Jira sprint 522)
 
 **Goal:** Only a logged-in CLI user gets a reply, and the Agent Core knows who they are.
 
@@ -333,15 +338,15 @@ checked against sprint 1's completed points at planning. **The spike prepares th
 S2-11 answers the one open question that would be expensive to guess before the turn log is
 persisted (S2-08).
 
-| ID | Type | Summary | Label | Size | Blocked by |
-|---|---|---|---|---|---|
-| S2-01 | Story | Register the ARIA client and its roles in Keycloak | `theme-identity` | 2 | — |
-| S2-02 | Story | Log the CLI in with the device authorization flow | `theme-identity` | 2 | S2-01 |
-| S2-03 | Story | Reject unauthenticated Converse streams at the Gateway | `theme-identity` | 3 | S2-01 |
-| S2-04 | Story | Mint the signed context at the Gateway and verify it in the Agent Core | `theme-identity` | 5 | S2-03 |
-| S2-11 | Spike | Prototype how the end-user context crosses a second service hop | `theme-identity` | 4 h | — |
+| ID | Jira | Type | Summary | Label | Size | Blocked by |
+|---|---|---|---|---|---|---|
+| S2-01 | [ARIA-152](https://firephoenixgames.atlassian.net/browse/ARIA-152) | Story | Register the ARIA client and its roles in Keycloak | `theme-identity` | 2 | — |
+| S2-02 | [ARIA-160](https://firephoenixgames.atlassian.net/browse/ARIA-160) | Story | Log the CLI in with the device authorization flow | `theme-identity` | 2 | S2-01 |
+| S2-03 | [ARIA-168](https://firephoenixgames.atlassian.net/browse/ARIA-168) | Story | Reject unauthenticated Converse streams at the Gateway | `theme-identity` | 3 | S2-01 |
+| S2-04 | [ARIA-181](https://firephoenixgames.atlassian.net/browse/ARIA-181) | Story | Mint the signed context at the Gateway and verify it in the Agent Core | `theme-identity` | 5 | S2-03 |
+| S2-11 | [ARIA-187](https://firephoenixgames.atlassian.net/browse/ARIA-187) | Spike | Prototype how the end-user context crosses a second service hop | `theme-identity` | 4 h | — |
 
-### S2-01 · Register the ARIA client and its roles in Keycloak
+### S2-01 · ARIA-152 · Register the ARIA client and its roles in Keycloak
 
 *Story · `theme-identity` · 2 points · 94 words*
 
@@ -366,7 +371,7 @@ persisted (S2-08).
 2. Create the client and both roles
 3. Record the facts and decoded tokens in the Keycloak facts page
 
-### S2-02 · Log the CLI in with the device authorization flow
+### S2-02 · ARIA-160 · Log the CLI in with the device authorization flow
 
 *Story · `theme-identity` · 2 points · blocked by S2-01 · 83 words*
 
@@ -391,7 +396,7 @@ persisted (S2-08).
 2. Attach the token as stream metadata
 3. Handle an expired token
 
-### S2-03 · Reject unauthenticated Converse streams at the Gateway
+### S2-03 · ARIA-168 · Reject unauthenticated Converse streams at the Gateway
 
 *Story · `theme-identity` · 3 points · blocked by S2-01 · 116 words*
 
@@ -419,7 +424,7 @@ persisted (S2-08).
 3. Enforce it on `Converse` in the Gateway
 4. Test with the recorded token fixtures
 
-### S2-04 · Mint the signed context at the Gateway and verify it in the Agent Core
+### S2-04 · ARIA-181 · Mint the signed context at the Gateway and verify it in the Agent Core
 
 *Story · `theme-identity` · 5 points · blocked by S2-03 · 118 words*
 
@@ -446,7 +451,7 @@ persisted (S2-08).
 3. Mint and attach the context on each `Decide` call
 4. Verify it in the Agent Core with an interceptor
 
-### S2-11 · Prototype how the end-user context crosses a second service hop
+### S2-11 · ARIA-187 · Prototype how the end-user context crosses a second service hop
 
 *Spike · `theme-identity` · timebox 4 h · 93 words*
 
@@ -488,16 +493,16 @@ nothing beyond the sprint being planned, and each carries an open question that'
 
 The walking skeleton runs at the end of the second of these.
 
-| ID | Type | Summary | Label | Size | Blocked by |
-|---|---|---|---|---|---|
-| S2-05 | Story | Provision the Postgres VM with verify-full TLS | `theme-data` | 3 | — |
-| S2-06 | Story | Run the Knowledge Core against its own database with Vault credentials | `theme-data` | 5 | S2-05 |
-| S2-07 | Story | Store and list turn-log events in the Knowledge Core | `theme-data` | 3 | S2-06, S2-04 |
-| S2-08 | Story | Persist every turn from the Agent Core to the Knowledge Core | `theme-conversation` | 3 | S2-07, S2-11 |
-| S2-09 | Story | Route browser calls to the Knowledge Core through the Service router | `theme-clients` | 5 | S2-07, S2-04 |
-| S2-10 | Story | Build the Core Web shell with PKCE login and a turn history view | `theme-clients` | 5 | — |
+| ID | Jira | Type | Summary | Label | Size | Blocked by |
+|---|---|---|---|---|---|---|
+| S2-05 | [ARIA-188](https://firephoenixgames.atlassian.net/browse/ARIA-188) | Story | Provision the Postgres VM with verify-full TLS | `theme-data` | 3 | — |
+| S2-06 | [ARIA-196](https://firephoenixgames.atlassian.net/browse/ARIA-196) | Story | Run the Knowledge Core against its own database with Vault credentials | `theme-data` | 5 | S2-05 |
+| S2-07 | [ARIA-206](https://firephoenixgames.atlassian.net/browse/ARIA-206) | Story | Store and list turn-log events in the Knowledge Core | `theme-data` | 3 | S2-06, S2-04 |
+| S2-08 | [ARIA-198](https://firephoenixgames.atlassian.net/browse/ARIA-198) | Story | Persist every turn from the Agent Core to the Knowledge Core | `theme-conversation` | 3 | S2-07, S2-11 |
+| S2-09 | [ARIA-207](https://firephoenixgames.atlassian.net/browse/ARIA-207) | Story | Route browser calls to the Knowledge Core through the Service router | `theme-clients` | 5 | S2-07, S2-04 |
+| S2-10 | [ARIA-216](https://firephoenixgames.atlassian.net/browse/ARIA-216) | Story | Build the Core Web shell with PKCE login and a turn history view | `theme-clients` | 5 | — |
 
-### S2-05 · Provision the Postgres VM with verify-full TLS
+### S2-05 · ARIA-188 · Provision the Postgres VM with verify-full TLS
 
 *Story · `theme-data` · 3 points · 101 words*
 
@@ -524,7 +529,7 @@ The walking skeleton runs at the end of the second of these.
 3. Restrict `pg_hba.conf` and the host firewall
 4. Add the Antrea egress policy
 
-### S2-06 · Run the Knowledge Core against its own database with Vault credentials
+### S2-06 · ARIA-196 · Run the Knowledge Core against its own database with Vault credentials
 
 *Story · `theme-data` · 5 points · blocked by S2-05 · 116 words*
 
@@ -552,7 +557,7 @@ The walking skeleton runs at the end of the second of these.
 4. Connect with `sqlx` over `verify-full`
 5. Add gRPC health and spans
 
-### S2-07 · Store and list turn-log events in the Knowledge Core
+### S2-07 · ARIA-206 · Store and list turn-log events in the Knowledge Core
 
 *Story · `theme-data` · 3 points · blocked by S2-06, S2-04 · 84 words*
 
@@ -578,7 +583,7 @@ The walking skeleton runs at the end of the second of these.
 3. Implement both RPCs with `sqlx`
 4. Verify the context with the Agent Core's interceptor
 
-### S2-08 · Persist every turn from the Agent Core to the Knowledge Core
+### S2-08 · ARIA-198 · Persist every turn from the Agent Core to the Knowledge Core
 
 *Story · `theme-conversation` · 3 points · blocked by S2-07, S2-11 · 112 words*
 
@@ -604,7 +609,7 @@ The walking skeleton runs at the end of the second of these.
 2. Load session history from `ListTurns`
 3. Forward the user context on the call
 
-### S2-09 · Route browser calls to the Knowledge Core through the Service router
+### S2-09 · ARIA-207 · Route browser calls to the Knowledge Core through the Service router
 
 *Story · `theme-clients` · 5 points · blocked by S2-07, S2-04 · 115 words*
 
@@ -631,7 +636,7 @@ The walking skeleton runs at the end of the second of these.
 3. Add the path-prefix route with external auth
 4. Enable `tonic-web` on the Knowledge Core
 
-### S2-10 · Build the Core Web shell with PKCE login and a turn history view
+### S2-10 · ARIA-216 · Build the Core Web shell with PKCE login and a turn history view
 
 *Story · `theme-clients` · 5 points · 103 words*
 
@@ -716,5 +721,6 @@ your uncommitted D60–D84 edits, so they belong in it when that batch is commit
   description.
 - **Links:** only the 16 Blocks edges in the tables above.
 - **Sprints:** named `ARIA Sprint <n> — <goal>` and created without dates; dates are set when you
-  start a sprint from the board. The guideline's "sprint id = 472 + n" mapping won't hold for the
-  new sprints, since ids 473–488 are already taken.
+  start a sprint from the board. Jira caps sprint names below 30 characters, so the goal words are
+  short and the full sentence lives in the sprint's goal field. The new ids are **521** and
+  **522** — the old "472 + n" mapping no longer holds.
