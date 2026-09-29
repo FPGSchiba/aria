@@ -53,6 +53,28 @@ Counts as of **2026-08-19**, carried forward from CLAUDE.md §8:
 | B — awaiting a measurement | 10 |
 | C — deferred | 7 |
 
+### After the 2026-09-23 design conversation (D60–D84)
+
+Twenty-five decisions were recorded. Their effect on this directory:
+
+| | A — needs a decision | B — awaiting a measurement |
+|---|---|---|
+| **Closed by a decision** | 3 (the D41 re-examination, the D31/Vault re-decision, the reopened D6) | — |
+| **Made moot, not answered** | 2 (a fallback OTLP target; telemetry-egress acceptability) | 2 (the Postgres operator / Qdrant in-cluster topology; AppSignal's billable-request definition) |
+| **Narrowed or annotated, still open** | 8 | 2 |
+| **Newly surfaced** | 15 | 3 |
+
+**Net: bucket A grew.** That is the expected shape — a decision that touches a new surface reveals
+questions nobody had yet asked about it, and recording them is the point. Notably, **D82 invalidated
+a row in D56's retention table** rather than merely superseding a decision: Jaeger's trace retention
+is now ARIA's own choice and nobody has made it.
+
+Three things were **deliberately left open** by the decisions that could have settled them, and must
+not be read as decided: **service-to-service mTLS** (D81 supersedes D6 but does not answer it),
+**whether `traceparent` rides the outbound hosted-LLM call** (D83 decided the other three
+propagation points and stopped), and **Speech's placement** now that the GPU is known to be outside
+the cluster (untouched on 2026-09-23).
+
 A follow-up decision session was scoped but has not yet run — its agenda (~17 deferred items plus
 ~12 newly surfaced) is preserved in
 [`../../archive/ARIA-session-2-prompt.md`](../../archive/ARIA-session-2-prompt.md).

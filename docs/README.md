@@ -72,7 +72,7 @@ Is it a choice between real alternatives?
    ├─ Is it the output of a spike?               → spikes/ARIA-NN-<topic>.md
    ├─ Is it internal to one service?             → services/<service>.md
    ├─ Is it about the backlog itself?            → backlog/
-   └─ Is it how we write stories?                → backlog/story-style.md
+   └─ Is it how we write stories or sprints?     → backlog/jira-rulebook.md, backlog/sprint-guideline.md
 ```
 
 ---
@@ -84,7 +84,7 @@ Is it a choice between real alternatives?
 3. [02-stack.md](02-stack.md) + [03-architecture.md](03-architecture.md) — current state
 4. [decisions/README.md](decisions/README.md) — skim the index, read the entries touching your area
 5. [open-questions/README.md](open-questions/README.md) — what you may and may not decide
-6. [sprints/sprint-01.md](sprints/sprint-01.md) — what is actually being worked right now
+6. [backlog/roadmap.md](backlog/roadmap.md) and [backlog/sprint-plan-1-2.md](backlog/sprint-plan-1-2.md) — what is actually being worked right now
 
 Do **not** start from `backlog/implementation-plan.md`. It is derived and has drifted before.
 

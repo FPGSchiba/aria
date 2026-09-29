@@ -20,6 +20,23 @@
   fabricated a required argument on **100%** of runs where the user supplied none. The Agent Core
   cannot rely on the model to decline; something structural must catch it.
 
+
+## Amendments from 2026-09-23 (D61, D83)
+
+- **[D61](../decisions/0012-clients-gateway-surface.md)** — the **turn log is product data**, not
+  an implementation detail of this service's conversation history. The Agent Core still owns and
+  persists history (D36); what changed is that part of it is now a **user-facing surface** with a
+  client reading it over the Gateway's HTTP door, which constrains what may be dropped or
+  reshaped later.
+- **[D83](../decisions/0016-observability-v2.md)** — the **user-facing action timeline is built
+  from the turn log, never from traces.** Traces are sampled and retained on an operational
+  schedule; the turn log is not. Building the timeline on traces would either force trace retention
+  to match product retention or show the user a history with sampled-out holes in it.
+- **[D82](../decisions/0016-observability-v2.md)** — the span wrapping the **LLM call** is one of
+  D83's four propagation points. Whether `traceparent` rides the outbound **hosted** call is
+  **still open** — propagating discloses a correlation identifier to a third party; not propagating
+  breaks the trace at the most interesting hop. The Ollama fallback has no such objection.
+
 ---
 
 ## Purpose

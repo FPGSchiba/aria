@@ -22,6 +22,35 @@
 
 ---
 
+## Amendments from 2026-09-23 (D69, D70, D75, D83)
+
+- **[D69](../decisions/0013-extension-surface.md)** — the Registry is also the **service catalog**,
+  and **publishes the route table** the Gateway's HTTP front door
+  ([D62](../decisions/0012-clients-gateway-surface.md)) uses to reach extension UIs. This is new
+  responsibility, not a restatement: the Registry already knew which servers exist, and now that
+  knowledge has a consumer outside the tool-call path.
+- **[D66](../decisions/0013-extension-surface.md)–[D68](../decisions/0013-extension-surface.md)** —
+  an approved server may ship a **UI bundle**, approved by digest in the **same PR** as its image.
+  The Registry's approval check (D44/D45) therefore covers two artifacts, not one. The UI runs on a
+  **separate origin in a sandboxed iframe** and receives an **audience-limited token**, never the
+  user's Keycloak token.
+- **[D70](../decisions/0013-extension-surface.md)** — MCP servers get **no direct Knowledge Core
+  access**. The one legitimate need — knowing which person they act for — is a narrow
+  **`ResolvePerson`** call behind **its own consent scope**, which the Registry gates like any
+  other. [D77](../decisions/0015-external-datastores.md) then makes this structural: the Knowledge
+  Core is in its own database, so the grant that would bypass it cannot be written.
+- **[D75](../decisions/0015-external-datastores.md)** — a second broker exists.
+  **`aria-storage-broker`** provisions an approved server's Postgres schema and grants, and the
+  Registry **must not hold that credential either** — the same reasoning that produced
+  `aria-kc-broker` (D8), applied to storage. See
+  [storage-broker.md](storage-broker.md).
+- **[D83](../decisions/0016-observability-v2.md)** — the `traceparent` header on the
+  **streamable-HTTP call to an MCP server** is one of three manual trace-propagation points, and it
+  must also be in the **generated-server template**. This is the hop where "what did the tool do"
+  is asked, and it is the one most easily forgotten.
+
+---
+
 ## Purpose
 
 The **only** component that speaks MCP. Holds the list of connected MCP servers, aggregates their

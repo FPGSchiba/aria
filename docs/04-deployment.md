@@ -72,6 +72,83 @@ conversation content or knowledge-base content leaves except as ciphertext under
 
 ---
 
+## Amendments from the 2026-09-23 design conversation
+
+Two of the bullets above are now substantially wrong, and the list of things that cross the network
+boundary has changed in both directions.
+
+### The datastores left the cluster (D73, D78, D80)
+
+"Postgres and Qdrant as StatefulSets with persistent volumes" is no longer the plan. **Each runs on
+its own VM**, outside the cluster, reached over the LAN:
+
+- **Postgres** — one VM, **one schema per service**, with a `*_owner` / `*_app` role split so that
+  the role an application connects as cannot alter its own schema
+  ([D73](decisions/0015-external-datastores.md)). Cross-schema reads are **read-only views**
+  ([D74](decisions/0015-external-datastores.md)). The **Knowledge Core gets its own database**, not
+  merely its own schema ([D77](decisions/0015-external-datastores.md)).
+- **Qdrant** — its own VM ([D78](decisions/0015-external-datastores.md)). Note the ordering of the
+  argument there: the motive is **backup and monitoring** — Qdrant holds primary, non-re-derivable
+  data and belongs in the same backup regime as the rest of Jann's VMs. **Capacity relief on a
+  one-node cluster is a consequence, not the motive.**
+
+This makes the **backup bullet above partly obsolete**: "Postgres operator backups" describes an
+operator ARIA no longer deploys. [D80](decisions/0015-external-datastores.md) replaces it with
+**pgBackRest plus Qdrant snapshots**, and adds the requirement the old bullet never stated — **a
+restore that has actually been tested**. Off-site replication with client-side encryption under a
+locally-held key is unchanged, and so is the D56 retention interaction.
+
+[D80](decisions/0015-external-datastores.md) also sets the **posture for the data VMs**, which the
+in-cluster plan never needed: TLS with **`verify-full`** against a certificate from **`fpg-ca`**,
+reached by **DNS name and not IP**, with access restricted in three layers — Antrea egress policy
+on the cluster side, `pg_hba.conf` in Postgres, and a host firewall on the VM.
+
+### Two new workloads, one dropped
+
+- **`aria-notify`** ([D71](decisions/0014-notifications.md)) — stateless, schedulable anywhere.
+- **`aria-storage-broker`** ([D75](decisions/0015-external-datastores.md)) — holds the credential
+  that can create schemas and grants. Like `aria-kc-broker`, it is deliberately small and deliberately
+  not the Registry.
+- **The AppSignal self-hosted collector is dropped** ([D82](decisions/0016-observability-v2.md)).
+  In its place: an **in-cluster OpenTelemetry collector** ARIA owns, and **Jaeger deployed
+  in-cluster** as the trace backend. Metrics go to the **Prometheus that already runs in
+  `lens-metrics`** — not a new deployment. **Logs go to stdout**, with nothing aggregating them;
+  that is a known gap, not a solved problem.
+
+### What crosses the network boundary
+
+The opening paragraph names three things. **It is now two.**
+
+| | Status |
+|---|---|
+| The hosted LLM API call | unchanged |
+| Source code and CI logs (GitHub-hosted runners) | unchanged |
+| Encrypted off-site backups | unchanged (ciphertext only) |
+| ~~Telemetry~~ | **removed** — [D82](decisions/0016-observability-v2.md) keeps all three signals on the LAN |
+
+Telemetry was never in the original three-item list, but D41 had made it a fourth. D82 takes it
+back off. This is the first change to that list in the narrowing direction.
+
+### Internal networking
+
+[D81](decisions/0015-external-datastores.md) supersedes **D6**. The revisit trigger in the bullet
+above ("if the cluster turns out to be multi-node") **fired** — ARIA-79 found two nodes. D81's
+answer is not "add mTLS everywhere": it records that **service-to-service mTLS is still open**, and
+corrects the one part of D6's reasoning that is no longer true — the cost argument rested on having
+to stand up a CA, and **cert-manager and `fpg-ca` already exist**. The decision has to be retaken
+on its real merits rather than inherited or dismissed on a stale cost.
+
+The **data-VM connections are a separate matter and are not open**: those are TLS `verify-full`
+today, per D80.
+
+### Scheduling
+
+Unchanged for the services listed, with one addition: **Speech's pinning is still unachievable as
+written** — ARIA-79 found the GPU is on Proxmox `prox2`, outside Kubernetes, and no decision taken
+on 2026-09-23 addresses that. It remains open.
+
+---
+
 ## See also
 
 - [ARIA-79 cluster baseline](spikes/ARIA-79-cluster-baseline.md) — the facts this section assumes but does not yet record

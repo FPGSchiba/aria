@@ -22,6 +22,25 @@ session-1 decisions on 2026-08-19.
 
 ---
 
+## Touched by the 2026-09-23 decisions
+
+- **C-5 (alerting) is unblocked, not closed.** It was waiting on "whatever D41 becomes". D41 became
+  **[D82](../decisions/0016-observability-v2.md)**, so application-level alerting now has a concrete
+  substrate — the existing Prometheus for metrics, Jaeger for traces, both on the LAN. The
+  revisit-when condition is unchanged (services are deployed and running), but the item is no longer
+  blocked on a prerequisite decision.
+- **C-7 (external/remote access) gains a second reason to exist.**
+  [D60](../decisions/0012-clients-gateway-surface.md) puts **native phone clients** in scope. A
+  phone is the client most likely to be away from home, so the deferral now has a named consumer
+  rather than a hypothetical one. Still genuinely fine to defer — the revisit condition (the core
+  works locally end-to-end) has not arrived.
+- **C-1 (who polices the packaging convention) is unchanged**, and
+  [D84](../decisions/0017-conventions.md) does not resolve it: D84 extends the definition of done
+  but is explicitly a convention held by review, with no gate to enforce it and no CI workflow to
+  put one in.
+
+---
+
 ## Deferred by nature, not by triage
 
 **ARIA-57's column list.** ARIA-57 is a design story whose *output* is the schema. The shape

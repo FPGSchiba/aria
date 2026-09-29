@@ -73,6 +73,104 @@ lives under [services/](services/) with the proposed internal structure.
 
 ---
 
+## Amendments from the 2026-09-23 design conversation
+
+The list above is preserved verbatim as of 2026-08-12. Three things changed: **clients entered the
+architecture**, **two services were added**, and **the datastores left the cluster**.
+
+### Clients are part of the architecture (D60–D65)
+
+[D60](decisions/0012-clients-gateway-surface.md) puts clients inside the boundary rather than
+treating them as an afterthought: **native phone and desktop applications** speaking gRPC
+bidirectional streams, and a **Core Web shell** in the browser on Authorization Code + PKCE. The
+Gateway remains the only ARIA component a client can reach.
+
+The Gateway therefore grows a **second front door**
+([D62](decisions/0012-clients-gateway-surface.md)). gRPC-web cannot do client or bidirectional
+streaming, which is the forcing fact: a browser cannot hold the `Converse` stream. So there are two
+surfaces — the **gRPC stream for turns**, and **HTTP for everything else** (history, preferences,
+consent management, extension UIs). Routing between them is **by path prefix**, and the Gateway
+**never decodes a request body to decide where it goes**
+([D63](decisions/0012-clients-gateway-surface.md)).
+
+Both doors mint the same thing: the Gateway stays the **sole minter of end-user context**
+([D64](decisions/0012-clients-gateway-surface.md)), so nothing downstream learns which door a
+request came through — except where that difference is deliberate.
+[D65](decisions/0012-clients-gateway-surface.md) makes that explicit: two paths into one service
+may carry **different gates**, and a read the user performs on themselves is not the same act as a
+tool reading on their behalf.
+
+**The turn log becomes product data** ([D61](decisions/0012-clients-gateway-surface.md)) — the
+user-facing record of what ARIA did, not an implementation detail of the Agent Core's conversation
+history. [D83](decisions/0016-observability-v2.md) adds the rule that follows from it: the
+**user-facing action timeline is built from the turn log, never from traces**.
+
+### The extension surface (D66–D70)
+
+An MCP server may now contribute **more than tools**. It may ship a **UI bundle**, approved by
+digest in the same PR as its image ([D66](decisions/0013-extension-surface.md)) — one approval, one
+artifact, no second trust path. That UI runs on a **separate origin in a sandboxed iframe**,
+communicating over `postMessage` ([D67](decisions/0013-extension-surface.md)), and receives an
+**audience-limited token**, never the user's Keycloak token
+([D68](decisions/0013-extension-surface.md)).
+
+The **MCP Registry gains a role**: it is the **service catalog**, and it publishes the route table
+the Gateway's HTTP door uses ([D69](decisions/0013-extension-surface.md)).
+
+And the boundary holds in the other direction: **MCP servers get no direct Knowledge Core access**
+([D70](decisions/0013-extension-surface.md)). The one thing they legitimately need — resolving
+which person they are acting for — is a narrow **`ResolvePerson`** call behind its own consent
+scope. [D77](decisions/0015-external-datastores.md) then makes this structural rather than a rule
+anyone must remember: the Knowledge Core lives in its **own database**, so a cross-schema grant to
+it cannot be expressed at all.
+
+### Two new services
+
+- **Notification service** (`aria-notify`) — [D71](decisions/0014-notifications.md). Delivers over
+  a live client stream when the Gateway holds one, otherwise over an offline push path. The
+  service itself is **stateless**; the inbox and device registrations live in the Knowledge Core.
+  Proactivity has been differentiator 1 in the vision since the beginning and had no mechanism
+  until now. [D72](decisions/0014-notifications.md) gives it a leash in the same breath: **sending
+  a notification is a gated capability** — its own consent scope, quiet hours read from typed
+  preferences, a rate limit, a per-server mute, and an audit row per send.
+  See [services/notify.md](services/notify.md).
+- **Storage provisioning broker** (`aria-storage-broker`) — [D75](decisions/0015-external-datastores.md).
+  Issues a newly approved MCP server's Postgres schema and grants at **approval time**, and
+  nothing else. Deliberately a **dumb reconciler**: it takes no decisions, reads the approval
+  artifact, and refuses anything outside its pattern. Same shape and the same reasoning as
+  `aria-kc-broker` — a narrow service holding a credential the Registry must never hold.
+  See [services/storage-broker.md](services/storage-broker.md).
+
+### The Knowledge Core no longer owns in-cluster datastores
+
+The bullet above says the Knowledge Core "owns Postgres and Qdrant", both as in-cluster
+deployments. Both moved out. **Postgres runs on its own VM** with a schema per service and a
+`*_owner` / `*_app` role split ([D73](decisions/0015-external-datastores.md)); **Qdrant runs on its
+own VM** ([D78](decisions/0015-external-datastores.md)). The Knowledge Core is still the service
+that *fronts* them, and still validates writes itself (D22) — what changed is where the bytes live
+and who backs them up.
+
+Two consequences worth naming here rather than leaving in the decision file:
+
+- The **calendar cache relocates** ([D79](decisions/0015-external-datastores.md)). This supersedes
+  **D20's placement only** — the calendar is still a mirror, writes still go through a calendar MCP
+  server, and ARIA still implements no recurrence expansion.
+- **Cross-schema reads are read-only views** ([D74](decisions/0015-external-datastores.md)), with
+  `ALTER DEFAULT PRIVILEGES` set and `PUBLIC` revoked, so a new table is not accidentally world-
+  readable the moment it is created.
+
+### Observability
+
+Unchanged in instrumentation, changed in destination —
+see [02-stack.md](02-stack.md#from-the-2026-09-23-design-conversation-d60d84) and
+[D82](decisions/0016-observability-v2.md). The point that belongs on this page:
+[D83](decisions/0016-observability-v2.md) requires trace context to survive **four hops**, and
+three of them are manual. One of those three is **the MCP boundary**, and the `traceparent` header
+must live in the **generated-server template** the Self-Extension server produces — otherwise every
+server ARIA writes for herself silently breaks the trace at the most interesting hop.
+
+---
+
 ## See also
 
 - [Service pages](services/) — per-service detail

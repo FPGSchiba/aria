@@ -2,6 +2,11 @@
 
 [Library index](../README.md) · [Spikes](../spikes/README.md) · [Backlog](../backlog/README.md) · [Open questions](../open-questions/README.md)
 
+> **Superseded 2026-09-26.** This dossier describes sprint 473 of the backlog that was deleted when the
+> backlog was rewritten. Its story keys resolve only in
+> [`../backlog/archive/backlog-2026-09.json`](../backlog/archive/backlog-2026-09.json). Current work:
+> [`../backlog/sprint-plan-1-2.md`](../backlog/sprint-plan-1-2.md).
+
 Sprint id **473**. Status read live from Jira **2026-08-19**.
 
 ---
