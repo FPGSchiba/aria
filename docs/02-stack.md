@@ -41,6 +41,53 @@ first where they overlap.
   weaker posture than D43's consent fail-closed, and the entry argues why: D43 protects the user's
   control, this protects the record. **The MCP Registry is stateful as a result.**
 
+
+### From the 2026-09-23 design conversation (D60–D84)
+
+Twenty-five further decisions. These five amend the table directly; the rest add surfaces the
+table never covered (clients, notifications, extension UIs) and are described in
+[Architecture](03-architecture.md).
+
+- **[D82](decisions/0016-observability-v2.md)** replaces the *Observability* row outright.
+  Instrumentation is unchanged — still OpenTelemetry, still vendor-neutral, which is exactly why
+  this was a config change. The backend is not: an **in-cluster OpenTelemetry collector** ARIA
+  owns, **metrics into the existing Prometheus** (`lens-metrics`), **traces into Jaeger deployed
+  in-cluster**, **logs on stdout** with no export pipeline. **AppSignal is dropped** — it would
+  have been a third telemetry pipeline beside Prometheus and Zabbix, and it shipped traces
+  off-site. **Telemetry no longer crosses the network boundary.** [D83](decisions/0016-observability-v2.md)
+  adds the propagation requirement: four points, three of them manual (a `tonic` interceptor,
+  a `traceparent` header across the MCP boundary that must live in the generated-server template,
+  and a root span started on the client device).
+- **[D73](decisions/0015-external-datastores.md)** and **[D78](decisions/0015-external-datastores.md)**
+  amend *Knowledge Core (RAG)*: Postgres and Qdrant are **no longer in-cluster deployments**. Each
+  moves to its own VM, outside the cluster, reached over the LAN. Postgres is organised as
+  **one schema per service** with a `*_owner` / `*_app` role split
+  ([D73](decisions/0015-external-datastores.md)), cross-schema reads go through **read-only views**
+  ([D74](decisions/0015-external-datastores.md)), and the **Knowledge Core gets its own database**
+  so that a cross-schema grant to it is structurally inexpressible
+  ([D77](decisions/0015-external-datastores.md)).
+- **[D76](decisions/0015-external-datastores.md)** amends *Secrets management*, and **corrects the
+  reasoning in the row as written**: it rejected Vault as "a whole secret-management system for a
+  handful of credentials", which the ARIA-79 baseline disproved — **Vault is already running in
+  the homelab**. Database credentials now come from Vault. Sealed-secrets is **not** replaced:
+  it remains the deploy-time artifact in git; Vault issues runtime identity. The two answer
+  different questions and the entry draws the line.
+- **[D75](decisions/0015-external-datastores.md)** adds a service to the *Keycloak
+  client/scope provisioning* pattern: **`aria-storage-broker`**, a deliberately dumb reconciler
+  that issues schema grants at approval time. Same shape as `aria-kc-broker` and for the same
+  reason — a narrow service holding a credential that the Registry must never hold.
+- **[D81](decisions/0015-external-datastores.md)** supersedes **D6**'s conditional on internal
+  TLS. Service-to-service mTLS is **explicitly still open**, not settled; D6's cost argument
+  against it (standing up a CA) is no longer true, because cert-manager and `fpg-ca` already exist.
+
+Two further rows are affected without being replaced. *Source control & CI* keeps its accepted
+trade-off, but the list of things that leave the network is now **shorter by one** — telemetry is
+off it. And *Consent & permissions* gains a third thing a server may contribute beyond tools: a
+**UI bundle**, approved by digest in the same PR as its image
+([D66](decisions/0013-extension-surface.md)), running on a separate origin in a sandboxed iframe
+with an audience-limited token ([D67](decisions/0013-extension-surface.md),
+[D68](decisions/0013-extension-surface.md)) — never the user's Keycloak token.
+
 ---
 
 | Concern | Decision | Rationale / replaces |

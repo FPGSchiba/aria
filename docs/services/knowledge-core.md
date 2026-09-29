@@ -36,6 +36,49 @@
   for a second reason: a future schema change must not quietly drop one of the fields the row's
   independence rests on.
 
+
+## Amendments from 2026-09-23 (D70, D73–D80, D71, D61)
+
+**The datastores left the cluster.** This service no longer owns two in-cluster StatefulSets; it
+fronts **Postgres on its own VM** and **Qdrant on its own VM**, reached over the LAN. Everything
+about what it *validates* is unchanged — D22 still holds, rows still carry a `source`, a server may
+still only modify what it authored.
+
+- **[D73](../decisions/0015-external-datastores.md)** — Postgres is organised as **one schema per
+  service**, with a `*_owner` / `*_app` role split so the role a service connects as cannot alter
+  its own schema. **[D74](../decisions/0015-external-datastores.md)** — cross-schema reads are
+  **read-only views**, with `ALTER DEFAULT PRIVILEGES` set and `PUBLIC` revoked so a newly created
+  table is not accidentally readable.
+- **[D77](../decisions/0015-external-datastores.md)** — the Knowledge Core gets **its own
+  database**, not merely its own schema, so that a cross-schema grant from an MCP server to this
+  service's tables is **inexpressible in Postgres** rather than merely forbidden by policy. This is
+  what makes [D70](../decisions/0013-extension-surface.md) structural.
+- **[D70](../decisions/0013-extension-surface.md)** — MCP servers reach person data through **one
+  narrow `ResolvePerson` call behind its own consent scope**, and through nothing else.
+- **[D78](../decisions/0015-external-datastores.md)** — Qdrant moves to its own VM. The motive is
+  **backup and monitoring** — Qdrant holds primary, non-re-derivable data (D16/D48) and belongs in
+  the same regime as Jann's other VMs. Capacity relief on a one-node cluster is a **consequence,
+  not the motive**.
+- **[D79](../decisions/0015-external-datastores.md)** — the **calendar cache relocates**. This
+  supersedes **D20's placement only**: the calendar is still a mirror, writes still go through a
+  calendar MCP server, and ARIA still implements no recurrence expansion, timezone arithmetic or
+  attendee state.
+- **[D80](../decisions/0015-external-datastores.md)** — the connection posture: TLS **`verify-full`**
+  against an `fpg-ca` certificate, reached **by DNS name, never IP**, with access restricted in
+  three independent layers (Antrea egress policy, `pg_hba.conf`, host firewall). Backups become
+  **pgBackRest plus Qdrant snapshots** with a **tested restore** — replacing the "Postgres operator
+  backups" line, since ARIA no longer deploys an operator.
+- **[D76](../decisions/0015-external-datastores.md)** — database credentials come from **Vault**,
+  which already runs in the homelab. Sealed-secrets (D31) is not replaced; the entry draws the line
+  between a deploy-time artifact in git and runtime identity.
+- **[D71](../decisions/0014-notifications.md)** — this service gains two new areas: the
+  **notification inbox** and **device registrations** for `aria-notify`, which is itself stateless.
+  **[D72](../decisions/0014-notifications.md)** reads **quiet hours from typed preferences** here.
+- **[D61](../decisions/0012-clients-gateway-surface.md)** — the **turn log is product data**, read
+  by clients over the Gateway's HTTP door. D56 already set conversation history's retention to
+  indefinite and that covers it; what is **not** settled is the retention of the narrower
+  per-event payloads a timeline might carry.
+
 ---
 
 ## Purpose

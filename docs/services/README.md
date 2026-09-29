@@ -13,6 +13,8 @@ One page per service: what it owns, which decisions bind it, and what is still o
 | `aria-knowledge-core` — Knowledge Core | Deployed service · `services/knowledge-core/` | [knowledge-core.md](knowledge-core.md) |
 | `aria-identity` — Identity | **Library crate, not a deployed service** · `crates/identity/` | [identity.md](identity.md) |
 | `aria-kc-broker` — Keycloak provisioning broker | Deployed service · `services/kc-broker/` | [kc-broker.md](kc-broker.md) |
+| `aria-notify` — Notification service | Deployed service · `services/notify/` | [notify.md](notify.md) |
+| `aria-storage-broker` — Storage provisioning broker | Deployed service · `services/storage-broker/` | [storage-broker.md](storage-broker.md) |
 | Self-Extension MCP Server | **Separate GitHub repo** — external to the `aria` monorepo by design, like any other MCP server | [self-extension.md](self-extension.md) |
 
 **Deferred, not in initial scope:** the Trainer.

@@ -49,8 +49,10 @@ Confluence page (children of "ARIA — Architecture & Hosting").
   workload, in their own repo — keep the core `aria` repo free of per-integration logic. The
   Self-Extension server follows this same rule: it's not part of the core monorepo either.
 - Container images per service, published from GitHub Actions; deployed to the `aria` namespace on
-  the existing k3s cluster via **one umbrella Helm chart** for the namespace (section 4). Each
+  the existing cluster via **one umbrella Helm chart** for the namespace (section 4). Each
   out-of-monorepo MCP server carries its own small chart following the same convention.
+  *(The source text said "k3s"; ARIA-79 found the cluster is **kubeadm v1.33.0**. Corrected here
+  because it is a factual error, not a decision.)*
 - **Repo gate**: `cargo fmt --all -- --check`, `cargo clippy --workspace --all-targets -- -D
   warnings`, `cargo test --workspace`, and the coverage gate below must all pass before a commit
   lands. Enforced locally via a checked-in pre-commit hook (`.githooks/pre-commit`) — enable it
@@ -65,9 +67,35 @@ Confluence page (children of "ARIA — Architecture & Hosting").
   the same pre-commit hook as the repo gate above, so it's a hard floor per commit, not an
   aspirational target.
 
+### Definition of done (D84, 2026-09-23)
+
+A service is **not done** without three things beyond its code, its tests and the 80% coverage
+floor above:
+
+1. **Its migration** — the `sqlx` migrations for the schema it owns. With schema-per-service and
+   the `*_owner` / `*_app` role split ([D73](decisions/0015-external-datastores.md),
+   [D77](decisions/0015-external-datastores.md)), the migration is also *where the ownership
+   boundary is expressed* — deferring it means the boundary exists only as an intention.
+2. **Its Helm chart** — its slice of the umbrella chart, written while the service is, not later
+   under deployment pressure. A service that joins the umbrella release late is a service whose
+   first rollback was never tested.
+3. **Its OpenTelemetry spans** — per [D82](decisions/0016-observability-v2.md) and the four
+   propagation points in [D83](decisions/0016-observability-v2.md). This is the one that never gets
+   added later, because nothing breaks without it: the system runs fine and simply cannot be
+   debugged.
+
+**This is a convention held by review, not a gate.** None of the three is checkable by `cargo`, and
+no CI workflow exists yet (D13). A cheap static check — "every service directory has a
+`migrations/` and a chart fragment" — is worth adding once there is more than one service to check;
+see [D84](decisions/0017-conventions.md) for why it was not added now.
+
+This rule also has to reach servers nobody has written yet: it belongs in the **generated-server
+template** the Self-Extension server produces, alongside D83's `traceparent` header.
+
 ---
 
 ## See also
 
 - [Decision Log · Repo, proto & CI](decisions/0002-repo-proto-ci.md)
+- [Decision Log · Working conventions](decisions/0017-conventions.md) — D84
 - [Architecture](03-architecture.md)

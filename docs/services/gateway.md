@@ -6,6 +6,40 @@
 
 ---
 
+## Amendments from 2026-09-23 (D60–D65, D82–D83)
+
+**The Gateway now has two front doors** ([D62](../decisions/0012-clients-gateway-surface.md)). The
+forcing fact: **gRPC-web cannot do client or bidirectional streaming**, so a browser cannot hold the
+`Converse` stream. The surface splits into
+
+1. the **gRPC bidirectional stream**, carrying turns, for native clients; and
+2. an **HTTP surface** for everything else — history, preferences, consent management, extension UIs.
+
+"Client-agnostic by design" below is still true in intent, but it is no longer true that every
+client arrives over the same gRPC surface.
+
+- **[D60](../decisions/0012-clients-gateway-surface.md)** — clients are named: **native phone and
+  desktop** apps on the gRPC stream, and a **Core Web shell** on Authorization Code + PKCE (D3).
+  The Gateway remains **the only ARIA component a client can reach**.
+- **[D63](../decisions/0012-clients-gateway-surface.md)** — routing between the two doors is **by
+  path prefix**. The Gateway **never decodes a request body to decide where a request goes**.
+- **[D64](../decisions/0012-clients-gateway-surface.md)** — the Gateway is still the **sole minter**
+  of the end-user context, **on both doors**. D1 is unchanged; it now applies twice.
+- **[D65](../decisions/0012-clients-gateway-surface.md)** — two paths into the same service may
+  carry **different gates**, deliberately. A user reading their own preferences over the HTTP door
+  is not the same act as a tool reading them on the user's behalf, and the difference is expressed
+  in the gate, not hidden.
+- **[D61](../decisions/0012-clients-gateway-surface.md)** — the **turn log is product data**, and
+  the HTTP door is where a client reads it.
+- **[D83](../decisions/0016-observability-v2.md)** — **a turn starts on the device.** The client
+  creates the root span and sends its trace context to the Gateway, so the Gateway is no longer the
+  start of a trace. Note what this adds: a client can send a malformed or fabricated trace context,
+  and nothing security-relevant may rest on it.
+- **[D82](../decisions/0016-observability-v2.md)** supersedes **D41** in the binding-decisions list
+  below: telemetry goes to an in-cluster collector, not AppSignal's.
+
+---
+
 ## Purpose
 
 The client-facing edge. The **only** place in the system where a raw user credential exists.
@@ -31,7 +65,7 @@ The 2021 "Interface" box and its three raw hand-wrapped SSL sockets (Audio / Inp
 
 ## Binding decisions
 
-D1 (signed context) · D2 (`sub` as `user_id`) · D3 (public client, PKCE + Device Grant) · D25 (Opus on the client link) · D27 (many turns, barge-in) · D29 (bounded drain) · D36 (`session_id`) · D39 (no auto-retry of tool-capable calls) · D41 (telemetry via collector)
+D1 (signed context) · D2 (`sub` as `user_id`) · D3 (public client, PKCE + Device Grant) · D25 (Opus on the client link) · D27 (many turns, barge-in) · D29 (bounded drain) · D36 (`session_id`) · D39 (no auto-retry of tool-capable calls) · D41 → superseded by D82 (telemetry via the in-cluster collector)
 
 See [the Decision Log](../decisions/README.md) for the full reasoning and rejected alternatives.
 

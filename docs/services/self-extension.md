@@ -4,6 +4,33 @@
 
 ****Separate GitHub repo** — external to the `aria` monorepo by design, like any other MCP server**
 
+
+## Amendments from 2026-09-23 (D66, D83, D84, D75)
+
+The **generated-server template** this service produces is now load-bearing for three things beyond
+packaging. Whatever `deploy_service` generates is what every future MCP server — including ones
+nobody reviews line by line — inherits by default:
+
+- **[D83](../decisions/0016-observability-v2.md)** — the **`traceparent` header** on the
+  streamable-HTTP call must be in the template. Miss it and every server ARIA writes for herself
+  silently breaks the trace at exactly the hop where "what did the tool do" is asked.
+- **[D84](../decisions/0017-conventions.md)** — the extended definition of done (migration, Helm
+  chart, OTel spans) has to be encoded in the template, since there is no reviewer to enforce it
+  for a generated service.
+- **[D66](../decisions/0013-extension-surface.md)** — a server may now ship a **UI bundle**, and
+  `request_approval` must put **both artifacts in the same PR**, each by digest. One approval, one
+  merge, two artifacts — never a second trust path for the UI.
+
+**[D75](../decisions/0015-external-datastores.md)** also changes what happens on merge: alongside
+sealing credentials and calling `RegisterServer`, the pipeline now has
+**[`aria-storage-broker`](storage-broker.md)** provision the new server's Postgres schema and
+grants — **at approval time**, from the merged approval artifact, never on the running server's
+request.
+
+*Unchanged and still open:* how much cluster authority this service holds, whether an approval can
+be revoked after a service is live, and the fact that a generated candidate's tests are themselves
+generated.
+
 ---
 
 ## Purpose
