@@ -7,7 +7,8 @@ members = [
     "services/mcp-registry",
     "services/speech",
     "crates/identity",
-    "crates/shared"
+    "crates/shared",
+    "proto"
 ]
 
 [workspace.lints.clippy]
@@ -23,8 +24,10 @@ mcp-registry   = { path = "services/mcp-registry" }
 speech         = { path = "services/speech" }
 identity       = { path = "crates/identity" }
 shared         = { path = "crates/shared" }
+proto          = { path = "proto" }
 
 tonic                 = { version = "0.14.6" }
+tonic-prost           = { version = "0.14.6" }
 prost                 = { version = "0.14.4" }
 tokio                 = { version = "1.53.1" }
 tracing               = { version = "0.1.44" }

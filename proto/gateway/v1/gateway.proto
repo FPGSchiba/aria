@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package aria.gateway.v1;
+
+service Gateway {
+  rpc Converse(stream ConverseRequest) returns (stream ConverseResponse);
+}
+
+message ConverseRequest {
+  oneof payload {
+    UserTurn user_turn = 1;
+    // Future: AudioChunk audio_chunk = 2;
+    // Future: ControlFrame control = 3;
+  }
+}
+
+message UserTurn {
+  // Optional participant name for multi-user/ambient chat (like OpenAI's `name`)
+  optional string speaker_name = 1;
+
+  // The actual text turn
+  string text = 2;
+}
+
+message ConverseResponse {
+  oneof payload {
+    // Incremental text chunk from the assistant
+    string text_delta = 1;
+
+    // Signal that the assistant turn is complete
+    TurnComplete turn_complete = 2;
+  }
+}
+
+message TurnComplete {
+  // Can carry finish reason or turn id
+}

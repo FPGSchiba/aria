@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package aria.agent_core.v1;
+
+service AgentCore {
+  // Server-streaming response emitting text chunks for a conversational turn.
+  rpc Decide(DecideRequest) returns (stream DecideResponse);
+}
+
+message DecideRequest {
+  // Gateway-minted session tracking conversation history (D36)
+  string session_id = 1;
+
+  // Optional participant identifier / name for the turn
+  optional string speaker_name = 2;
+
+  // The user prompt for this turn
+  string text = 3;
+}
+
+message DecideResponse {
+  oneof payload {
+    // Incremental text chunk from the LLM
+    string text_delta = 1;
+
+    // Signal that the LLM response is finished
+    TurnComplete turn_complete = 2;
+  }
+}
+
+message TurnComplete {
+  // Can carry finish reason or turn id
+}
