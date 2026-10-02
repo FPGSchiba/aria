@@ -37,6 +37,17 @@
   **still open** — propagating discloses a correlation identifier to a third party; not propagating
   breaks the trace at the most interesting hop. The Ollama fallback has no such objection.
 
+## Amendments from 2026-10-02 (D85)
+
+- **[D85](../decisions/0018-hosted-llm-backend.md)** — the default hosted backend is **Qwen 3.8 27B on
+  Cerebras** (`https://api.cerebras.ai/v1`), behind an OpenAI-compatible adapter whose host is
+  configuration. Reasoning stays at the provider default (`high`); switching it off was measured to cost
+  accuracy. Streamed tool calls arrive as one complete chunk; prose streams.
+  **New work recorded with it, not decided:** inject the current date, time and time zone into every
+  request (measured to fix dates); a clarification path for ARIA-121 (every leading model used a
+  `request_information` tool when given one); and, if strict schemas are used, dropping null optional
+  arguments before forwarding.
+
 ---
 
 ## Purpose
@@ -73,7 +84,8 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Open items
 
-- **Awaiting measurement:** hosted provider/model (ARIA-40); which Ollama model (ARIA-109) —
+- ~~Awaiting measurement: hosted provider/model (ARIA-40)~~ — answered by [D85](../decisions/0018-hosted-llm-backend.md).
+- **Awaiting measurement:** which Ollama model (ARIA-109) —
   this gates whether the backend-agnostic conformance suite passes unmodified, and gates reopening
   the automatic-routing rule
 - Whether the serving backend is exposed in the `Decide` response body or kept to traces only

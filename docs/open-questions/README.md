@@ -69,6 +69,13 @@ questions nobody had yet asked about it, and recording them is the point. Notabl
 a row in D56's retention table** rather than merely superseding a decision: Jaeger's trace retention
 is now ARIA's own choice and nobody has made it.
 
+### After ARIA-122 (D85, 2026-10-02)
+
+| | A — needs a decision | B — awaiting a measurement |
+|---|---|---|
+| **Closed by a measurement** | — | 1 (the hosted LLM provider/model) |
+| **Newly surfaced** | 2 (date/time injection; strict schemas and null stripping), plus new evidence on ARIA-121 | — |
+
 Three things were **deliberately left open** by the decisions that could have settled them, and must
 not be read as decided: **service-to-service mTLS** (D81 supersedes D6 but does not answer it),
 **whether `traceparent` rides the outbound hosted-LLM call** (D83 decided the other three

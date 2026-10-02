@@ -1,0 +1,857 @@
+[
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.464,
+  "usage": {
+   "queue_time": 0.213270785,
+   "prompt_tokens": 789,
+   "prompt_time": 0.057791396,
+   "completion_tokens": 41,
+   "completion_time": 0.119550466,
+   "total_tokens": 830,
+   "total_time": 0.177341862
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.28,
+  "usage": {
+   "queue_time": 0.037068205,
+   "prompt_tokens": 789,
+   "prompt_time": 0.064099792,
+   "completion_tokens": 41,
+   "completion_time": 0.122868171,
+   "total_tokens": 830,
+   "total_time": 0.186967963
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.551,
+  "usage": {
+   "queue_time": 0.309672827,
+   "prompt_tokens": 789,
+   "prompt_time": 0.070444971,
+   "completion_tokens": 41,
+   "completion_time": 0.123902784,
+   "total_tokens": 830,
+   "total_time": 0.194347755
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.261,
+  "usage": {
+   "queue_time": 0.01858953,
+   "prompt_tokens": 789,
+   "prompt_time": 0.070579624,
+   "completion_tokens": 41,
+   "completion_time": 0.126254467,
+   "total_tokens": 830,
+   "total_time": 0.196834091
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.296,
+  "usage": {
+   "queue_time": 0.059603195,
+   "prompt_tokens": 789,
+   "prompt_time": 0.063378563,
+   "completion_tokens": 41,
+   "completion_time": 0.121981531,
+   "total_tokens": 830,
+   "total_time": 0.185360094
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.363,
+  "usage": {
+   "queue_time": 0.01874074,
+   "prompt_tokens": 796,
+   "prompt_time": 0.068921432,
+   "completion_tokens": 90,
+   "completion_time": 0.237604526,
+   "total_tokens": 886,
+   "total_time": 0.306525958
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.458,
+  "usage": {
+   "queue_time": 0.130511291,
+   "prompt_tokens": 796,
+   "prompt_time": 0.064768617,
+   "completion_tokens": 80,
+   "completion_time": 0.227495148,
+   "total_tokens": 876,
+   "total_time": 0.292263765
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.386,
+  "usage": {
+   "queue_time": 0.048931841,
+   "prompt_tokens": 796,
+   "prompt_time": 0.071617944,
+   "completion_tokens": 80,
+   "completion_time": 0.214963182,
+   "total_tokens": 876,
+   "total_time": 0.286581126
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "brightness": 70,
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.39,
+  "usage": {
+   "queue_time": 0.018411425,
+   "prompt_tokens": 796,
+   "prompt_time": 0.058002356,
+   "completion_tokens": 93,
+   "completion_time": 0.235510363,
+   "total_tokens": 889,
+   "total_time": 0.293512719
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.342,
+  "usage": {
+   "queue_time": 0.01926388,
+   "prompt_tokens": 796,
+   "prompt_time": 0.066262392,
+   "completion_tokens": 80,
+   "completion_time": 0.219739863,
+   "total_tokens": 876,
+   "total_time": 0.286002255
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.674,
+  "usage": {
+   "queue_time": 0.345998464,
+   "prompt_tokens": 787,
+   "prompt_time": 0.069385682,
+   "completion_tokens": 114,
+   "completion_time": 0.225022281,
+   "total_tokens": 901,
+   "total_time": 0.294407963
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.455,
+  "usage": {
+   "queue_time": 0.049318263,
+   "prompt_tokens": 787,
+   "prompt_time": 0.068909527,
+   "completion_tokens": 145,
+   "completion_time": 0.291584628,
+   "total_tokens": 932,
+   "total_time": 0.360494155
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.669,
+  "usage": {
+   "queue_time": 0.019603896,
+   "prompt_tokens": 787,
+   "prompt_time": 0.055774824,
+   "completion_tokens": 250,
+   "completion_time": 0.525547121,
+   "total_tokens": 1037,
+   "total_time": 0.581321945
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.489,
+  "usage": {
+   "queue_time": 0.01956333,
+   "prompt_tokens": 787,
+   "prompt_time": 0.065589199,
+   "completion_tokens": 174,
+   "completion_time": 0.367932794,
+   "total_tokens": 961,
+   "total_time": 0.433521993
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.768,
+  "usage": {
+   "queue_time": 0.018403032,
+   "prompt_tokens": 787,
+   "prompt_time": 0.065541131,
+   "completion_tokens": 279,
+   "completion_time": 0.632210073,
+   "total_tokens": 1066,
+   "total_time": 0.697751204
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-06-16T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.365,
+  "usage": {
+   "queue_time": 0.050115008,
+   "prompt_tokens": 794,
+   "prompt_time": 0.069082923,
+   "completion_tokens": 58,
+   "completion_time": 0.198249524,
+   "total_tokens": 852,
+   "total_time": 0.267332447
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.199,
+  "usage": {
+   "queue_time": 0.049237381,
+   "prompt_tokens": 794,
+   "prompt_time": 0.063843815,
+   "completion_tokens": 22,
+   "completion_time": 0.043664605,
+   "total_tokens": 816,
+   "total_time": 0.10750842
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.278,
+  "usage": {
+   "queue_time": 0.048529591,
+   "prompt_tokens": 794,
+   "prompt_time": 0.068920656,
+   "completion_tokens": 53,
+   "completion_time": 0.128893066,
+   "total_tokens": 847,
+   "total_time": 0.197813722
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 3,
+  "calls": [
+   {
+    "name": "calendar_create_event",
+    "args": {
+     "duration_minutes": 15,
+     "start": "2026-06-13T15:00:00",
+     "title": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "calendar_create_event"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.404,
+  "usage": {
+   "queue_time": 0.048311392,
+   "prompt_tokens": 794,
+   "prompt_time": 0.06716383,
+   "completion_tokens": 83,
+   "completion_time": 0.251746889,
+   "total_tokens": 877,
+   "total_time": 0.318910719
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.187,
+  "usage": {
+   "queue_time": 0.018044004,
+   "prompt_tokens": 794,
+   "prompt_time": 0.060334579,
+   "completion_tokens": 36,
+   "completion_time": 0.068627923,
+   "total_tokens": 830,
+   "total_time": 0.128962502
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.178,
+  "usage": {
+   "queue_time": 0.019274055,
+   "prompt_tokens": 786,
+   "prompt_time": 0.06032815,
+   "completion_tokens": 25,
+   "completion_time": 0.047865837,
+   "total_tokens": 811,
+   "total_time": 0.108193987
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.27,
+  "usage": {
+   "queue_time": 0.143669005,
+   "prompt_tokens": 786,
+   "prompt_time": 0.059312388,
+   "completion_tokens": 10,
+   "completion_time": 0.021925586,
+   "total_tokens": 796,
+   "total_time": 0.081237974
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Music playback needs a specific track/artist/album and a room to play it in. Ask the user what song and which room they want."
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.311,
+  "usage": {
+   "queue_time": 0.020645323,
+   "prompt_tokens": 786,
+   "prompt_time": 0.059613283,
+   "completion_tokens": 54,
+   "completion_time": 0.196447476,
+   "total_tokens": 840,
+   "total_time": 0.256060759
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.173,
+  "usage": {
+   "queue_time": 0.018317025,
+   "prompt_tokens": 786,
+   "prompt_time": 0.063120441,
+   "completion_tokens": 21,
+   "completion_time": 0.049746618,
+   "total_tokens": 807,
+   "total_time": 0.112867059
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.168,
+  "usage": {
+   "queue_time": 0.018829573,
+   "prompt_tokens": 786,
+   "prompt_time": 0.067921456,
+   "completion_tokens": 17,
+   "completion_time": 0.033785636,
+   "total_tokens": 803,
+   "total_time": 0.101707092
+  }
+ }
+]

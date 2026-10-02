@@ -351,3 +351,24 @@ that reads as finished on one of them is wrong.
 - **Acoustic echo cancellation**, still unowned (above), and now more awkward rather than less:
   D60 gives the clients an identity, which turns "it plausibly belongs on the client" from a
   hypothetical into a concrete claim about a component that exists.
+
+## Newly surfaced by D85 (2026-10-02)
+
+Consequences of the hosted-backend measurements, recorded with
+[D85](../decisions/0018-hosted-llm-backend.md) but not decided by it. Evidence:
+[follow-up checks](../spikes/hosted-llm-providers-2026-09.md#follow-up-checks-2026-10-02).
+
+- **How the Agent Core injects the current date, time and time zone into every request.** Measured:
+  with the date in the system prompt, all four leading models wrote "tomorrow at 3pm" correctly in
+  every run; without it they invented or dropped the date. Where it is assembled (system prompt vs.
+  per-turn context) and whose time zone applies in a multi-user household are open. Affects ARIA-143,
+  ARIA-61.
+- **Whether to use strict tool schemas, and who drops the nulls.** Strict mode removed malformed calls
+  in every measured model, but OpenAI-style strict (OpenAI, Cerebras, OpenRouter) requires every
+  property, so models send `null` for unused optional fields. Either the hosted adapter or the MCP
+  Registry must strip null optional arguments before a call reaches an MCP server. Affects ARIA-143
+  and the Registry's call path.
+- **ARIA-121 — new evidence for the clarification path.** Given a `request_information` tool, Qwen 3.8
+  27B, GPT-6 Sol, Sonnet 5.5 and DeepSeek V4.1 Flash all asked in 5 of 5 missing-argument runs instead
+  of inventing a value. This supports an explicit ask path (the `information required` rhyme with D42
+  above) over relying on the model to decline. Not decided here.

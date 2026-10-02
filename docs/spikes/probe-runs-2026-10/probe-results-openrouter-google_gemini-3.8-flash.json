@@ -1,0 +1,844 @@
+[
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "room": "kitchen",
+     "query": "Miles Davis"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.778,
+  "usage": {
+   "prompt_tokens": 297,
+   "completion_tokens": 67,
+   "total_tokens": 364,
+   "cost": 0.000474,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.000474,
+    "upstream_inference_prompt_cost": 0.00022275,
+    "upstream_inference_completions_cost": 0.00025125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 44,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "room": "kitchen",
+     "query": "Miles Davis"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.573,
+  "usage": {
+   "prompt_tokens": 297,
+   "completion_tokens": 81,
+   "total_tokens": 378,
+   "cost": 0.0005265,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0005265,
+    "upstream_inference_prompt_cost": 0.00022275,
+    "upstream_inference_completions_cost": 0.00030375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 58,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.732,
+  "usage": {
+   "prompt_tokens": 297,
+   "completion_tokens": 78,
+   "total_tokens": 375,
+   "cost": 0.00051525,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00051525,
+    "upstream_inference_prompt_cost": 0.00022275,
+    "upstream_inference_completions_cost": 0.0002925
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 55,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "room": "kitchen",
+     "query": "Miles Davis"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 21.71,
+  "usage": {
+   "prompt_tokens": 297,
+   "completion_tokens": 75,
+   "total_tokens": 372,
+   "cost": 0.000504,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.000504,
+    "upstream_inference_prompt_cost": 0.00022275,
+    "upstream_inference_completions_cost": 0.00028125
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 52,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.872,
+  "usage": {
+   "prompt_tokens": 297,
+   "completion_tokens": 85,
+   "total_tokens": 382,
+   "cost": 0.0005415,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0005415,
+    "upstream_inference_prompt_cost": 0.00022275,
+    "upstream_inference_completions_cost": 0.00031875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 62,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "room": "living room",
+     "query": "jazz"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.371,
+  "usage": {
+   "prompt_tokens": 304,
+   "completion_tokens": 138,
+   "total_tokens": 442,
+   "cost": 0.0007455,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0007455,
+    "upstream_inference_prompt_cost": 0.000228,
+    "upstream_inference_completions_cost": 0.0005175
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 94,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "room": "living room",
+     "query": "jazz"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.208,
+  "usage": {
+   "prompt_tokens": 304,
+   "completion_tokens": 113,
+   "total_tokens": 417,
+   "cost": 0.00065175,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00065175,
+    "upstream_inference_prompt_cost": 0.000228,
+    "upstream_inference_completions_cost": 0.00042375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 69,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 9.783,
+  "usage": {
+   "prompt_tokens": 304,
+   "completion_tokens": 125,
+   "total_tokens": 429,
+   "cost": 0.00069675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00069675,
+    "upstream_inference_prompt_cost": 0.000228,
+    "upstream_inference_completions_cost": 0.00046875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 81,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "on": true,
+     "room": "living room"
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "room": "living room",
+     "query": "jazz"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.425,
+  "usage": {
+   "prompt_tokens": 304,
+   "completion_tokens": 140,
+   "total_tokens": 444,
+   "cost": 0.000753,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.000753,
+    "upstream_inference_prompt_cost": 0.000228,
+    "upstream_inference_completions_cost": 0.000525
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 96,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "room": "living room",
+     "query": "jazz"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.974,
+  "usage": {
+   "prompt_tokens": 304,
+   "completion_tokens": 197,
+   "total_tokens": 501,
+   "cost": 0.00096675,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00096675,
+    "upstream_inference_prompt_cost": 0.000228,
+    "upstream_inference_completions_cost": 0.00073875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 153,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.94,
+  "usage": {
+   "prompt_tokens": 295,
+   "completion_tokens": 221,
+   "total_tokens": 516,
+   "cost": 0.00105,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00105,
+    "upstream_inference_prompt_cost": 0.00022125,
+    "upstream_inference_completions_cost": 0.00082875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 48,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.466,
+  "usage": {
+   "prompt_tokens": 295,
+   "completion_tokens": 256,
+   "total_tokens": 551,
+   "cost": 0.00118125,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00118125,
+    "upstream_inference_prompt_cost": 0.00022125,
+    "upstream_inference_completions_cost": 0.00096
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 56,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.739,
+  "usage": {
+   "prompt_tokens": 295,
+   "completion_tokens": 221,
+   "total_tokens": 516,
+   "cost": 0.00105,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00105,
+    "upstream_inference_prompt_cost": 0.00022125,
+    "upstream_inference_completions_cost": 0.00082875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 54,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.96,
+  "usage": {
+   "prompt_tokens": 295,
+   "completion_tokens": 229,
+   "total_tokens": 524,
+   "cost": 0.00108,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00108,
+    "upstream_inference_prompt_cost": 0.00022125,
+    "upstream_inference_completions_cost": 0.00085875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 49,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 4,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 0,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 1,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 2,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist tomorrow at 3pm"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 8.764,
+  "usage": {
+   "prompt_tokens": 302,
+   "completion_tokens": 1005,
+   "total_tokens": 1307,
+   "cost": 0.00399525,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00399525,
+    "upstream_inference_prompt_cost": 0.0002265,
+    "upstream_inference_completions_cost": 0.00376875
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 982,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 4,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 0,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 1,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 2,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 3,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ },
+ {
+  "provider": "openrouter",
+  "model": "google/gemini-3.8-flash",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 4,
+  "error": "HTTP 402: {\"error\":{\"message\":\"This request would exceed your available credits given your current in-flight requests. Retry after in-flight requests settle, or add credits.\",\"code\":402,\"metadata\":{\"reason\":\"in_flight_budget_exhausted\",\"limit_source\":\"openrouter_in_flight_budget\",\"remedy_hint\":\"Retry after your in-flight requests settle (see the Retry-After header). Adding credits at https://openr"
+ }
+]

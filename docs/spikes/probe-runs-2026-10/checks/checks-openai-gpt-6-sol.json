@@ -1,0 +1,4149 @@
+[
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.241,
+  "usage": {
+   "prompt_tokens": 417,
+   "completion_tokens": 23,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.559,
+  "usage": {
+   "prompt_tokens": 417,
+   "completion_tokens": 23,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.249,
+  "usage": {
+   "prompt_tokens": 417,
+   "completion_tokens": 23,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.164,
+  "usage": {
+   "prompt_tokens": 417,
+   "completion_tokens": 23,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.995,
+  "usage": {
+   "prompt_tokens": 417,
+   "completion_tokens": 23,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.307,
+  "usage": {
+   "prompt_tokens": 424,
+   "completion_tokens": 58,
+   "total_tokens": 482,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.316,
+  "usage": {
+   "prompt_tokens": 424,
+   "completion_tokens": 58,
+   "total_tokens": 482,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.634,
+  "usage": {
+   "prompt_tokens": 424,
+   "completion_tokens": 58,
+   "total_tokens": 482,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.302,
+  "usage": {
+   "prompt_tokens": 424,
+   "completion_tokens": 58,
+   "total_tokens": 482,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.321,
+  "usage": {
+   "prompt_tokens": 424,
+   "completion_tokens": 58,
+   "total_tokens": 482,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.737,
+  "usage": {
+   "prompt_tokens": 415,
+   "completion_tokens": 50,
+   "total_tokens": 465,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.59,
+  "usage": {
+   "prompt_tokens": 415,
+   "completion_tokens": 51,
+   "total_tokens": 466,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.989,
+  "usage": {
+   "prompt_tokens": 415,
+   "completion_tokens": 48,
+   "total_tokens": 463,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.641,
+  "usage": {
+   "prompt_tokens": 415,
+   "completion_tokens": 46,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.561,
+  "usage": {
+   "prompt_tokens": 415,
+   "completion_tokens": 51,
+   "total_tokens": 466,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.402,
+  "usage": {
+   "prompt_tokens": 422,
+   "completion_tokens": 39,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.14,
+  "usage": {
+   "prompt_tokens": 422,
+   "completion_tokens": 39,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.118,
+  "usage": {
+   "prompt_tokens": 422,
+   "completion_tokens": 39,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.116,
+  "usage": {
+   "prompt_tokens": 422,
+   "completion_tokens": 39,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.222,
+  "usage": {
+   "prompt_tokens": 422,
+   "completion_tokens": 39,
+   "total_tokens": 461,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.104,
+  "usage": {
+   "prompt_tokens": 414,
+   "completion_tokens": 15,
+   "total_tokens": 429,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.089,
+  "usage": {
+   "prompt_tokens": 414,
+   "completion_tokens": 17,
+   "total_tokens": 431,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.153,
+  "usage": {
+   "prompt_tokens": 414,
+   "completion_tokens": 17,
+   "total_tokens": 431,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.981,
+  "usage": {
+   "prompt_tokens": 414,
+   "completion_tokens": 17,
+   "total_tokens": 431,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.167,
+  "usage": {
+   "prompt_tokens": 414,
+   "completion_tokens": 20,
+   "total_tokens": 434,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.863,
+  "usage": {
+   "prompt_tokens": 458,
+   "completion_tokens": 23,
+   "total_tokens": 481,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.043,
+  "usage": {
+   "prompt_tokens": 458,
+   "completion_tokens": 23,
+   "total_tokens": 481,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.965,
+  "usage": {
+   "prompt_tokens": 458,
+   "completion_tokens": 23,
+   "total_tokens": 481,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.169,
+  "usage": {
+   "prompt_tokens": 458,
+   "completion_tokens": 23,
+   "total_tokens": 481,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.934,
+  "usage": {
+   "prompt_tokens": 458,
+   "completion_tokens": 23,
+   "total_tokens": 481,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.046,
+  "usage": {
+   "prompt_tokens": 465,
+   "completion_tokens": 22,
+   "total_tokens": 487,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.117,
+  "usage": {
+   "prompt_tokens": 465,
+   "completion_tokens": 58,
+   "total_tokens": 523,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.462,
+  "usage": {
+   "prompt_tokens": 465,
+   "completion_tokens": 58,
+   "total_tokens": 523,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.246,
+  "usage": {
+   "prompt_tokens": 465,
+   "completion_tokens": 58,
+   "total_tokens": 523,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.788,
+  "usage": {
+   "prompt_tokens": 465,
+   "completion_tokens": 58,
+   "total_tokens": 523,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.595,
+  "usage": {
+   "prompt_tokens": 456,
+   "completion_tokens": 45,
+   "total_tokens": 501,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.354,
+  "usage": {
+   "prompt_tokens": 456,
+   "completion_tokens": 50,
+   "total_tokens": 506,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.449,
+  "usage": {
+   "prompt_tokens": 456,
+   "completion_tokens": 48,
+   "total_tokens": 504,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.464,
+  "usage": {
+   "prompt_tokens": 456,
+   "completion_tokens": 48,
+   "total_tokens": 504,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.624,
+  "usage": {
+   "prompt_tokens": 456,
+   "completion_tokens": 51,
+   "total_tokens": 507,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.058,
+  "usage": {
+   "prompt_tokens": 463,
+   "completion_tokens": 39,
+   "total_tokens": 502,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.081,
+  "usage": {
+   "prompt_tokens": 463,
+   "completion_tokens": 39,
+   "total_tokens": 502,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.149,
+  "usage": {
+   "prompt_tokens": 463,
+   "completion_tokens": 39,
+   "total_tokens": 502,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.136,
+  "usage": {
+   "prompt_tokens": 463,
+   "completion_tokens": 39,
+   "total_tokens": 502,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.165,
+  "usage": {
+   "prompt_tokens": 463,
+   "completion_tokens": 39,
+   "total_tokens": 502,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to listen to, and in which room?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.459,
+  "usage": {
+   "prompt_tokens": 455,
+   "completion_tokens": 29,
+   "total_tokens": 484,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to listen to, and which room should I play it in?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.33,
+  "usage": {
+   "prompt_tokens": 455,
+   "completion_tokens": 33,
+   "total_tokens": 488,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to listen to, and in which room?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.041,
+  "usage": {
+   "prompt_tokens": 455,
+   "completion_tokens": 29,
+   "total_tokens": 484,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to listen to, and in which room?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.961,
+  "usage": {
+   "prompt_tokens": 455,
+   "completion_tokens": 29,
+   "total_tokens": 484,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to hear, and which room should I play it in?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.207,
+  "usage": {
+   "prompt_tokens": 455,
+   "completion_tokens": 32,
+   "total_tokens": 487,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.994,
+  "usage": {
+   "prompt_tokens": 423,
+   "completion_tokens": 23,
+   "total_tokens": 446,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.19,
+  "usage": {
+   "prompt_tokens": 423,
+   "completion_tokens": 23,
+   "total_tokens": 446,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.105,
+  "usage": {
+   "prompt_tokens": 423,
+   "completion_tokens": 23,
+   "total_tokens": 446,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.053,
+  "usage": {
+   "prompt_tokens": 423,
+   "completion_tokens": 23,
+   "total_tokens": 446,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.331,
+  "usage": {
+   "prompt_tokens": 423,
+   "completion_tokens": 23,
+   "total_tokens": 446,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.838,
+  "usage": {
+   "prompt_tokens": 430,
+   "completion_tokens": 62,
+   "total_tokens": 492,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.342,
+  "usage": {
+   "prompt_tokens": 430,
+   "completion_tokens": 62,
+   "total_tokens": 492,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.512,
+  "usage": {
+   "prompt_tokens": 430,
+   "completion_tokens": 62,
+   "total_tokens": 492,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.318,
+  "usage": {
+   "prompt_tokens": 430,
+   "completion_tokens": 62,
+   "total_tokens": 492,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.858,
+  "usage": {
+   "prompt_tokens": 430,
+   "completion_tokens": 62,
+   "total_tokens": 492,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.743,
+  "usage": {
+   "prompt_tokens": 421,
+   "completion_tokens": 43,
+   "total_tokens": 464,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.512,
+  "usage": {
+   "prompt_tokens": 421,
+   "completion_tokens": 45,
+   "total_tokens": 466,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.475,
+  "usage": {
+   "prompt_tokens": 421,
+   "completion_tokens": 48,
+   "total_tokens": 469,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.045,
+  "usage": {
+   "prompt_tokens": 421,
+   "completion_tokens": 46,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.497,
+  "usage": {
+   "prompt_tokens": 421,
+   "completion_tokens": 48,
+   "total_tokens": 469,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.909,
+  "usage": {
+   "prompt_tokens": 428,
+   "completion_tokens": 39,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.249,
+  "usage": {
+   "prompt_tokens": 428,
+   "completion_tokens": 39,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.092,
+  "usage": {
+   "prompt_tokens": 428,
+   "completion_tokens": 39,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.142,
+  "usage": {
+   "prompt_tokens": 428,
+   "completion_tokens": 39,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.38,
+  "usage": {
+   "prompt_tokens": 428,
+   "completion_tokens": 39,
+   "total_tokens": 467,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.021,
+  "usage": {
+   "prompt_tokens": 420,
+   "completion_tokens": 15,
+   "total_tokens": 435,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.007,
+  "usage": {
+   "prompt_tokens": 420,
+   "completion_tokens": 16,
+   "total_tokens": 436,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.325,
+  "usage": {
+   "prompt_tokens": 420,
+   "completion_tokens": 20,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.189,
+  "usage": {
+   "prompt_tokens": 420,
+   "completion_tokens": 20,
+   "total_tokens": 440,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.267,
+  "usage": {
+   "prompt_tokens": 420,
+   "completion_tokens": 19,
+   "total_tokens": 439,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 0,
+    "audio_tokens": 0,
+    "accepted_prediction_tokens": 0,
+    "rejected_prediction_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.012,
+  "usage": null,
+  "ttft": 0.885,
+  "first_tool": 0.885,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.846,
+  "usage": null,
+  "ttft": 0.774,
+  "first_tool": 0.774,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.038,
+  "usage": null,
+  "ttft": 0.928,
+  "first_tool": 0.928,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.484,
+  "usage": null,
+  "ttft": 1.386,
+  "first_tool": 1.386,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.854,
+  "usage": null,
+  "ttft": 0.702,
+  "first_tool": 0.702,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.171,
+  "usage": null,
+  "ttft": 1.08,
+  "first_tool": 1.08,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8,
+   9
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.09,
+  "usage": null,
+  "ttft": 1.041,
+  "first_tool": 1.041,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8,
+   9
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.06,
+  "usage": null,
+  "ttft": 1.018,
+  "first_tool": 1.018,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8,
+   9
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.23,
+  "usage": null,
+  "ttft": 1.136,
+  "first_tool": 1.136,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8,
+   9
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.299,
+  "usage": null,
+  "ttft": 1.208,
+  "first_tool": 1.208,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8,
+   9
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.48,
+  "usage": null,
+  "ttft": 0.731,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.2,
+  "usage": null,
+  "ttft": 0.776,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.45,
+  "usage": null,
+  "ttft": 1.96,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.202,
+  "usage": null,
+  "ttft": 0.717,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.473,
+  "usage": null,
+  "ttft": 0.754,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 2.188,
+  "usage": null,
+  "ttft": 1.956,
+  "first_tool": 1.956,
+  "text_before_tool": false,
+  "arg_chunks": [
+   26
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.284,
+  "usage": null,
+  "ttft": 0.972,
+  "first_tool": 0.972,
+  "text_before_tool": false,
+  "arg_chunks": [
+   26
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 0.976,
+  "usage": null,
+  "ttft": 0.786,
+  "first_tool": 0.786,
+  "text_before_tool": false,
+  "arg_chunks": [
+   26
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 0.989,
+  "usage": null,
+  "ttft": 0.778,
+  "first_tool": 0.778,
+  "text_before_tool": false,
+  "arg_chunks": [
+   26
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 0.988,
+  "usage": null,
+  "ttft": 0.799,
+  "first_tool": 0.799,
+  "text_before_tool": false,
+  "arg_chunks": [
+   26
+  ]
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.06,
+  "usage": null,
+  "ttft": 0.787,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.809,
+  "usage": null,
+  "ttft": 0.711,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.757,
+  "usage": null,
+  "ttft": 0.639,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.99,
+  "usage": null,
+  "ttft": 0.781,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openai",
+  "model": "gpt-6-sol",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.887,
+  "usage": null,
+  "ttft": 0.755,
+  "text_before_tool": false,
+  "arg_chunks": []
+ }
+]

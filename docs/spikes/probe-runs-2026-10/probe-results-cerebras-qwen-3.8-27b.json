@@ -1,0 +1,929 @@
+[
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.454,
+  "usage": {
+   "total_tokens": 902,
+   "completion_tokens": 80,
+   "completion_tokens_details": {
+    "reasoning_tokens": 38
+   },
+   "prompt_tokens": 822,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.348,
+  "usage": {
+   "total_tokens": 898,
+   "completion_tokens": 76,
+   "completion_tokens_details": {
+    "reasoning_tokens": 34
+   },
+   "prompt_tokens": 822,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.357,
+  "usage": {
+   "total_tokens": 897,
+   "completion_tokens": 75,
+   "completion_tokens_details": {
+    "reasoning_tokens": 33
+   },
+   "prompt_tokens": 822,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.478,
+  "usage": {
+   "total_tokens": 895,
+   "completion_tokens": 73,
+   "completion_tokens_details": {
+    "reasoning_tokens": 31
+   },
+   "prompt_tokens": 822,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.6,
+  "usage": {
+   "total_tokens": 915,
+   "completion_tokens": 93,
+   "completion_tokens_details": {
+    "reasoning_tokens": 51
+   },
+   "prompt_tokens": 822,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.434,
+  "usage": {
+   "total_tokens": 980,
+   "completion_tokens": 151,
+   "completion_tokens_details": {
+    "reasoning_tokens": 70
+   },
+   "prompt_tokens": 829,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.683,
+  "usage": {
+   "total_tokens": 1005,
+   "completion_tokens": 176,
+   "completion_tokens_details": {
+    "reasoning_tokens": 95
+   },
+   "prompt_tokens": 829,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.631,
+  "usage": {
+   "total_tokens": 1252,
+   "completion_tokens": 423,
+   "completion_tokens_details": {
+    "reasoning_tokens": 342
+   },
+   "prompt_tokens": 829,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.464,
+  "usage": {
+   "total_tokens": 991,
+   "completion_tokens": 162,
+   "completion_tokens_details": {
+    "reasoning_tokens": 81
+   },
+   "prompt_tokens": 829,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.754,
+  "usage": {
+   "total_tokens": 997,
+   "completion_tokens": 168,
+   "completion_tokens_details": {
+    "reasoning_tokens": 87
+   },
+   "prompt_tokens": 829,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.37,
+  "usage": {
+   "total_tokens": 954,
+   "completion_tokens": 134,
+   "completion_tokens_details": {
+    "reasoning_tokens": 71
+   },
+   "prompt_tokens": 820,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.231,
+  "usage": {
+   "total_tokens": 1349,
+   "completion_tokens": 529,
+   "completion_tokens_details": {
+    "reasoning_tokens": 267
+   },
+   "prompt_tokens": 820,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.359,
+  "usage": {
+   "total_tokens": 936,
+   "completion_tokens": 116,
+   "completion_tokens_details": {
+    "reasoning_tokens": 40
+   },
+   "prompt_tokens": 820,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.952,
+  "usage": {
+   "total_tokens": 1319,
+   "completion_tokens": 499,
+   "completion_tokens_details": {
+    "reasoning_tokens": 288
+   },
+   "prompt_tokens": 820,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.376,
+  "usage": {
+   "total_tokens": 950,
+   "completion_tokens": 130,
+   "completion_tokens_details": {
+    "reasoning_tokens": 73
+   },
+   "prompt_tokens": 820,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.245,
+  "usage": {
+   "total_tokens": 1851,
+   "completion_tokens": 1024,
+   "completion_tokens_details": {
+    "reasoning_tokens": 1024
+   },
+   "prompt_tokens": 827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-06-25T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.428,
+  "usage": {
+   "total_tokens": 1001,
+   "completion_tokens": 174,
+   "completion_tokens_details": {
+    "reasoning_tokens": 115
+   },
+   "prompt_tokens": 827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist tomorrow at 3pm"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.499,
+  "usage": {
+   "total_tokens": 1065,
+   "completion_tokens": 238,
+   "completion_tokens_details": {
+    "reasoning_tokens": 204
+   },
+   "prompt_tokens": 827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist at 3pm"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.559,
+  "usage": {
+   "total_tokens": 1207,
+   "completion_tokens": 380,
+   "completion_tokens_details": {
+    "reasoning_tokens": 347
+   },
+   "prompt_tokens": 827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist tomorrow at 3pm"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.564,
+  "usage": {
+   "total_tokens": 1139,
+   "completion_tokens": 312,
+   "completion_tokens_details": {
+    "reasoning_tokens": 278
+   },
+   "prompt_tokens": 827,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.868,
+  "usage": {
+   "total_tokens": 1146,
+   "completion_tokens": 327,
+   "completion_tokens_details": {
+    "reasoning_tokens": 244
+   },
+   "prompt_tokens": 819,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.552,
+  "usage": {
+   "total_tokens": 999,
+   "completion_tokens": 180,
+   "completion_tokens_details": {
+    "reasoning_tokens": 145
+   },
+   "prompt_tokens": 819,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.404,
+  "usage": {
+   "total_tokens": 937,
+   "completion_tokens": 118,
+   "completion_tokens_details": {
+    "reasoning_tokens": 100
+   },
+   "prompt_tokens": 819,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.457,
+  "usage": {
+   "total_tokens": 984,
+   "completion_tokens": 165,
+   "completion_tokens_details": {
+    "reasoning_tokens": 118
+   },
+   "prompt_tokens": 819,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "cerebras",
+  "model": "qwen-3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.389,
+  "usage": {
+   "total_tokens": 957,
+   "completion_tokens": 138,
+   "completion_tokens_details": {
+    "reasoning_tokens": 113
+   },
+   "prompt_tokens": 819,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "image_tokens": 0
+   }
+  }
+ }
+]
