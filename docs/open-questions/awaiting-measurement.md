@@ -10,7 +10,9 @@ deliberately refused to fake. Every item names the spike that owns it.
 
 ---
 
-- Pick the specific hosted LLM provider/model for the Agent Core's default backend.
+- ~~Pick the specific hosted LLM provider/model for the Agent Core's default backend.~~
+  **ANSWERED 2026-10-02** by ARIA-122 → [D85](../decisions/0018-hosted-llm-backend.md): Qwen 3.8 27B on
+  Cerebras. Evidence: [the brief's probe results](../spikes/hosted-llm-providers-2026-09.md#probe-results-aria-122).
 - Confirm the Rust MCP SDK to standardize on (`rmcp` or equivalent).
 - Confirm the STT library/model and the TTS library/voice that fit the VRAM budget, and the GPU
   access approach.

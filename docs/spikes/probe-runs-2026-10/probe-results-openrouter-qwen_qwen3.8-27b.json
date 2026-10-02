@@ -1,0 +1,1185 @@
+[
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.328,
+  "usage": {
+   "prompt_tokens": 877,
+   "completion_tokens": 89,
+   "total_tokens": 966,
+   "cost": 0.0004085796,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 64,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004085796,
+    "upstream_inference_prompt_cost": 2.14296e-05,
+    "upstream_inference_completions_cost": 0.00038715
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 47,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.095,
+  "usage": {
+   "prompt_tokens": 877,
+   "completion_tokens": 90,
+   "total_tokens": 967,
+   "cost": 0.0004090896,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004090896,
+    "upstream_inference_prompt_cost": 1.75896e-05,
+    "upstream_inference_completions_cost": 0.0003915
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 48,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.872,
+  "usage": {
+   "prompt_tokens": 877,
+   "completion_tokens": 93,
+   "total_tokens": 970,
+   "cost": 0.0004221396,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004221396,
+    "upstream_inference_prompt_cost": 1.75896e-05,
+    "upstream_inference_completions_cost": 0.00040455
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 51,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.823,
+  "usage": {
+   "prompt_tokens": 877,
+   "completion_tokens": 86,
+   "total_tokens": 963,
+   "cost": 0.0003916896,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0003916896,
+    "upstream_inference_prompt_cost": 1.75896e-05,
+    "upstream_inference_completions_cost": 0.0003741
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 44,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.818,
+  "usage": {
+   "prompt_tokens": 877,
+   "completion_tokens": 91,
+   "total_tokens": 968,
+   "cost": 0.0004134396,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0004134396,
+    "upstream_inference_prompt_cost": 1.75896e-05,
+    "upstream_inference_completions_cost": 0.00039585
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 49,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.013,
+  "usage": {
+   "prompt_tokens": 884,
+   "completion_tokens": 190,
+   "total_tokens": 1074,
+   "cost": 0.0008442632,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0008442632,
+    "upstream_inference_prompt_cost": 1.77632e-05,
+    "upstream_inference_completions_cost": 0.0008265
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 109,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.986,
+  "usage": {
+   "prompt_tokens": 884,
+   "completion_tokens": 172,
+   "total_tokens": 1056,
+   "cost": 0.0007659632,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0007659632,
+    "upstream_inference_prompt_cost": 1.77632e-05,
+    "upstream_inference_completions_cost": 0.0007482
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 91,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.598,
+  "usage": {
+   "prompt_tokens": 884,
+   "completion_tokens": 147,
+   "total_tokens": 1031,
+   "cost": 0.0006572132,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0006572132,
+    "upstream_inference_prompt_cost": 1.77632e-05,
+    "upstream_inference_completions_cost": 0.00063945
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 66,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.705,
+  "usage": {
+   "prompt_tokens": 884,
+   "completion_tokens": 155,
+   "total_tokens": 1039,
+   "cost": 0.0006920132,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0006920132,
+    "upstream_inference_prompt_cost": 1.77632e-05,
+    "upstream_inference_completions_cost": 0.00067425
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 74,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "room": "living room",
+     "query": "jazz"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 3.158,
+  "usage": {
+   "prompt_tokens": 884,
+   "completion_tokens": 210,
+   "total_tokens": 1094,
+   "cost": 0.0009312632,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0009312632,
+    "upstream_inference_prompt_cost": 1.77632e-05,
+    "upstream_inference_completions_cost": 0.0009135
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 129,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 5.106,
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 338,
+   "total_tokens": 1213,
+   "cost": 0.00148784,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00148784,
+    "upstream_inference_prompt_cost": 1.754e-05,
+    "upstream_inference_completions_cost": 0.0014703
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 141,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 5.729,
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 399,
+   "total_tokens": 1274,
+   "cost": 0.00175319,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00175319,
+    "upstream_inference_prompt_cost": 1.754e-05,
+    "upstream_inference_completions_cost": 0.00173565
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 148,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 5.085,
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 321,
+   "total_tokens": 1196,
+   "cost": 0.00141389,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00141389,
+    "upstream_inference_prompt_cost": 1.754e-05,
+    "upstream_inference_completions_cost": 0.00139635
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 60,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 10.065,
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 441,
+   "total_tokens": 1316,
+   "cost": 0.00193589,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00193589,
+    "upstream_inference_prompt_cost": 1.754e-05,
+    "upstream_inference_completions_cost": 0.00191835
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 163,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 6.327,
+  "usage": {
+   "prompt_tokens": 875,
+   "completion_tokens": 325,
+   "total_tokens": 1200,
+   "cost": 0.00143129,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00143129,
+    "upstream_inference_prompt_cost": 1.754e-05,
+    "upstream_inference_completions_cost": 0.00141375
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 127,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 8.442,
+  "usage": {
+   "prompt_tokens": 882,
+   "completion_tokens": 427,
+   "total_tokens": 1309,
+   "cost": 0.0018751636,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0018751636,
+    "upstream_inference_prompt_cost": 1.77136e-05,
+    "upstream_inference_completions_cost": 0.00185745
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 393,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 15.217,
+  "usage": {
+   "prompt_tokens": 882,
+   "completion_tokens": 1024,
+   "total_tokens": 1906,
+   "cost": 0.0044721136,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0044721136,
+    "upstream_inference_prompt_cost": 1.77136e-05,
+    "upstream_inference_completions_cost": 0.0044544
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1024,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 15.409,
+  "usage": {
+   "prompt_tokens": 882,
+   "completion_tokens": 1024,
+   "total_tokens": 1906,
+   "cost": 0.0044721136,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0044721136,
+    "upstream_inference_prompt_cost": 1.77136e-05,
+    "upstream_inference_completions_cost": 0.0044544
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1024,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist (tomorrow at 3:00 PM)"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 9.105,
+  "usage": {
+   "prompt_tokens": 882,
+   "completion_tokens": 470,
+   "total_tokens": 1352,
+   "cost": 0.0020622136,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0020622136,
+    "upstream_inference_prompt_cost": 1.77136e-05,
+    "upstream_inference_completions_cost": 0.0020445
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 430,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist tomorrow at 3 PM"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 14.227,
+  "usage": {
+   "prompt_tokens": 882,
+   "completion_tokens": 916,
+   "total_tokens": 1798,
+   "cost": 0.0040023136,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0040023136,
+    "upstream_inference_prompt_cost": 1.77136e-05,
+    "upstream_inference_completions_cost": 0.0039846
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 882,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 3.497,
+  "usage": {
+   "prompt_tokens": 874,
+   "completion_tokens": 180,
+   "total_tokens": 1054,
+   "cost": 0.0008005152,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0008005152,
+    "upstream_inference_prompt_cost": 1.75152e-05,
+    "upstream_inference_completions_cost": 0.000783
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 129,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 5.875,
+  "usage": {
+   "prompt_tokens": 874,
+   "completion_tokens": 241,
+   "total_tokens": 1115,
+   "cost": 0.0010658652,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0010658652,
+    "upstream_inference_prompt_cost": 1.75152e-05,
+    "upstream_inference_completions_cost": 0.00104835
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 173,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.096,
+  "usage": {
+   "prompt_tokens": 874,
+   "completion_tokens": 203,
+   "total_tokens": 1077,
+   "cost": 0.0009005652,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0009005652,
+    "upstream_inference_prompt_cost": 1.75152e-05,
+    "upstream_inference_completions_cost": 0.00088305
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 134,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 18.332,
+  "usage": {
+   "prompt_tokens": 874,
+   "completion_tokens": 177,
+   "total_tokens": 1051,
+   "cost": 0.0007874652,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0007874652,
+    "upstream_inference_prompt_cost": 1.75152e-05,
+    "upstream_inference_completions_cost": 0.00076995
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 104,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "provider": "openrouter",
+  "model": "qwen/qwen3.8-27b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 3.526,
+  "usage": {
+   "prompt_tokens": 874,
+   "completion_tokens": 166,
+   "total_tokens": 1040,
+   "cost": 0.0007396152,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 832,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0007396152,
+    "upstream_inference_prompt_cost": 1.75152e-05,
+    "upstream_inference_completions_cost": 0.0007221
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 122,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ }
+]

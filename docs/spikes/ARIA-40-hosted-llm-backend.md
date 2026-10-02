@@ -3,6 +3,11 @@
 [Library index](../README.md) · [Spikes](README.md) · [Agent Core](../services/agent-core.md) · [Sprint 1](../sprints/sprint-01.md)
 
 **Status: cannot close on research. Framework + probe harness ready; the measurement is yours to run.**
+
+> **Update 2026-10-02 (ARIA-122):** the probe has run against 12 host/model combinations. Results,
+> run conditions and findings are in [hosted-llm-providers-2026-09.md — Probe results](hosted-llm-providers-2026-09.md#probe-results-aria-122);
+> raw files in [`probe-runs-2026-10/`](probe-runs-2026-10/). **Decided:** [D85](../decisions/0018-hosted-llm-backend.md) —
+> Qwen 3.8 27B on Cerebras.
 Desk research 2026-08-19.
 
 > ### ⚠️ Conflict of interest, stated up front

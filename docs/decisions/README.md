@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D85**.
+- Next number to allocate: **D86**.
 
 ---
 
@@ -175,6 +175,12 @@ Taken 2026-09-23 (design conversation). The instrumentation is unchanged; the ba
 Taken 2026-09-23 (design conversation).
 
 - **D84** — Definition of done extends: no service is done without its migration, its Helm chart and its OTel spans
+
+### [Hosted LLM backend](0018-hosted-llm-backend.md) · D85
+
+Taken 2026-10-02 (measurement — ARIA-122).
+
+- **D85** — The default hosted backend is Qwen 3.8 27B on Cerebras, through an OpenAI-compatible adapter; reasoning at the provider default; `api.cerebras.ai` is the one LLM egress host
 
 ### [Session 1 summary](0008-session-1-summary.md)
 

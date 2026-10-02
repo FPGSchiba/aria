@@ -1,0 +1,4105 @@
+[
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.955,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.524,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.644,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.553,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.941,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.806,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.839,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.807,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.894,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.816,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.87,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 400,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.7,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 342,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.278,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 403,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.084,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 378,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.005,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 405,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.728,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.614,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 2.551,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.624,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.586,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {}
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": true,
+  "problems": [
+   "music_play: missing required 'query'",
+   "music_play: missing required 'room'"
+  ],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.422,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 26,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.764,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 60,
+   "output_tokens_details": {
+    "thinking_tokens": 28
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.868,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 66,
+   "output_tokens_details": {
+    "thinking_tokens": 35
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.833,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 68,
+   "output_tokens_details": {
+    "thinking_tokens": 31
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.041,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 86,
+   "output_tokens_details": {
+    "thinking_tokens": 36
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.522,
+  "usage": {
+   "input_tokens": 1219,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.657,
+  "usage": {
+   "input_tokens": 1219,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.555,
+  "usage": {
+   "input_tokens": 1219,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.578,
+  "usage": {
+   "input_tokens": 1219,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.578,
+  "usage": {
+   "input_tokens": 1219,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.879,
+  "usage": {
+   "input_tokens": 1223,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.889,
+  "usage": {
+   "input_tokens": 1223,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.746,
+  "usage": {
+   "input_tokens": 1223,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.774,
+  "usage": {
+   "input_tokens": 1223,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.796,
+  "usage": {
+   "input_tokens": 1223,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.717,
+  "usage": {
+   "input_tokens": 1212,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 370,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.664,
+  "usage": {
+   "input_tokens": 1212,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 371,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.044,
+  "usage": {
+   "input_tokens": 1212,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 366,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.638,
+  "usage": {
+   "input_tokens": 1212,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 368,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.602,
+  "usage": {
+   "input_tokens": 1212,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 363,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.576,
+  "usage": {
+   "input_tokens": 1224,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.712,
+  "usage": {
+   "input_tokens": 1224,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.451,
+  "usage": {
+   "input_tokens": 1224,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.735,
+  "usage": {
+   "input_tokens": 1224,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.59,
+  "usage": {
+   "input_tokens": 1224,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Sure! What would you like to listen to (artist, album, or track), and in which room should I play it?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.693,
+  "usage": {
+   "input_tokens": 1209,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Sure! What would you like to listen to (artist, album, or track), and in which room should I play it?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.78,
+  "usage": {
+   "input_tokens": 1209,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Happy to! What would you like to listen to (an artist, album, or track), and which room should I play it in?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.946,
+  "usage": {
+   "input_tokens": 1209,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 108,
+   "output_tokens_details": {
+    "thinking_tokens": 29
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Sure! What would you like to listen to (artist, album, or track), and in which room should I play it?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.704,
+  "usage": {
+   "input_tokens": 1209,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Sure! What would you like to listen to (artist, album, or track), and in which room should I play it?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.729,
+  "usage": {
+   "input_tokens": 1209,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 12.504,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.971,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.836,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.847,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.814,
+  "usage": {
+   "input_tokens": 1110,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 76,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.452,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.146,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.194,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.169,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.191,
+  "usage": {
+   "input_tokens": 1114,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 137,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.987,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 404,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.726,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 399,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.515,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 352,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.054,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 412,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.14,
+  "usage": {
+   "input_tokens": 1103,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 376,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 2.365,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.632,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 2.435,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.78,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.607,
+  "usage": {
+   "input_tokens": 1115,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 90,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.852,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 36,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.945,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 52,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.827,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 64,
+   "output_tokens_details": {
+    "thinking_tokens": 31
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.803,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 33,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.707,
+  "usage": {
+   "input_tokens": 1100,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation": {
+    "ephemeral_5m_input_tokens": 0,
+    "ephemeral_1h_input_tokens": 0
+   },
+   "output_tokens": 42,
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "service_tier": "standard",
+   "inference_geo": "global"
+  }
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.577,
+  "usage": null,
+  "ttft": 0.839,
+  "first_tool": 0.839,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.335,
+  "usage": null,
+  "ttft": 2.644,
+  "first_tool": 2.644,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.577,
+  "usage": null,
+  "ttft": 0.842,
+  "first_tool": 0.842,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.503,
+  "usage": null,
+  "ttft": 0.798,
+  "first_tool": 0.798,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.713,
+  "usage": null,
+  "ttft": 0.96,
+  "first_tool": 0.96,
+  "text_before_tool": false,
+  "arg_chunks": [
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.873,
+  "usage": null,
+  "ttft": 0.893,
+  "first_tool": 0.893,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7,
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.839,
+  "usage": null,
+  "ttft": 0.84,
+  "first_tool": 0.84,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7,
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.818,
+  "usage": null,
+  "ttft": 0.819,
+  "first_tool": 0.819,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7,
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.856,
+  "usage": null,
+  "ttft": 0.784,
+  "first_tool": 0.784,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7,
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.799,
+  "usage": null,
+  "ttft": 0.801,
+  "first_tool": 0.801,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7,
+   8
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.808,
+  "usage": null,
+  "ttft": 0.941,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.483,
+  "usage": null,
+  "ttft": 0.949,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.71,
+  "usage": null,
+  "ttft": 0.78,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.18,
+  "usage": null,
+  "ttft": 0.964,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.95,
+  "usage": null,
+  "ttft": 1.008,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.693,
+  "usage": null,
+  "ttft": 0.926,
+  "first_tool": 0.926,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.689,
+  "usage": null,
+  "ttft": 0.917,
+  "first_tool": 0.917,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.504,
+  "usage": null,
+  "ttft": 0.745,
+  "first_tool": 0.745,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.574,
+  "usage": null,
+  "ttft": 0.808,
+  "first_tool": 0.808,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.643,
+  "usage": null,
+  "ttft": 0.885,
+  "first_tool": 0.885,
+  "text_before_tool": false,
+  "arg_chunks": [
+   11
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.567,
+  "usage": null,
+  "ttft": 0.699,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.618,
+  "usage": null,
+  "ttft": 0.79,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {}
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": true,
+  "problems": [
+   "music_play: missing required 'query'",
+   "music_play: missing required 'room'"
+  ],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.341,
+  "usage": null,
+  "ttft": 0.83,
+  "first_tool": 0.83,
+  "text_before_tool": false,
+  "arg_chunks": [
+   1
+  ]
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.72,
+  "usage": null,
+  "ttft": 0.82,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.982,
+  "usage": null,
+  "ttft": 1.039,
+  "text_before_tool": false,
+  "arg_chunks": []
+ }
+]

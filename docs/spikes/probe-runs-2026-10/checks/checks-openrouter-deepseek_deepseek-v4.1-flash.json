@@ -1,0 +1,4682 @@
+[
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.398,
+  "usage": {
+   "prompt_tokens": 818,
+   "completion_tokens": 69,
+   "total_tokens": 887,
+   "cost": 8.23e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.23e-05,
+    "upstream_inference_prompt_cost": 4.09e-05,
+    "upstream_inference_completions_cost": 4.14e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 11,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.375,
+  "usage": {
+   "prompt_tokens": 818,
+   "completion_tokens": 84,
+   "total_tokens": 902,
+   "cost": 8.362e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.362e-05,
+    "upstream_inference_prompt_cost": 3.322e-05,
+    "upstream_inference_completions_cost": 5.04e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 19,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.714,
+  "usage": {
+   "prompt_tokens": 818,
+   "completion_tokens": 69,
+   "total_tokens": 887,
+   "cost": 7.462e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.462e-05,
+    "upstream_inference_prompt_cost": 3.322e-05,
+    "upstream_inference_completions_cost": 4.14e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.001,
+  "usage": {
+   "prompt_tokens": 818,
+   "completion_tokens": 85,
+   "total_tokens": 903,
+   "cost": 8.422e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.422e-05,
+    "upstream_inference_prompt_cost": 3.322e-05,
+    "upstream_inference_completions_cost": 5.1e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 27,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.204,
+  "usage": {
+   "prompt_tokens": 818,
+   "completion_tokens": 68,
+   "total_tokens": 886,
+   "cost": 7.402e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.402e-05,
+    "upstream_inference_prompt_cost": 3.322e-05,
+    "upstream_inference_completions_cost": 4.08e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 10,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.394,
+  "usage": {
+   "prompt_tokens": 825,
+   "completion_tokens": 128,
+   "total_tokens": 953,
+   "cost": 0.00011037,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011037,
+    "upstream_inference_prompt_cost": 3.357e-05,
+    "upstream_inference_completions_cost": 7.68e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 20,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.378,
+  "usage": {
+   "prompt_tokens": 825,
+   "completion_tokens": 136,
+   "total_tokens": 961,
+   "cost": 0.00011517,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011517,
+    "upstream_inference_prompt_cost": 3.357e-05,
+    "upstream_inference_completions_cost": 8.16e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 28,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.781,
+  "usage": {
+   "prompt_tokens": 825,
+   "completion_tokens": 129,
+   "total_tokens": 954,
+   "cost": 0.00011097,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011097,
+    "upstream_inference_prompt_cost": 3.357e-05,
+    "upstream_inference_completions_cost": 7.74e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 20,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.453,
+  "usage": {
+   "prompt_tokens": 825,
+   "completion_tokens": 120,
+   "total_tokens": 945,
+   "cost": 0.00010557,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010557,
+    "upstream_inference_prompt_cost": 3.357e-05,
+    "upstream_inference_completions_cost": 7.2e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 12,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.662,
+  "usage": {
+   "prompt_tokens": 825,
+   "completion_tokens": 128,
+   "total_tokens": 953,
+   "cost": 0.00011037,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011037,
+    "upstream_inference_prompt_cost": 3.357e-05,
+    "upstream_inference_completions_cost": 7.68e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 20,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 8.394,
+  "usage": {
+   "prompt_tokens": 816,
+   "completion_tokens": 295,
+   "total_tokens": 1111,
+   "cost": 0.00021012,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00021012,
+    "upstream_inference_prompt_cost": 3.312e-05,
+    "upstream_inference_completions_cost": 0.000177
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 12,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 5.056,
+  "usage": {
+   "prompt_tokens": 816,
+   "completion_tokens": 293,
+   "total_tokens": 1109,
+   "cost": 0.00020892,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00020892,
+    "upstream_inference_prompt_cost": 3.312e-05,
+    "upstream_inference_completions_cost": 0.0001758
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.618,
+  "usage": {
+   "prompt_tokens": 816,
+   "completion_tokens": 302,
+   "total_tokens": 1118,
+   "cost": 0.00021432,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00021432,
+    "upstream_inference_prompt_cost": 3.312e-05,
+    "upstream_inference_completions_cost": 0.0001812
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.389,
+  "usage": {
+   "prompt_tokens": 816,
+   "completion_tokens": 264,
+   "total_tokens": 1080,
+   "cost": 0.00019152,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00019152,
+    "upstream_inference_prompt_cost": 3.312e-05,
+    "upstream_inference_completions_cost": 0.0001584
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 9.219,
+  "usage": {
+   "prompt_tokens": 816,
+   "completion_tokens": 260,
+   "total_tokens": 1076,
+   "cost": 0.00018912,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00018912,
+    "upstream_inference_prompt_cost": 3.312e-05,
+    "upstream_inference_completions_cost": 0.000156
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 2.116,
+  "usage": {
+   "prompt_tokens": 823,
+   "completion_tokens": 143,
+   "total_tokens": 966,
+   "cost": 0.00011927,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011927,
+    "upstream_inference_prompt_cost": 3.347e-05,
+    "upstream_inference_completions_cost": 8.58e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 77,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 2.053,
+  "usage": {
+   "prompt_tokens": 823,
+   "completion_tokens": 162,
+   "total_tokens": 985,
+   "cost": 0.00013067,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00013067,
+    "upstream_inference_prompt_cost": 3.347e-05,
+    "upstream_inference_completions_cost": 9.72e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 96,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 2.225,
+  "usage": {
+   "prompt_tokens": 823,
+   "completion_tokens": 162,
+   "total_tokens": 985,
+   "cost": 0.00013067,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00013067,
+    "upstream_inference_prompt_cost": 3.347e-05,
+    "upstream_inference_completions_cost": 9.72e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 96,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.712,
+  "usage": {
+   "prompt_tokens": 823,
+   "completion_tokens": 130,
+   "total_tokens": 953,
+   "cost": 0.00011147,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011147,
+    "upstream_inference_prompt_cost": 3.347e-05,
+    "upstream_inference_completions_cost": 7.8e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 58,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 1.688,
+  "usage": {
+   "prompt_tokens": 823,
+   "completion_tokens": 158,
+   "total_tokens": 981,
+   "cost": 0.00012827,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012827,
+    "upstream_inference_prompt_cost": 3.347e-05,
+    "upstream_inference_completions_cost": 9.48e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 92,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.527,
+  "usage": {
+   "prompt_tokens": 790,
+   "completion_tokens": 128,
+   "total_tokens": 918,
+   "cost": 0.0003906,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.0003906,
+    "upstream_inference_prompt_cost": 0.000237,
+    "upstream_inference_completions_cost": 0.0001536
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 78,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.005,
+  "usage": {
+   "prompt_tokens": 815,
+   "completion_tokens": 205,
+   "total_tokens": 1020,
+   "cost": 0.00015607,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00015607,
+    "upstream_inference_prompt_cost": 3.307e-05,
+    "upstream_inference_completions_cost": 0.000123
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 160,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.63,
+  "usage": {
+   "prompt_tokens": 815,
+   "completion_tokens": 98,
+   "total_tokens": 913,
+   "cost": 9.187e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 9.187e-05,
+    "upstream_inference_prompt_cost": 3.307e-05,
+    "upstream_inference_completions_cost": 5.88e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 58,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.985,
+  "usage": {
+   "prompt_tokens": 815,
+   "completion_tokens": 154,
+   "total_tokens": 969,
+   "cost": 0.00012547,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012547,
+    "upstream_inference_prompt_cost": 3.307e-05,
+    "upstream_inference_completions_cost": 9.24e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 89,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "dated",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.474,
+  "usage": {
+   "prompt_tokens": 815,
+   "completion_tokens": 112,
+   "total_tokens": 927,
+   "cost": 0.00010027,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010027,
+    "upstream_inference_prompt_cost": 3.307e-05,
+    "upstream_inference_completions_cost": 6.72e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 90,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.899,
+  "usage": {
+   "prompt_tokens": 899,
+   "completion_tokens": 83,
+   "total_tokens": 982,
+   "cost": 8.707e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.707e-05,
+    "upstream_inference_prompt_cost": 3.727e-05,
+    "upstream_inference_completions_cost": 4.98e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 25,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.868,
+  "usage": {
+   "prompt_tokens": 899,
+   "completion_tokens": 77,
+   "total_tokens": 976,
+   "cost": 8.347e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.347e-05,
+    "upstream_inference_prompt_cost": 3.727e-05,
+    "upstream_inference_completions_cost": 4.62e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 19,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.268,
+  "usage": {
+   "prompt_tokens": 899,
+   "completion_tokens": 87,
+   "total_tokens": 986,
+   "cost": 8.947e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.947e-05,
+    "upstream_inference_prompt_cost": 3.727e-05,
+    "upstream_inference_completions_cost": 5.22e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 29,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.853,
+  "usage": {
+   "prompt_tokens": 899,
+   "completion_tokens": 65,
+   "total_tokens": 964,
+   "cost": 7.627e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.627e-05,
+    "upstream_inference_prompt_cost": 3.727e-05,
+    "upstream_inference_completions_cost": 3.9e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 7,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.978,
+  "usage": {
+   "prompt_tokens": 899,
+   "completion_tokens": 72,
+   "total_tokens": 971,
+   "cost": 8.047e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.047e-05,
+    "upstream_inference_prompt_cost": 3.727e-05,
+    "upstream_inference_completions_cost": 4.32e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 14,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.997,
+  "usage": {
+   "prompt_tokens": 906,
+   "completion_tokens": 173,
+   "total_tokens": 1079,
+   "cost": 0.00014142,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00014142,
+    "upstream_inference_prompt_cost": 3.762e-05,
+    "upstream_inference_completions_cost": 0.0001038
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 65,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.538,
+  "usage": {
+   "prompt_tokens": 906,
+   "completion_tokens": 122,
+   "total_tokens": 1028,
+   "cost": 0.00011082,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011082,
+    "upstream_inference_prompt_cost": 3.762e-05,
+    "upstream_inference_completions_cost": 7.32e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 20,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.202,
+  "usage": {
+   "prompt_tokens": 906,
+   "completion_tokens": 118,
+   "total_tokens": 1024,
+   "cost": 0.00010842,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010842,
+    "upstream_inference_prompt_cost": 3.762e-05,
+    "upstream_inference_completions_cost": 7.08e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.472,
+  "usage": {
+   "prompt_tokens": 906,
+   "completion_tokens": 134,
+   "total_tokens": 1040,
+   "cost": 0.00011802,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011802,
+    "upstream_inference_prompt_cost": 3.762e-05,
+    "upstream_inference_completions_cost": 8.04e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 26,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.944,
+  "usage": {
+   "prompt_tokens": 906,
+   "completion_tokens": 130,
+   "total_tokens": 1036,
+   "cost": 0.00011562,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011562,
+    "upstream_inference_prompt_cost": 3.762e-05,
+    "upstream_inference_completions_cost": 7.8e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 22,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.389,
+  "usage": {
+   "prompt_tokens": 897,
+   "completion_tokens": 280,
+   "total_tokens": 1177,
+   "cost": 0.00020517,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00020517,
+    "upstream_inference_prompt_cost": 3.717e-05,
+    "upstream_inference_completions_cost": 0.000168
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.396,
+  "usage": {
+   "prompt_tokens": 897,
+   "completion_tokens": 282,
+   "total_tokens": 1179,
+   "cost": 0.00020637,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00020637,
+    "upstream_inference_prompt_cost": 3.717e-05,
+    "upstream_inference_completions_cost": 0.0001692
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.036,
+  "usage": {
+   "prompt_tokens": 897,
+   "completion_tokens": 407,
+   "total_tokens": 1304,
+   "cost": 0.00028137,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00028137,
+    "upstream_inference_prompt_cost": 3.717e-05,
+    "upstream_inference_completions_cost": 0.0002442
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.85,
+  "usage": {
+   "prompt_tokens": 897,
+   "completion_tokens": 339,
+   "total_tokens": 1236,
+   "cost": 0.00024057,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00024057,
+    "upstream_inference_prompt_cost": 3.717e-05,
+    "upstream_inference_completions_cost": 0.0002034
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 37,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.484,
+  "usage": {
+   "prompt_tokens": 897,
+   "completion_tokens": 408,
+   "total_tokens": 1305,
+   "cost": 0.00028197,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00028197,
+    "upstream_inference_prompt_cost": 3.717e-05,
+    "upstream_inference_completions_cost": 0.0002448
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00",
+  "seconds": 1.382,
+  "usage": {
+   "prompt_tokens": 904,
+   "completion_tokens": 212,
+   "total_tokens": 1116,
+   "cost": 0.00016472,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00016472,
+    "upstream_inference_prompt_cost": 3.752e-05,
+    "upstream_inference_completions_cost": 0.0001272
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 144,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 0.995,
+  "usage": {
+   "prompt_tokens": 904,
+   "completion_tokens": 119,
+   "total_tokens": 1023,
+   "cost": 0.00010892,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010892,
+    "upstream_inference_prompt_cost": 3.752e-05,
+    "upstream_inference_completions_cost": 7.14e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 53,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00",
+  "seconds": 2.112,
+  "usage": {
+   "prompt_tokens": 904,
+   "completion_tokens": 221,
+   "total_tokens": 1125,
+   "cost": 0.00017012,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00017012,
+    "upstream_inference_prompt_cost": 3.752e-05,
+    "upstream_inference_completions_cost": 0.0001326
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 153,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 1.34,
+  "usage": {
+   "prompt_tokens": 904,
+   "completion_tokens": 101,
+   "total_tokens": 1005,
+   "cost": 9.812e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 9.812e-05,
+    "upstream_inference_prompt_cost": 3.752e-05,
+    "upstream_inference_completions_cost": 6.06e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 35,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 1.196,
+  "usage": {
+   "prompt_tokens": 904,
+   "completion_tokens": 115,
+   "total_tokens": 1019,
+   "cost": 0.00010652,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010652,
+    "upstream_inference_prompt_cost": 3.752e-05,
+    "upstream_inference_completions_cost": 6.9e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 42,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to hear (artist, album, or track), and which room should I play it in?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.068,
+  "usage": {
+   "prompt_tokens": 896,
+   "completion_tokens": 244,
+   "total_tokens": 1140,
+   "cost": 0.00018352,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00018352,
+    "upstream_inference_prompt_cost": 3.712e-05,
+    "upstream_inference_completions_cost": 0.0001464
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 170,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Which room should I play music in, and is there a particular artist, album, or track you'd like?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.309,
+  "usage": {
+   "prompt_tokens": 896,
+   "completion_tokens": 151,
+   "total_tokens": 1047,
+   "cost": 0.00012772,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012772,
+    "upstream_inference_prompt_cost": 3.712e-05,
+    "upstream_inference_completions_cost": 9.06e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 78,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Which room should I play music in, and what would you like to hear (artist, album, or track)?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.563,
+  "usage": {
+   "prompt_tokens": 896,
+   "completion_tokens": 168,
+   "total_tokens": 1064,
+   "cost": 0.00013792,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00013792,
+    "upstream_inference_prompt_cost": 3.712e-05,
+    "upstream_inference_completions_cost": 0.0001008
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 94,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "What would you like to hear (artist, album, or track), and which room should I play it in?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.698,
+  "usage": {
+   "prompt_tokens": 896,
+   "completion_tokens": 272,
+   "total_tokens": 1168,
+   "cost": 0.00020032,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00020032,
+    "upstream_inference_prompt_cost": 3.712e-05,
+    "upstream_inference_completions_cost": 0.0001632
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 200,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "clarify",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [
+   {
+    "name": "request_information",
+    "args": {
+     "question": "Which room should I play music in, and what would you like to hear (an artist, album, or track)?"
+    }
+   }
+  ],
+  "tool_names": [
+   "request_information"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.132,
+  "usage": {
+   "prompt_tokens": 896,
+   "completion_tokens": 122,
+   "total_tokens": 1018,
+   "cost": 0.00011032,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011032,
+    "upstream_inference_prompt_cost": 3.712e-05,
+    "upstream_inference_completions_cost": 7.32e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 45,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.59,
+  "usage": {
+   "prompt_tokens": 839,
+   "completion_tokens": 65,
+   "total_tokens": 904,
+   "cost": 8.095e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 8.095e-05,
+    "upstream_inference_prompt_cost": 4.195e-05,
+    "upstream_inference_completions_cost": 3.9e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 7,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.833,
+  "usage": {
+   "prompt_tokens": 839,
+   "completion_tokens": 67,
+   "total_tokens": 906,
+   "cost": 7.447e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.447e-05,
+    "upstream_inference_prompt_cost": 3.427e-05,
+    "upstream_inference_completions_cost": 4.02e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 9,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.624,
+  "usage": {
+   "prompt_tokens": 839,
+   "completion_tokens": 73,
+   "total_tokens": 912,
+   "cost": 7.807e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.807e-05,
+    "upstream_inference_prompt_cost": 3.427e-05,
+    "upstream_inference_completions_cost": 4.38e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.56,
+  "usage": {
+   "prompt_tokens": 839,
+   "completion_tokens": 68,
+   "total_tokens": 907,
+   "cost": 7.507e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.507e-05,
+    "upstream_inference_prompt_cost": 3.427e-05,
+    "upstream_inference_completions_cost": 4.08e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.57,
+  "usage": {
+   "prompt_tokens": 839,
+   "completion_tokens": 68,
+   "total_tokens": 907,
+   "cost": 7.507e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.507e-05,
+    "upstream_inference_prompt_cost": 3.427e-05,
+    "upstream_inference_completions_cost": 4.08e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.978,
+  "usage": {
+   "prompt_tokens": 846,
+   "completion_tokens": 159,
+   "total_tokens": 1005,
+   "cost": 0.00013002,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00013002,
+    "upstream_inference_prompt_cost": 3.462e-05,
+    "upstream_inference_completions_cost": 9.54e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 34,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.095,
+  "usage": {
+   "prompt_tokens": 846,
+   "completion_tokens": 148,
+   "total_tokens": 994,
+   "cost": 0.00012342,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012342,
+    "upstream_inference_prompt_cost": 3.462e-05,
+    "upstream_inference_completions_cost": 8.88e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 23,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.914,
+  "usage": {
+   "prompt_tokens": 846,
+   "completion_tokens": 147,
+   "total_tokens": 993,
+   "cost": 0.00012282,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012282,
+    "upstream_inference_prompt_cost": 3.462e-05,
+    "upstream_inference_completions_cost": 8.82e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.852,
+  "usage": {
+   "prompt_tokens": 846,
+   "completion_tokens": 144,
+   "total_tokens": 990,
+   "cost": 0.00012102,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012102,
+    "upstream_inference_prompt_cost": 3.462e-05,
+    "upstream_inference_completions_cost": 8.64e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 19,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 1,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.227,
+  "usage": {
+   "prompt_tokens": 846,
+   "completion_tokens": 227,
+   "total_tokens": 1073,
+   "cost": 0.00017082,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00017082,
+    "upstream_inference_prompt_cost": 3.462e-05,
+    "upstream_inference_completions_cost": 0.0001362
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 92,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 6.761,
+  "usage": {
+   "prompt_tokens": 837,
+   "completion_tokens": 419,
+   "total_tokens": 1256,
+   "cost": 0.00028557,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00028557,
+    "upstream_inference_prompt_cost": 3.417e-05,
+    "upstream_inference_completions_cost": 0.0002514
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.155,
+  "usage": {
+   "prompt_tokens": 837,
+   "completion_tokens": 220,
+   "total_tokens": 1057,
+   "cost": 0.00016617,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00016617,
+    "upstream_inference_prompt_cost": 3.417e-05,
+    "upstream_inference_completions_cost": 0.000132
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 26,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 6.445,
+  "usage": {
+   "prompt_tokens": 837,
+   "completion_tokens": 358,
+   "total_tokens": 1195,
+   "cost": 0.00024897,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00024897,
+    "upstream_inference_prompt_cost": 3.417e-05,
+    "upstream_inference_completions_cost": 0.0002148
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 4.715,
+  "usage": {
+   "prompt_tokens": 837,
+   "completion_tokens": 346,
+   "total_tokens": 1183,
+   "cost": 0.00024177,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00024177,
+    "upstream_inference_prompt_cost": 3.417e-05,
+    "upstream_inference_completions_cost": 0.0002076
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 15,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 3.853,
+  "usage": {
+   "prompt_tokens": 837,
+   "completion_tokens": 295,
+   "total_tokens": 1132,
+   "cost": 0.00021117,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00021117,
+    "upstream_inference_prompt_cost": 3.417e-05,
+    "upstream_inference_completions_cost": 0.000177
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 16,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 0.937,
+  "usage": {
+   "prompt_tokens": 844,
+   "completion_tokens": 117,
+   "total_tokens": 961,
+   "cost": 0.00010472,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010472,
+    "upstream_inference_prompt_cost": 3.452e-05,
+    "upstream_inference_completions_cost": 7.02e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 45,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 0.828,
+  "usage": {
+   "prompt_tokens": 844,
+   "completion_tokens": 110,
+   "total_tokens": 954,
+   "cost": 0.00010052,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00010052,
+    "upstream_inference_prompt_cost": 3.452e-05,
+    "upstream_inference_completions_cost": 6.6e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 44,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 1.244,
+  "usage": {
+   "prompt_tokens": 844,
+   "completion_tokens": 109,
+   "total_tokens": 953,
+   "cost": 9.992e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 9.992e-05,
+    "upstream_inference_prompt_cost": 3.452e-05,
+    "upstream_inference_completions_cost": 6.54e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 43,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00",
+  "seconds": 1.921,
+  "usage": {
+   "prompt_tokens": 844,
+   "completion_tokens": 146,
+   "total_tokens": 990,
+   "cost": 0.00012212,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00012212,
+    "upstream_inference_prompt_cost": 3.452e-05,
+    "upstream_inference_completions_cost": 8.76e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 78,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 1.094,
+  "usage": {
+   "prompt_tokens": 844,
+   "completion_tokens": 73,
+   "total_tokens": 917,
+   "cost": 7.832e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 7.832e-05,
+    "upstream_inference_prompt_cost": 3.452e-05,
+    "upstream_inference_completions_cost": 4.38e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 1,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.37,
+  "usage": {
+   "prompt_tokens": 836,
+   "completion_tokens": 133,
+   "total_tokens": 969,
+   "cost": 0.00011392,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011392,
+    "upstream_inference_prompt_cost": 3.412e-05,
+    "upstream_inference_completions_cost": 7.98e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 91,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.672,
+  "usage": {
+   "prompt_tokens": 836,
+   "completion_tokens": 129,
+   "total_tokens": 965,
+   "cost": 0.00011152,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011152,
+    "upstream_inference_prompt_cost": 3.412e-05,
+    "upstream_inference_completions_cost": 7.74e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 80,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.57,
+  "usage": {
+   "prompt_tokens": 836,
+   "completion_tokens": 131,
+   "total_tokens": 967,
+   "cost": 0.00011272,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 0.00011272,
+    "upstream_inference_prompt_cost": 3.412e-05,
+    "upstream_inference_completions_cost": 7.86e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 64,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.229,
+  "usage": {
+   "prompt_tokens": 836,
+   "completion_tokens": 103,
+   "total_tokens": 939,
+   "cost": 9.592e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 9.592e-05,
+    "upstream_inference_prompt_cost": 3.412e-05,
+    "upstream_inference_completions_cost": 6.18e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 63,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "strict",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.011,
+  "usage": {
+   "prompt_tokens": 836,
+   "completion_tokens": 105,
+   "total_tokens": 941,
+   "cost": 9.712e-05,
+   "is_byok": false,
+   "prompt_tokens_details": {
+    "cached_tokens": 768,
+    "cache_write_tokens": 0,
+    "audio_tokens": 0,
+    "video_tokens": 0
+   },
+   "cost_details": {
+    "upstream_inference_cost": 9.712e-05,
+    "upstream_inference_prompt_cost": 3.412e-05,
+    "upstream_inference_completions_cost": 6.3e-05
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 74,
+    "image_tokens": 0,
+    "audio_tokens": 0
+   }
+  }
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.151,
+  "usage": null,
+  "ttft": 0.999,
+  "first_tool": 0.999,
+  "text_before_tool": false,
+  "arg_chunks": [
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.863,
+  "usage": null,
+  "ttft": 0.717,
+  "first_tool": 0.717,
+  "text_before_tool": false,
+  "arg_chunks": [
+   4
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.748,
+  "usage": null,
+  "ttft": 0.663,
+  "first_tool": 0.663,
+  "text_before_tool": false,
+  "arg_chunks": [
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.729,
+  "usage": null,
+  "ttft": 0.609,
+  "first_tool": 0.609,
+  "text_before_tool": false,
+  "arg_chunks": [
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "single",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.655,
+  "usage": null,
+  "ttft": 0.647,
+  "first_tool": 0.647,
+  "text_before_tool": false,
+  "arg_chunks": [
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.776,
+  "usage": null,
+  "ttft": 0.631,
+  "first_tool": 0.631,
+  "text_before_tool": true,
+  "arg_chunks": [
+   3,
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 1,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.701,
+  "usage": null,
+  "ttft": 0.406,
+  "first_tool": 0.583,
+  "text_before_tool": true,
+  "arg_chunks": [
+   4,
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 2,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.935,
+  "usage": null,
+  "ttft": 0.754,
+  "first_tool": 0.899,
+  "text_before_tool": true,
+  "arg_chunks": [
+   3,
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 3,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.712,
+  "usage": null,
+  "ttft": 0.6,
+  "first_tool": 0.6,
+  "text_before_tool": false,
+  "arg_chunks": [
+   4,
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "multi",
+  "run": 4,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "room": "living room",
+     "on": true
+    }
+   },
+   {
+    "name": "music_play",
+    "args": {
+     "query": "jazz",
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.654,
+  "usage": null,
+  "ttft": 0.524,
+  "first_tool": 0.525,
+  "text_before_tool": true,
+  "arg_chunks": [
+   3,
+   3
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.018,
+  "usage": null,
+  "ttft": 0.559,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.662,
+  "usage": null,
+  "ttft": 0.555,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.356,
+  "usage": null,
+  "ttft": 0.604,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.902,
+  "usage": null,
+  "ttft": 1.148,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "none",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.306,
+  "usage": null,
+  "ttft": 0.554,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00",
+  "seconds": 0.929,
+  "usage": null,
+  "ttft": 0.91,
+  "first_tool": 0.91,
+  "text_before_tool": false,
+  "arg_chunks": [
+   6
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00",
+  "seconds": 2.295,
+  "usage": null,
+  "ttft": 2.164,
+  "first_tool": 2.164,
+  "text_before_tool": false,
+  "arg_chunks": [
+   5
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 0.97,
+  "usage": null,
+  "ttft": 0.739,
+  "first_tool": 0.739,
+  "text_before_tool": false,
+  "arg_chunks": [
+   6
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00",
+  "seconds": 1.409,
+  "usage": null,
+  "ttft": 0.711,
+  "first_tool": 0.711,
+  "text_before_tool": false,
+  "arg_chunks": [
+   4
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "ambiguous",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "text": "Call the dentist",
+     "due": "2026-10-03T15:00:00+02:00"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": null,
+  "refused": false,
+  "date_status": "correct",
+  "date_value": "2026-10-03T15:00:00+02:00",
+  "seconds": 0.905,
+  "usage": null,
+  "ttft": 0.746,
+  "first_tool": 0.746,
+  "text_before_tool": false,
+  "arg_chunks": [
+   7
+  ]
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 2.084,
+  "usage": null,
+  "ttft": 1.542,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.466,
+  "usage": null,
+  "ttft": 1.129,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.52,
+  "usage": null,
+  "ttft": 1.286,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 0.893,
+  "usage": null,
+  "ttft": 0.717,
+  "text_before_tool": false,
+  "arg_chunks": []
+ },
+ {
+  "profile": "openrouter",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "variant": "stream",
+  "tag": "",
+  "case": "missing_arg",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "nulls_stripped": 0,
+  "spurious": false,
+  "hallucinated_arg": false,
+  "refused": true,
+  "date_status": null,
+  "date_value": null,
+  "seconds": 1.468,
+  "usage": null,
+  "ttft": 1.142,
+  "text_before_tool": false,
+  "arg_chunks": []
+ }
+]

@@ -1,0 +1,798 @@
+[
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 0,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.281,
+  "usage": {
+   "queue_time": 0.048357359,
+   "prompt_tokens": 409,
+   "prompt_time": 0.025710847,
+   "completion_tokens": 64,
+   "completion_time": 0.136398212,
+   "total_tokens": 473,
+   "total_time": 0.162109059,
+   "completion_tokens_details": {
+    "reasoning_tokens": 28
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 1,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.215,
+  "usage": {
+   "queue_time": 0.048651949,
+   "prompt_tokens": 409,
+   "prompt_time": 0.016211341,
+   "completion_tokens": 53,
+   "completion_time": 0.112635016,
+   "total_tokens": 462,
+   "total_time": 0.128846357,
+   "completion_tokens_details": {
+    "reasoning_tokens": 17
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 2,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.393,
+  "usage": {
+   "queue_time": 1.238672533,
+   "prompt_tokens": 409,
+   "prompt_time": 0.991487463,
+   "completion_tokens": 56,
+   "completion_time": 0.117081838,
+   "total_tokens": 465,
+   "total_time": 1.108569301,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 20
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 3,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.667,
+  "usage": {
+   "queue_time": 0.303453591,
+   "prompt_tokens": 409,
+   "prompt_time": 0.145681322,
+   "completion_tokens": 59,
+   "completion_time": 0.159067583,
+   "total_tokens": 468,
+   "total_time": 0.304748905,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 23
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "single",
+  "note": "unambiguous single tool",
+  "run": 4,
+  "calls": [
+   {
+    "name": "music_play",
+    "args": {
+     "query": "Miles Davis",
+     "room": "kitchen"
+    }
+   }
+  ],
+  "tool_names": [
+   "music_play"
+  ],
+  "expected": [
+   "music_play"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.514,
+  "usage": {
+   "queue_time": 0.298601113,
+   "prompt_tokens": 409,
+   "prompt_time": 0.018835172,
+   "completion_tokens": 66,
+   "completion_time": 0.140741426,
+   "total_tokens": 475,
+   "total_time": 0.159576598,
+   "completion_tokens_details": {
+    "reasoning_tokens": 30
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 0,
+  "calls": [
+   {
+    "name": "light_set",
+    "args": {
+     "brightness": 100,
+     "on": true,
+     "room": "living room"
+    }
+   }
+  ],
+  "tool_names": [
+   "light_set"
+  ],
+  "expected": [
+   "light_set",
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.234,
+  "usage": {
+   "queue_time": 1.956868317,
+   "prompt_tokens": 416,
+   "prompt_time": 0.019980011,
+   "completion_tokens": 99,
+   "completion_time": 0.208656709,
+   "total_tokens": 515,
+   "total_time": 0.22863672,
+   "completion_tokens_details": {
+    "reasoning_tokens": 58
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 1,
+  "error": "HTTP 400: {\"error\":{\"message\":\"Tool call validation failed: tool call validation failed: parameters for tool light_set did not match schema: errors: [`/brightness`: expected integer, but got null]\",\"type\":\"invalid_request_error\",\"code\":\"tool_use_failed\",\"failed_generation\":\"{\\\"name\\\": \\\"light_set\\\", \\\"arguments\\\": {\\n  \\\"brightness\\\": null,\\n  \\\"on\\\": true,\\n  \\\"room\\\": \\\"living room\\\"\\n}}\"}}\n"
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 2,
+  "error": "HTTP 400: {\"error\":{\"message\":\"Tool call validation failed: tool call validation failed: parameters for tool light_set did not match schema: errors: [`/brightness`: expected integer, but got null]\",\"type\":\"invalid_request_error\",\"code\":\"tool_use_failed\",\"failed_generation\":\"{\\\"name\\\": \\\"light_set\\\", \\\"arguments\\\": {\\n  \\\"brightness\\\": null,\\n  \\\"on\\\": true,\\n  \\\"room\\\": \\\"living room\\\"\\n}}\"}}\n"
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 3,
+  "error": "HTTP 400: {\"error\":{\"message\":\"Tool call validation failed: tool call validation failed: parameters for tool light_set did not match schema: errors: [`/brightness`: expected integer, but got null]\",\"type\":\"invalid_request_error\",\"code\":\"tool_use_failed\",\"failed_generation\":\"{\\\"name\\\": \\\"light_set\\\", \\\"arguments\\\": {\\n  \\\"brightness\\\": null,\\n  \\\"on\\\": true,\\n  \\\"room\\\": \\\"living room\\\"\\n}}\"}}\n"
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "multi",
+  "note": "needs two tools in one turn",
+  "run": 4,
+  "error": "HTTP 400: {\"error\":{\"message\":\"Tool call validation failed: tool call validation failed: parameters for tool light_set did not match schema: errors: [`/brightness`: expected integer, but got null]\",\"type\":\"invalid_request_error\",\"code\":\"tool_use_failed\",\"failed_generation\":\"{\\\"name\\\": \\\"light_set\\\", \\\"arguments\\\": {\\n  \\\"brightness\\\": null,\\n  \\\"on\\\": true,\\n  \\\"room\\\": \\\"living room\\\"\\n}}\"}}\n"
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.577,
+  "usage": {
+   "queue_time": 0.050013442,
+   "prompt_tokens": 407,
+   "prompt_time": 0.019538413,
+   "completion_tokens": 212,
+   "completion_time": 0.442626883,
+   "total_tokens": 619,
+   "total_time": 0.462165296,
+   "completion_tokens_details": {
+    "reasoning_tokens": 29
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.829,
+  "usage": {
+   "queue_time": 0.204553484,
+   "prompt_tokens": 407,
+   "prompt_time": 0.038727589,
+   "completion_tokens": 250,
+   "completion_time": 0.528148103,
+   "total_tokens": 657,
+   "total_time": 0.566875692,
+   "completion_tokens_details": {
+    "reasoning_tokens": 15
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.68,
+  "usage": {
+   "queue_time": 0.047504356,
+   "prompt_tokens": 407,
+   "prompt_time": 0.031005889,
+   "completion_tokens": 234,
+   "completion_time": 0.56099887,
+   "total_tokens": 641,
+   "total_time": 0.592004759,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 21
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.783,
+  "usage": {
+   "queue_time": 0.229681695,
+   "prompt_tokens": 407,
+   "prompt_time": 0.025658248,
+   "completion_tokens": 238,
+   "completion_time": 0.50504571,
+   "total_tokens": 645,
+   "total_time": 0.530703958,
+   "completion_tokens_details": {
+    "reasoning_tokens": 21
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "none",
+  "note": "no tool applies - measures spurious calls",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.027,
+  "usage": {
+   "queue_time": 0.461681632,
+   "prompt_tokens": 407,
+   "prompt_time": 0.020776824,
+   "completion_tokens": 234,
+   "completion_time": 0.490557563,
+   "total_tokens": 641,
+   "total_time": 0.511334387,
+   "completion_tokens_details": {
+    "reasoning_tokens": 18
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 0,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-10-02T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.606,
+  "usage": {
+   "queue_time": 0.01751401,
+   "prompt_tokens": 414,
+   "prompt_time": 0.21968957,
+   "completion_tokens": 137,
+   "completion_time": 0.316167389,
+   "total_tokens": 551,
+   "total_time": 0.535856959,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 89
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 1,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-10-02T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 1.498,
+  "usage": {
+   "queue_time": 0.220410125,
+   "prompt_tokens": 414,
+   "prompt_time": 0.729548953,
+   "completion_tokens": 138,
+   "completion_time": 0.317725869,
+   "total_tokens": 552,
+   "total_time": 1.047274822,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 90
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 2,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-10-02T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.613,
+  "usage": {
+   "queue_time": 0.29764216,
+   "prompt_tokens": 414,
+   "prompt_time": 0.018087466,
+   "completion_tokens": 124,
+   "completion_time": 0.259956282,
+   "total_tokens": 538,
+   "total_time": 0.278043748,
+   "completion_tokens_details": {
+    "reasoning_tokens": 76
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 3,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-10-02T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.462,
+  "usage": {
+   "queue_time": 0.018667789,
+   "prompt_tokens": 414,
+   "prompt_time": 0.08498855,
+   "completion_tokens": 143,
+   "completion_time": 0.306868289,
+   "total_tokens": 557,
+   "total_time": 0.391856839,
+   "completion_tokens_details": {
+    "reasoning_tokens": 95
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "ambiguous",
+  "note": "either is defensible; measures whether it picks ONE, not both",
+  "run": 4,
+  "calls": [
+   {
+    "name": "reminder_create",
+    "args": {
+     "due": "2026-10-02T15:00:00",
+     "text": "Call the dentist"
+    }
+   }
+  ],
+  "tool_names": [
+   "reminder_create"
+  ],
+  "expected": [
+   "calendar_create_event",
+   "reminder_create"
+  ],
+  "correct": true,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.363,
+  "usage": {
+   "queue_time": 0.018187313,
+   "prompt_tokens": 414,
+   "prompt_time": 0.008980519,
+   "completion_tokens": 135,
+   "completion_time": 0.283686258,
+   "total_tokens": 549,
+   "total_time": 0.292666777,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 87
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 0,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.737,
+  "usage": {
+   "queue_time": 0.356161156,
+   "prompt_tokens": 406,
+   "prompt_time": 0.017793729,
+   "completion_tokens": 145,
+   "completion_time": 0.319876197,
+   "total_tokens": 551,
+   "total_time": 0.337669926,
+   "completion_tokens_details": {
+    "reasoning_tokens": 105
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 1,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.437,
+  "usage": {
+   "queue_time": 0.213325108,
+   "prompt_tokens": 406,
+   "prompt_time": 0.020062,
+   "completion_tokens": 67,
+   "completion_time": 0.13945699,
+   "total_tokens": 473,
+   "total_time": 0.15951899,
+   "completion_tokens_details": {
+    "reasoning_tokens": 39
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 2,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 0.343,
+  "usage": {
+   "queue_time": 0.018359523,
+   "prompt_tokens": 406,
+   "prompt_time": 0.080483775,
+   "completion_tokens": 100,
+   "completion_time": 0.208928475,
+   "total_tokens": 506,
+   "total_time": 0.28941225,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 50
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 3,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 2.201,
+  "usage": {
+   "queue_time": 0.291665798,
+   "prompt_tokens": 406,
+   "prompt_time": 1.5780096879999999,
+   "completion_tokens": 121,
+   "completion_time": 0.279980338,
+   "total_tokens": 527,
+   "total_time": 1.857990026,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 80
+   }
+  }
+ },
+ {
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "case": "missing_arg",
+  "note": "required 'room' is absent - measures hallucinated arguments",
+  "run": 4,
+  "calls": [],
+  "tool_names": [],
+  "expected": [
+   "music_play"
+  ],
+  "correct": false,
+  "malformed": false,
+  "problems": [],
+  "spurious": false,
+  "hallucinated_arg": null,
+  "seconds": 4.357,
+  "usage": {
+   "queue_time": 4.060031077,
+   "prompt_tokens": 406,
+   "prompt_time": 0.027951833,
+   "completion_tokens": 104,
+   "completion_time": 0.235239451,
+   "total_tokens": 510,
+   "total_time": 0.263191284,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "completion_tokens_details": {
+    "reasoning_tokens": 76
+   }
+  }
+ }
+]

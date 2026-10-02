@@ -32,6 +32,7 @@ Two habits worth keeping:
 |---|---|---|---|
 | [ARIA-65 — Rust MCP SDK](ARIA-65-rust-mcp-sdk.md) | ARIA-65 | Recommendation ready (`rmcp` 3.1.3) | One PoC transcript |
 | [ARIA-40 — Hosted LLM backend](ARIA-40-hosted-llm-backend.md) | ARIA-40 | Framework + probe harness ready | Running the probes with real API keys |
+| [Hosted LLM providers — desk research](hosted-llm-providers-2026-09.md) | ARIA-122 | **Closed by [D85](../decisions/0018-hosted-llm-backend.md)** — Qwen 3.8 27B on Cerebras | — |
 | [ARIA-43 — Knowledge classification](ARIA-43-knowledge-classification.md) | ARIA-43, ARIA-52 | Rule proposed; embedder still blocked | A decision on the rule; ARIA-27 for the embedder |
 | [ARIA-79 — Cluster baseline](ARIA-79-cluster-baseline.md) | ARIA-79, ARIA-117 | Discovery script ready | A run against the real cluster |
 | [ARIA-19 — Keycloak realm facts](ARIA-19-keycloak-facts.md) | ARIA-19 | Fill-in template ready | Realm access |
@@ -46,6 +47,7 @@ Two habits worth keeping:
 |---|---|---|
 | [`../../scripts/aria-cluster-baseline.sh`](../../scripts/aria-cluster-baseline.sh) | ARIA-79, ARIA-117, ARIA-27 | Read-only. Deploys nothing |
 | [`../../scripts/aria-llm-probe.py`](../../scripts/aria-llm-probe.py) | ARIA-40, **and ARIA-109** | Stdlib only. Same harness both sides, deliberately — ARIA-50's conformance suite is backend-agnostic |
+| [`../../scripts/aria-llm-checks.py`](../../scripts/aria-llm-checks.py) | ARIA-122 follow-up | Stdlib only. Re-uses the probe's tools and cases; adds date-in-prompt, a clarification tool, strict schemas and streamed TTFT for Cerebras, OpenAI, Anthropic and OpenRouter |
 | [`../../scripts/aria-ollama-diagnose.sh`](../../scripts/aria-ollama-diagnose.sh) | ARIA-27, ARIA-79 | Run in the container/host shell. Separates GPU-passthrough failure from model-thinking latency |
 | [`../../scripts/aria-ollama-diagnose.ps1`](../../scripts/aria-ollama-diagnose.ps1) | ARIA-27 | Same, remotely over HTTP from Windows — no container shell needed |
 

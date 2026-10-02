@@ -79,6 +79,10 @@ table never covered (clients, notifications, extension UIs) and are described in
 - **[D81](decisions/0015-external-datastores.md)** supersedes **D6**'s conditional on internal
   TLS. Service-to-service mTLS is **explicitly still open**, not settled; D6's cost argument
   against it (standing up a CA) is no longer true, because cert-manager and `fpg-ca` already exist.
+- **[D85](decisions/0018-hosted-llm-backend.md)** amends *Agent Core "brain"*: the default hosted
+  backend is no longer "e.g. Claude" but **Qwen 3.8 27B on Cerebras**, called through an
+  OpenAI-compatible Chat Completions adapter with the host as configuration. Reasoning stays at the
+  provider default. The Ollama fallback (D35) is unchanged. `api.cerebras.ai` is the one LLM egress host.
 
 Two further rows are affected without being replaced. *Source control & CI* keeps its accepted
 trade-off, but the list of things that leave the network is now **shorter by one** — telemetry is
