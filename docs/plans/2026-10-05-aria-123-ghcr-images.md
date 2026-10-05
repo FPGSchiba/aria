@@ -100,7 +100,7 @@ credential, because the packages are public. Story:
 
 ### C1 — Record D86: public container packages
 
-status: pending
+status: done
 kind: chore
 
 **Responsibility.** Put the public-packages decision into the append-only decision record before
@@ -119,7 +119,7 @@ links it, the Confluence mirror matches, and `git diff` touches no earlier decis
 
 ### C2 — Workspace image build
 
-status: pending
+status: done
 kind: chore
 depends-on: 1
 
