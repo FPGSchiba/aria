@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D86**.
+- Next number to allocate: **D87**.
 
 ---
 
@@ -181,6 +181,12 @@ Taken 2026-09-23 (design conversation).
 Taken 2026-10-02 (measurement — ARIA-122).
 
 - **D85** — The default hosted backend is Qwen 3.8 27B on Cerebras, through an OpenAI-compatible adapter; reasoning at the provider default; `api.cerebras.ai` is the one LLM egress host
+
+### [Container packages](0019-container-packages.md) · D86
+
+Taken 2026-10-05 (planning — ARIA-123).
+
+- **D86** — ARIA's `ghcr.io` packages are public and pulled anonymously; no secret and no homelab CA is ever baked into an image
 
 ### [Session 1 summary](0008-session-1-summary.md)
 

@@ -117,13 +117,14 @@ on the cluster side, `pg_hba.conf` in Postgres, and a host firewall on the VM.
 
 ### What crosses the network boundary
 
-The opening paragraph names three things. **It is now two.**
+The opening paragraph names three things. **The table below lists four live entries**: built images were added by D52 but never entered here until D86, and telemetry was removed by D82. *(This line previously read "It is now two", which did not match its own table; corrected 2026-10-05 as a factual fix, not a decision.)*
 
 | | Status |
 |---|---|
 | The hosted LLM API call | unchanged |
 | Source code and CI logs (GitHub-hosted runners) | unchanged |
 | Encrypted off-site backups | unchanged (ciphertext only) |
+| Built container images (`ghcr.io`) | added by [D52](decisions/0009-measurement-session.md), never entered here until now; **public** since [D86](decisions/0019-container-packages.md) — images carry no secret |
 | ~~Telemetry~~ | **removed** — [D82](decisions/0016-observability-v2.md) keeps all three signals on the LAN |
 
 Telemetry was never in the original three-item list, but D41 had made it a fourth. D82 takes it
