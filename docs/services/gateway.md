@@ -71,7 +71,7 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Contract
 
-`Converse` (bidirectional stream) + `SendCommand` (unary) — `proto/gateway/v1/gateway.proto`, `package aria.gateway.v1;`
+`Converse` (bidirectional stream) + `SendCommand` (unary) — `proto/aria/gateway/v1/gateway.proto`, `package aria.gateway.v1;`
 
 ## Open items
 

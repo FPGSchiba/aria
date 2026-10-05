@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D87**.
+- Next number to allocate: **D88**.
 
 ---
 
@@ -40,7 +40,7 @@ a settled choice or, worse, silently reversing one.
 
 - **D10** (C1) — The Knowledge Core is a deployed service; §4 was wrong
 - **D11** (C4) — `mcp-client` lives at `crates/mcp-client/`
-- **D12** (P2) — Protobuf versioning uses both a directory and a package suffix
+- **D12** (P2) — Protobuf versioning uses both a directory and a package suffix — ⚠️ **file path superseded by D87**
 - **D13** (X9) — GitHub with GitHub Actions on hosted runners
 - **D14** (P1) — Generated protobuf code is built at build time into `OUT_DIR`
 - **D15** (Q13) — One umbrella Helm chart for the whole `aria` namespace (closes ARIA-21)
@@ -187,6 +187,12 @@ Taken 2026-10-02 (measurement — ARIA-122).
 Taken 2026-10-05 (planning — ARIA-123).
 
 - **D86** — ARIA's `ghcr.io` packages are public and pulled anonymously; no secret and no homelab CA is ever baked into an image
+
+### [Protobuf file layout](0020-proto-layout.md) · D87
+
+Taken 2026-10-05 (first full repo review).
+
+- **D87** — ⚠️ **Supersedes D12's file path**: schemas live at `proto/aria/<service>/v1/<service>.proto` so the directory matches `package aria.<service>.v1;`; D12's dual versioning is unchanged
 
 ### [Session 1 summary](0008-session-1-summary.md)
 

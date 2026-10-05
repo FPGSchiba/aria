@@ -86,7 +86,7 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Contract
 
-`RegisterServer` / `DeregisterServer` / `ListTools` / `CallTool` — `proto/mcp-registry/v1/mcp_registry.proto`. Proposed modules: `approval.rs`, `consent.rs`, `audit.rs`, `broker.rs`.
+`RegisterServer` / `DeregisterServer` / `ListTools` / `CallTool` — `proto/aria/mcp_registry/v1/mcp_registry.proto`. Proposed modules: `approval.rs`, `consent.rs`, `audit.rs`, `broker.rs`.
 
 ## Open items
 

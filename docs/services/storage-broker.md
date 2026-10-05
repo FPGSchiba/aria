@@ -60,8 +60,8 @@ through the Knowledge Core's narrow `ResolvePerson` call behind its own consent 
 
 ## Contract
 
-Not yet specified. gRPC, per [D12](../decisions/0002-repo-proto-ci.md)'s versioning conventions:
-`proto/storage-broker/v1/storage-broker.proto`, `package aria.storage_broker.v1;`.
+Not yet specified. gRPC, per [D12](../decisions/0002-repo-proto-ci.md)'s versioning conventions and [D87](../decisions/0020-proto-layout.md)'s path:
+`proto/aria/storage_broker/v1/storage_broker.proto`, `package aria.storage_broker.v1;`.
 
 ## Residual risk — recorded, not solved
 

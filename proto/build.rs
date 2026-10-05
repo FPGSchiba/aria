@@ -1,17 +1,30 @@
-use std::env;
+use std::path::PathBuf;
+
+/// Schemas to compile, relative to the include root. Layout per D87:
+/// `aria/<service>/v1/<service>.proto`, matching `package aria.<service>.v1;`.
+const PROTOS: &[&str] = &[
+    "aria/gateway/v1/gateway.proto",
+    "aria/agent_core/v1/agent_core.proto",
+];
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // SAFETY: build.rs is single-threaded at this stage, so mutating the environment is safe.
-    unsafe { env::set_var("PROTOC", protoc_bin_vendored::protoc_bin_path()?) };
+    // Absolute, so the include root never depends on the build script's working directory.
+    // prost-build silently drops an include path that does not exist.
+    let root = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")?);
+    let protos: Vec<PathBuf> = PROTOS.iter().map(|p| root.join(p)).collect();
 
-    tonic_prost_build::configure()
-        .compile_protos(
-            &["gateway/v1/gateway.proto", "agent-core/v1/agent_core.proto"],
-            &["proto"],
-        )
-        .expect("Failed to compile protobuf schemas");
+    let mut config = prost_build::Config::new();
+    config.protoc_executable(protoc_bin_vendored::protoc_bin_path()?);
 
-    println!("cargo:rerun-if-changed=gateway/v1/gateway.proto");
-    println!("cargo:rerun-if-changed=agent-core/v1/agent_core.proto");
+    tonic_prost_build::configure().compile_with_config(
+        config,
+        &protos,
+        std::slice::from_ref(&root),
+    )?;
+
+    for proto in &protos {
+        println!("cargo:rerun-if-changed={}", proto.display());
+    }
 
     Ok(())
 }

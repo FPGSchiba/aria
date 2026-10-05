@@ -372,3 +372,27 @@ Consequences of the hosted-backend measurements, recorded with
   27B, GPT-6 Sol, Sonnet 5.5 and DeepSeek V4.1 Flash all asked in 5 of 5 missing-argument runs instead
   of inventing a value. This supports an explicit ask path (the `information required` rhyme with D42
   above) over relying on the model to decline. Not decided here.
+
+## Surfaced by the first full repo review (2026-10-05)
+
+Found while reviewing `main` against the decisions. Recorded, not decided.
+
+- **How the end-user context crosses more than one hop.** The signed context carries a single `aud`
+  ([D59](../decisions/0011-identity-wire-encoding.md)), and `verify()` rejects a mismatch, while
+  [D1](../decisions/0001-identity-tokens-service-auth.md) says the token is attached to *every*
+  downstream call. A context minted for `aria-agent-core` therefore fails if the Agent Core forwards
+  it to the MCP Registry or the Knowledge Core. Open: does the Gateway mint one context per callee,
+  does `aud` become a list, or do intermediate hops re-mint (which [D64](../decisions/0012-clients-gateway-surface.md)'s
+  "sole minter" rules out)? Needed before sprint 2's identity stories wire it into two services.
+- **Whether anything enforces `jti` replay protection.** [D1](../decisions/0001-identity-tokens-service-auth.md)
+  says "`exp` plus `jti` covers replay", and the identity page describes `jti` as "for replay
+  detection", but `verify()` never consults `jti` and no story owns a seen-`jti` cache. Open: is
+  replay covered by a short `exp` alone (then D1's wording overstates it), or does each verifier keep
+  a `jti` cache, and for how long? Interacts with the existing *context freshness window* item on the
+  [identity page](../services/identity.md#open-items), and with the 60 s clock leeway `verify()`
+  currently inherits from `jsonwebtoken`'s default — neither the window nor the leeway is decided.
+- **Protobuf service names and buf's `SERVICE_SUFFIX` rule.** buf's default lint set expects service
+  names to end in `Service`; ARIA's are `Gateway` and `AgentCore`.
+  [D87](../decisions/0020-proto-layout.md) fixed the directory layout and deliberately left this
+  alone. Open: rename (a wire-visible change to the gRPC method paths) or except the rule. Cheapest to
+  settle before clients exist.

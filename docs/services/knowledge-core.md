@@ -120,7 +120,7 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Contract
 
-`grpc/people.rs`, `grpc/memory.rs`, `grpc/registry.rs` — `proto/knowledge-core/v1/knowledge_core.proto`. Data access via **`sqlx`** with compile-time-checked queries and its migration harness.
+`grpc/people.rs`, `grpc/memory.rs`, `grpc/registry.rs` — `proto/aria/knowledge_core/v1/knowledge_core.proto`. Data access via **`sqlx`** with compile-time-checked queries and its migration harness.
 
 ## Open items
 

@@ -21,7 +21,7 @@ the `aria-*` name is the corresponding service/container image name used in depl
 | `knowledge-core`     | `services/knowledge-core/` | `aria-knowledge-core` | Deployed service                    |
 | `identity`           | `crates/identity/`         | `aria-identity`       | Shared library crate (not deployed) |
 
-`proto/` holds shared protobuf schemas (`proto/<service>/v1/<service>.proto`), built at compile
+`proto/` holds shared protobuf schemas (`proto/aria/<service>/v1/<service>.proto`, D87), built at compile
 time via `tonic-build` — nothing generated is committed.
 
 Each service currently exists as a compiling placeholder (`main.rs`/`lib.rs` stub); shared
