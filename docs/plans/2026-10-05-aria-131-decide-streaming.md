@@ -80,6 +80,26 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
   skeleton needs a live Agent Core, and the OTLP-or-not switch only has meaning at process startup.
   It is named so nobody mistakes it for a product backend, and startup logs which backend is
   serving. Rejected: *library only, stub `main`* (the OTel interim would drift into ARIA-143).
+- **The history store is a trait now, not a concrete type** (amended after the API review on
+  2026-10-05). The review found that the concrete in-memory store could not be replaced by a persisted
+  one without touching the `Decide` handler, which breaks the constraint above. Jann chose to meet the
+  constraint now rather than relax it. The store trait has asynchronous, fallible start, commit and
+  abort. Each store defines its own turn handle as an associated type. The service is generic over the
+  store, as it already is over the backend. The in-memory store is its first implementation.
+  Rejected: *amend the constraint and let the persistence story change the signatures* (cheaper now,
+  but pushes a handler change onto the next milestone).
+- **Dropping a turn handle frees the session "eventually"; the mechanism is the store's choice.**
+  `Drop` cannot await, so the trait states only the contract. The in-memory store releases
+  synchronously. A persisted store chooses between a spawned release task and a lease with expiry.
+  The lease also covers a pod crash, where no `Drop` runs; that is the persistence story's concern.
+  Rejected for this story: *prescribe a spawned task* (couples the trait to a runtime); *prescribe a
+  lease* (designs the Knowledge Core's locking before its API exists).
+- **Commit before `TurnComplete`, and store failure is `UNAVAILABLE`.** Once commit can fail, the
+  turn-complete marker is sent only after the commit succeeds. A failed commit ends the stream with an
+  error in place of `TurnComplete`, even though the chunks were already delivered. That is better than
+  telling the client "done" for an exchange that the next turn will not see. A store failure maps to
+  `UNAVAILABLE` with a generic message, distinct from busy (`ABORTED`) and invalid input
+  (`INVALID_ARGUMENT`).
 - **The acceptance tests exercise the real gRPC surface.** They run against an in-process server and
   client, not by calling the handler directly, because AC3 is a statement about the status the
   caller receives, which only the wire proves.
@@ -88,6 +108,23 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
 
 None blocking. The busy-rejection and in-memory interim are recorded on the Agent Core page (C5) as
 interim behaviour, not as decisions.
+
+- **Where D49's canonical conversation and tool-call type lives once it crosses a service
+  boundary** (persistence to the Knowledge Core under D36, the turn log under D61): a type in
+  `crates/shared`, or a proto message plus a domain type inside each service that converts at the
+  boundary. *Interim:* a small, typed conversation model internal to `agent-core`, designed to be
+  extended with tool calls additively and moved later. No proto change in this story. The LLM probe
+  defines no ARIA-owned shape (it is single-turn and speaks each vendor's wire format), so D49's
+  "close to OpenAI's" is the only reference. To be settled by the story that first persists history.
+- **System entries: stored, but not replayed.** The conversation model is a list of authored
+  entries (user, assistant, system, and later tool call and tool result), not user/assistant pairs.
+  Direction agreed for when the first system prompt arrives (D85's date/time injection, still open in
+  `needs-decision.md`): system entries are **stored** for debugging, but stored ones are **not
+  sent** to the backend. Only the fresh system entry for the current call is sent. Replaying stored
+  entries would hand the model several contradictory "today is" statements. Rejected: *not storing
+  them* (loses what the model was actually given); *storing only the static part* (splits one
+  prompt into two mechanisms). Not implemented here, because this story sends no system prompt; the
+  type only has to be able to represent one.
 
 ## Risks
 
@@ -117,9 +154,11 @@ adds.
 user's text and the reply as one exchange, after any earlier exchanges, in order. A turn that ends
 without committing, including by being dropped mid-way, leaves the history unchanged **and frees
 the session**. Starting a turn on a session that already has one in flight is refused in a way
-callers can tell apart from every other failure. Sessions are independent: a busy or failed turn on
-one has no effect on another. The store is shareable across concurrent requests. Its boundary must
-be replaceable by a persisted store later without changing callers.
+callers can tell apart from every other failure, including a store failure. Sessions are independent:
+a busy or failed turn on one has no effect on another. The store is shareable across concurrent
+requests. Its boundary is a trait with asynchronous, fallible start, commit and abort, and a
+per-store turn handle, so a persisted store can replace the in-memory one without changing callers.
+Dropping a turn handle frees the session eventually, by whatever mechanism the store chooses.
 
 **Tests.** A new session has empty history. After one committed turn, the next turn sees exactly
 that exchange. After two, it sees both, oldest first. A turn ended without committing leaves the
@@ -160,14 +199,15 @@ depends-on: 1, 2
 
 **Responsibility.** Implement the `AgentCore` gRPC service. Validate the request, reserve the
 session, run the backend with the session's history, stream chunks to the caller as they arrive,
-and on clean finish send the turn-complete marker and commit the exchange. Map every failure to a
+and on clean finish commit the exchange and then send the turn-complete marker. Map every failure to a
 gRPC status, and record failures in telemetry.
 
 **Contracts.** Chunks reach the caller as the backend produces them, followed by exactly one
 turn-complete marker on success. A backend error ends the stream with an error status, the backend
 is called exactly once (no retry), and history is unchanged. A client that cancels mid-stream
 leaves history unchanged and the session free. A busy session yields a status that callers can tell
-apart from a backend error and from invalid input. Invalid input yields an invalid-argument status
+apart from a backend error and from invalid input. A commit that fails ends the stream with an
+unavailable status in place of the turn-complete marker. Invalid input yields an invalid-argument status
 without calling the backend. Each `Decide` runs inside a span. A failed turn marks that span as an
 error, attaches an event naming the outcome (backend error or cancelled) and the session id, and
 emits an error-level log record.
@@ -180,7 +220,8 @@ chunk delivers that chunk, then an error status. The backend was called once, an
 status and no chunks. A second concurrent `Decide` on a session with a turn in flight is refused as
 busy, and the first completes normally. A cancelled client stream leaves the session with no history
 and free for a new turn. An empty `session_id`, and separately empty `text`, return invalid argument
-with zero backend calls. A backend failure emits an error-level record carrying the session id.
+with zero backend calls. A backend failure emits an error-level record carrying the session id. A store
+whose commit fails delivers the chunks, then an unavailable status, and no turn-complete marker.
 
 **Done when.** Those tests pass over an in-process gRPC server and client, and the linter is clean.
 
