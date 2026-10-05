@@ -2,7 +2,7 @@
 title: Publish Gateway and Agent Core images to ghcr.io from CI (ARIA-123)
 slug: aria-123-ghcr-images
 tier: technical
-status: active
+status: complete
 created: 2026-10-05
 branch: aria-123-ghcr-images
 owns_branch: true
@@ -78,9 +78,9 @@ credential, because the packages are public. Story:
 
 ## Open questions
 
-- Whether a package first pushed by the workflow under a personal account starts out private. If
-  it does, its visibility is switched to public once, by hand, in the package settings. C4
-  confirms this on the first push rather than assuming it.
+- ~~Whether a package first pushed by the workflow under a personal account starts out private.~~
+  **Answered by C4:** both packages were public on first push (inherited from the public repo). No
+  manual visibility step was needed.
 
 ## Risks
 
@@ -144,7 +144,7 @@ secret and no homelab CA. The build context excludes `target/` and other local-o
 
 ### C3 — CI workflow
 
-status: pending
+status: done
 kind: chore
 depends-on: 2
 
@@ -167,7 +167,7 @@ own SHA; neither is lost or overwritten.
 
 ### C4 — Cluster pull verification
 
-status: pending
+status: done
 kind: chore
 depends-on: 3
 
@@ -194,3 +194,11 @@ naming the SHA and the pull events.
   throwaway cluster pod, because this session has no cluster access. Accepted by Jann as
   sufficient evidence for the "no manual login" criterion: the cluster pulls the same public
   image from the same registry with no credential. No pods are created or deleted.
+- C3: the first publish run on `main` started without a cache, because GitHub doesn't share
+  caches written by PR runs with `main`. That is expected cache scoping, not a defect; later merges
+  reuse `main`'s own cache.
+
+## Outcome
+
+Merged in PR #3 as `a4d6917`. The `main` run published both images under the merge SHA. Both pulled
+anonymously, as amd64 and `nonroot`. The evidence is on ARIA-123 (comment, 2026-10-05).
