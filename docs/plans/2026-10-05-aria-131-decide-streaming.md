@@ -264,3 +264,18 @@ page says so. Then check whether Confluence or Jira (ARIA-143) need the same not
 a new architecture decision.
 
 ## Deviations
+
+- C1: `start_turn` returns the owned history snapshot alongside the turn, so a handler that is
+  generic over the store can pass history to the backend without naming the in-memory token. It
+  also removes a second clone per turn. Found in API review round 2.
+- C1: the in-memory store checks that a turn was issued by the same store (identity of its shared
+  map) before committing or aborting. A foreign turn is refused as `InvalidTurnOwner`, which maps to
+  `UNAVAILABLE` like every commit failure.
+- C1: generic callers get no `#[must_use]` lint on the associated turn type, so holding the turn for
+  the whole turn is a documented obligation on `start_turn`. `#[must_use]` sits on the in-memory
+  `Token`.
+- C3: serving requires the store to be cheaply `Clone`, because a clone moves into the `'static`
+  response stream to commit after the last chunk. `History` satisfies this through its shared `Arc`.
+- C4: the pure constructor takes a lookup by variable name in place of two positional values, so the
+  arguments cannot be swapped. A non-UTF-8 value is an error rather than "unset", and every error
+  names the variable and the offending value.
