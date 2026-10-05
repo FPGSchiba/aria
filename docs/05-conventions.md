@@ -58,8 +58,9 @@ Confluence page (children of "ARIA — Architecture & Hosting").
   lands. Enforced locally via a checked-in pre-commit hook (`.githooks/pre-commit`) — enable it
   once per clone with `git config core.hooksPath .githooks`. Requires `cargo install
   cargo-llvm-cov` and `rustup component add llvm-tools-preview` once per machine. Not yet mirrored
-  in CI (no GitHub Actions workflow exists yet, D13); the local hook is the only enforcement until
-  one is added.
+  in CI: the only GitHub Actions workflow (`.github/workflows/images.yml`, ARIA-123) builds and
+  publishes images and does not run the gate, so the local hook is the only enforcement until a
+  gate workflow is added.
 - **Coverage rule (Jann's call, 2026-08-28): 80% minimum, for all automated testing.** Measured as
   line coverage via `cargo llvm-cov --workspace --fail-under-lines 80` — that's what "coverage"
   means in this repo unless stated otherwise, to avoid the term drifting between line/function/

@@ -1,0 +1,31 @@
+# Build context for the workspace Dockerfile. Everything not needed to compile
+# stays out: it keeps the context small and stops doc or CI edits from
+# invalidating the source layer.
+
+# Build output (several GB locally)
+target/
+**/target/
+
+# VCS, CI and editor/agent state
+.git/
+.github/
+.githooks/
+.idea/
+.vscode/
+.claude/
+.agents/
+.gemini/
+
+# Not compiled
+docs/
+archive/
+scripts/
+*.md
+!proto/**/*.md
+**/*.rs.bk
+**/mutants.out*/
+**/__pycache__/
+
+# The build definition itself
+Dockerfile
+.dockerignore
