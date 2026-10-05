@@ -5,7 +5,7 @@
 use base64::Engine as _;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use identity::context::{Role, SigningKey, VerifyingKeySet, sign, verify};
-use jsonwebtoken::{DecodingKey, EncodingKey};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, encode};
 use serde_json::{Value, json};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -583,4 +583,148 @@ fn issuer_mismatch_is_rejected() {
     .unwrap();
 
     assert!(verify(&token, &[AUD], "some-other-issuer", &verifying).is_err());
+}
+
+// Signs an arbitrary JSON payload directly with `jsonwebtoken`, bypassing `sign()` -- so a test
+// can produce a *validly signed* token whose claims `sign()` would never emit.
+fn sign_raw(claims: &Value, alg: Algorithm, key: &EncodingKey, kid: &str) -> String {
+    let mut header = Header::new(alg);
+    header.kid = Some(kid.to_string());
+    encode(&header, claims, key).unwrap()
+}
+
+fn valid_claims() -> Value {
+    json!({
+        "user_id": "user-42",
+        "roles": ["aria-user"],
+        "aud": AUD,
+        "exp": now() + 3600,
+        "iat": now(),
+        "iss": ISS,
+        "nbf": 0,
+        "jti": "00000000-0000-4000-8000-000000000000",
+    })
+}
+
+#[test]
+fn audience_mismatch_is_rejected() {
+    let signing = signing_key(PRIV_1);
+    let verifying = verifying_set(PUB_1);
+
+    let token = sign(
+        "user-42".into(),
+        vec![Role::User],
+        AUD.into(),
+        now() + 3600,
+        ISS.into(),
+        0,
+        &signing,
+    )
+    .unwrap();
+
+    assert!(verify(&token, &["aria-knowledge-core"], ISS, &verifying).is_err());
+}
+
+#[test]
+fn not_yet_valid_context_is_rejected() {
+    let signing = signing_key(PRIV_1);
+    let verifying = verifying_set(PUB_1);
+
+    let token = sign(
+        "user-42".into(),
+        vec![Role::User],
+        AUD.into(),
+        now() + 7200,
+        ISS.into(),
+        now() + 3600, // nbf an hour out, well past the default leeway
+        &signing,
+    )
+    .unwrap();
+
+    assert!(verify(&token, &[AUD], ISS, &verifying).is_err());
+}
+
+#[test]
+fn raw_signed_valid_claims_are_accepted() {
+    // Control for the `sign_raw` tests below: proves a rejection there is caused by the one
+    // thing each test changes, not by `sign_raw` producing tokens `verify` never accepts.
+    let signing = signing_key(PRIV_1);
+    let key = EncodingKey::from_ed_pem(PRIV_1.as_bytes()).unwrap();
+    let token = sign_raw(&valid_claims(), Algorithm::EdDSA, &key, signing.kid());
+
+    let ctx = verify(&token, &[AUD], ISS, &verifying_set(PUB_1)).unwrap();
+    assert_eq!(ctx.user_id(), "user-42");
+}
+
+#[test]
+fn alg_none_is_rejected() {
+    let signing = signing_key(PRIV_1);
+    let verifying = verifying_set(PUB_1);
+
+    let token = sign(
+        "user-42".into(),
+        vec![Role::User],
+        AUD.into(),
+        now() + 3600,
+        ISS.into(),
+        0,
+        &signing,
+    )
+    .unwrap();
+
+    let none = tamper_header(&token, |header| header["alg"] = json!("none"));
+    let parts: Vec<&str> = none.split('.').collect();
+    let none_unsigned = format!("{}.{}.", parts[0], parts[1]);
+
+    assert!(verify(&none, &[AUD], ISS, &verifying).is_err());
+    assert!(verify(&none_unsigned, &[AUD], ISS, &verifying).is_err());
+}
+
+#[test]
+fn hmac_signed_with_public_key_is_rejected() {
+    // Classic algorithm confusion: HS256 keyed with the verifier's *public* key, under a `kid`
+    // the verifier knows. Must fail even though every claim is valid.
+    let signing = signing_key(PRIV_1);
+    let verifying = verifying_set(PUB_1);
+    let hmac = EncodingKey::from_secret(PUB_1.as_bytes());
+
+    let token = sign_raw(&valid_claims(), Algorithm::HS256, &hmac, signing.kid());
+
+    assert!(verify(&token, &[AUD], ISS, &verifying).is_err());
+}
+
+#[test]
+fn malformed_tokens_are_rejected() {
+    let verifying = verifying_set(PUB_1);
+
+    for token in ["", "not-a-jwt", "a.b.c", "..", "a.b"] {
+        assert!(
+            verify(token, &[AUD], ISS, &verifying).is_err(),
+            "accepted malformed token {token:?}"
+        );
+    }
+}
+
+#[test]
+fn unknown_role_is_rejected_even_when_validly_signed() {
+    let signing = signing_key(PRIV_1);
+    let key = EncodingKey::from_ed_pem(PRIV_1.as_bytes()).unwrap();
+    let mut claims = valid_claims();
+    claims["roles"] = json!(["aria-root"]);
+
+    let token = sign_raw(&claims, Algorithm::EdDSA, &key, signing.kid());
+
+    assert!(verify(&token, &[AUD], ISS, &verifying_set(PUB_1)).is_err());
+}
+
+#[test]
+fn missing_exp_is_rejected_even_when_validly_signed() {
+    let signing = signing_key(PRIV_1);
+    let key = EncodingKey::from_ed_pem(PRIV_1.as_bytes()).unwrap();
+    let mut claims = valid_claims();
+    claims.as_object_mut().unwrap().remove("exp");
+
+    let token = sign_raw(&claims, Algorithm::EdDSA, &key, signing.kid());
+
+    assert!(verify(&token, &[AUD], ISS, &verifying_set(PUB_1)).is_err());
 }
