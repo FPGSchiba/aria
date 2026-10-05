@@ -1,0 +1,9 @@
+language: rust
+test: cargo test --workspace
+test_one: cargo test --workspace {name}
+lint: cargo clippy --workspace --all-targets -- -D warnings
+format: cargo fmt --all -- --check
+trunk: main
+commit_style: conventional
+hint_default: L1
+plans_dir: docs/plans
