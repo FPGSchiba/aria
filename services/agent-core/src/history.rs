@@ -247,3 +247,159 @@ impl Token {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn exchange(user: &str, assistant: &str) -> Vec<ConversationPart> {
+        vec![
+            ConversationPart {
+                content: Content::Text {
+                    text: user.to_string(),
+                },
+                actor: Actor::User,
+            },
+            ConversationPart {
+                content: Content::Text {
+                    text: assistant.to_string(),
+                },
+                actor: Actor::Assistant,
+            },
+        ]
+    }
+
+    async fn commit_exchange<S: HistoryStore>(store: &S, session: &str, user: &str, reply: &str) {
+        let (turn, _) = store.start_turn(session).await.expect("start_turn");
+        store
+            .commit(turn, exchange(user, reply))
+            .await
+            .expect("commit");
+    }
+
+    async fn history_of<S: HistoryStore>(store: &S, session: &str) -> Vec<ConversationPart> {
+        let (turn, history) = store.start_turn(session).await.expect("start_turn");
+        store.abort(turn).await.expect("abort");
+        history
+    }
+
+    #[tokio::test]
+    async fn new_session_has_empty_history() {
+        let store = History::default();
+        let (_turn, history) = store.start_turn("s1").await.expect("start_turn");
+        assert!(history.is_empty());
+    }
+
+    #[tokio::test]
+    async fn committed_turn_is_visible_to_next_turn() {
+        let store = History::default();
+        commit_exchange(&store, "s1", "hello", "hi there").await;
+
+        assert_eq!(
+            history_of(&store, "s1").await,
+            exchange("hello", "hi there")
+        );
+    }
+
+    #[tokio::test]
+    async fn two_committed_turns_are_visible_oldest_first() {
+        let store = History::default();
+        commit_exchange(&store, "s1", "first", "one").await;
+        commit_exchange(&store, "s1", "second", "two").await;
+
+        let mut expected = exchange("first", "one");
+        expected.extend(exchange("second", "two"));
+        assert_eq!(history_of(&store, "s1").await, expected);
+    }
+
+    #[tokio::test]
+    async fn aborted_turn_leaves_history_unchanged_and_frees_session() {
+        let store = History::default();
+        commit_exchange(&store, "s1", "first", "one").await;
+
+        let (turn, _) = store.start_turn("s1").await.expect("start_turn");
+        store.abort(turn).await.expect("abort");
+
+        let (turn, history) = store
+            .start_turn("s1")
+            .await
+            .expect("session is free after abort");
+        assert_eq!(history, exchange("first", "one"));
+        store.abort(turn).await.expect("abort");
+    }
+
+    #[tokio::test]
+    async fn dropped_turn_frees_session_and_leaves_history_unchanged() {
+        let store = History::default();
+        commit_exchange(&store, "s1", "first", "one").await;
+
+        let (turn, _) = store.start_turn("s1").await.expect("start_turn");
+        drop(turn);
+
+        let (_turn, history) = store
+            .start_turn("s1")
+            .await
+            .expect("session is free after drop");
+        assert_eq!(history, exchange("first", "one"));
+    }
+
+    #[tokio::test]
+    async fn second_turn_on_busy_session_is_refused_as_turn_in_flight() {
+        let store = History::default();
+        let (_turn, _) = store.start_turn("s1").await.expect("start_turn");
+
+        let second = store.start_turn("s1").await;
+
+        assert!(
+            matches!(second, Err(HistoryError::TurnInFlight)),
+            "expected TurnInFlight, got {:?}",
+            second.map(|(_, history)| history)
+        );
+    }
+
+    #[tokio::test]
+    async fn busy_session_does_not_block_a_different_session() {
+        let store = History::default();
+        let (_busy, _) = store.start_turn("s1").await.expect("start_turn");
+
+        let other = store.start_turn("s2").await;
+
+        assert!(other.is_ok(), "a different session must not be blocked");
+    }
+
+    #[tokio::test]
+    async fn commit_on_one_session_does_not_change_another() {
+        let store = History::default();
+        commit_exchange(&store, "s1", "first", "one").await;
+
+        assert!(history_of(&store, "s2").await.is_empty());
+    }
+
+    #[tokio::test]
+    async fn committing_a_turn_from_another_store_is_refused_as_invalid_turn_owner() {
+        let store_a = History::default();
+        let store_b = History::default();
+        let (foreign_turn, _) = store_a.start_turn("s1").await.expect("start_turn");
+
+        let result = store_b.commit(foreign_turn, exchange("x", "y")).await;
+
+        assert!(
+            matches!(result, Err(HistoryError::InvalidTurnOwner)),
+            "expected InvalidTurnOwner, got {result:?}"
+        );
+    }
+
+    #[tokio::test]
+    async fn aborting_a_turn_from_another_store_is_refused_as_invalid_turn_owner() {
+        let store_a = History::default();
+        let store_b = History::default();
+        let (foreign_turn, _) = store_a.start_turn("s1").await.expect("start_turn");
+
+        let result = store_b.abort(foreign_turn).await;
+
+        assert!(
+            matches!(result, Err(HistoryError::InvalidTurnOwner)),
+            "expected InvalidTurnOwner, got {result:?}"
+        );
+    }
+}

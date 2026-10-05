@@ -37,3 +37,38 @@ impl Backend for EchoBackend {
         Box::pin(tokio_stream::iter(chunks))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::history::Actor;
+    use tokio_stream::StreamExt;
+
+    #[tokio::test]
+    async fn echoes_input_in_at_least_two_chunks_that_concatenate_to_the_input() {
+        let input = "hello from the echo backend";
+        let items: Vec<_> = EchoBackend
+            .stream_conversation(
+                Vec::new(),
+                vec![ConversationPart {
+                    content: Content::Text {
+                        text: input.to_string(),
+                    },
+                    actor: Actor::User,
+                }],
+            )
+            .collect()
+            .await;
+
+        assert!(
+            items.len() >= 2,
+            "expected at least two chunks, got {items:?}"
+        );
+        let mut joined = String::new();
+        for item in items {
+            let Chunk::Text { text } = item.expect("echo never errors");
+            joined.push_str(&text);
+        }
+        assert_eq!(joined, input);
+    }
+}

@@ -81,3 +81,124 @@ impl Default for ScriptedBackend {
         Self::new(Vec::new())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::history::{Actor, Content};
+    use tokio_stream::StreamExt;
+
+    fn text(s: &str) -> Chunk {
+        Chunk::Text {
+            text: s.to_string(),
+        }
+    }
+
+    fn chunk(s: &str) -> ScriptStep {
+        ScriptStep::Chunk(text(s))
+    }
+
+    fn part(actor: Actor, s: &str) -> ConversationPart {
+        ConversationPart {
+            content: Content::Text {
+                text: s.to_string(),
+            },
+            actor,
+        }
+    }
+
+    async fn drain(backend: &ScriptedBackend) -> Vec<Result<Chunk, BackendError>> {
+        backend
+            .stream_conversation(Vec::new(), vec![part(Actor::User, "hi")])
+            .collect()
+            .await
+    }
+
+    #[tokio::test]
+    async fn yields_configured_chunks_in_order_then_ends_cleanly() {
+        let backend = ScriptedBackend::new(vec![chunk("a"), chunk("b"), chunk("c")]);
+
+        let items = drain(&backend).await;
+
+        assert_eq!(items, vec![Ok(text("a")), Ok(text("b")), Ok(text("c"))]);
+    }
+
+    #[tokio::test]
+    async fn fails_after_n_chunks_yields_n_chunks_then_error() {
+        let backend = ScriptedBackend::new(vec![
+            chunk("a"),
+            chunk("b"),
+            ScriptStep::Error(BackendError::UnexpectedError),
+        ]);
+
+        let items = drain(&backend).await;
+
+        assert_eq!(
+            items,
+            vec![
+                Ok(text("a")),
+                Ok(text("b")),
+                Err(BackendError::UnexpectedError)
+            ]
+        );
+    }
+
+    #[tokio::test]
+    async fn failing_immediately_yields_only_the_error() {
+        let backend = ScriptedBackend::new(vec![ScriptStep::Error(BackendError::UnexpectedError)]);
+
+        let items = drain(&backend).await;
+
+        assert_eq!(items, vec![Err(BackendError::UnexpectedError)]);
+    }
+
+    #[tokio::test]
+    async fn nothing_is_emitted_after_an_error() {
+        let backend = ScriptedBackend::new(vec![
+            ScriptStep::Error(BackendError::UnexpectedError),
+            chunk("late"),
+        ]);
+
+        let items = drain(&backend).await;
+
+        assert_eq!(items, vec![Err(BackendError::UnexpectedError)]);
+    }
+
+    #[tokio::test]
+    async fn records_history_and_input_received_on_each_call() {
+        let backend = ScriptedBackend::new(vec![chunk("a")]);
+        let history = vec![part(Actor::User, "old"), part(Actor::Assistant, "older")];
+        let input = vec![part(Actor::User, "new")];
+
+        let _ = backend
+            .stream_conversation(history.clone(), input.clone())
+            .collect::<Vec<_>>()
+            .await;
+        let _ = backend
+            .stream_conversation(Vec::new(), vec![part(Actor::User, "second")])
+            .collect::<Vec<_>>()
+            .await;
+
+        let calls = backend.calls();
+        assert_eq!(calls.len(), 2);
+        assert_eq!(calls[0], ScriptedConversation { history, input });
+        assert_eq!(calls[1].input, vec![part(Actor::User, "second")]);
+    }
+
+    #[tokio::test]
+    async fn call_count_is_zero_before_any_call() {
+        let backend = ScriptedBackend::new(vec![chunk("a")]);
+
+        assert!(backend.calls().is_empty());
+    }
+
+    #[tokio::test]
+    async fn clones_share_the_recording() {
+        let backend = ScriptedBackend::new(vec![chunk("a")]);
+        let clone = backend.clone();
+
+        let _ = drain(&clone).await;
+
+        assert_eq!(backend.calls().len(), 1);
+    }
+}

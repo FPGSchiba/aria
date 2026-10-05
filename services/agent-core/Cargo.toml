@@ -26,7 +26,8 @@ thiserror             = { workspace = true }
 
 [dev-dependencies]
 agent-core = { path = ".", features = ["test-util"] }
-tokio      = { workspace = true, features = ["test-util"] }
+tokio      = { workspace = true, features = ["test-util", "time"] }
+tokio-stream = { workspace = true, features = ["net"] }
 
 [lints]
 workspace = true
