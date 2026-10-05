@@ -279,3 +279,7 @@ a new architecture decision.
 - C4: the pure constructor takes a lookup by variable name in place of two positional values, so the
   arguments cannot be swapped. A non-UTF-8 value is an error rather than "unset", and every error
   names the variable and the offending value.
+- C3: telemetry names are pinned so tests can observe them at the `tracing` layer, without an
+  in-test OTel exporter. The span is `decide`. A failed turn records `otel.status_code = "ERROR"` on
+  it, and its failure event carries `outcome` (`backend_error` or `cancelled`) and `session_id`.
+  Exporter wiring is C4's concern and is covered by the smoke run.

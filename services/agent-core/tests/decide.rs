@@ -11,18 +11,24 @@ use futures_core::Stream;
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::agent_core_server::AgentCoreServer;
 use proto::agent_core::v1::{DecideRequest, decide_response};
+use std::collections::HashMap;
 use std::io;
 use std::pin::Pin;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::net::TcpListener;
-use tokio::sync::Semaphore;
+use tokio::sync::{Notify, Semaphore};
 use tokio::time::timeout;
 use tokio_stream::StreamExt;
 use tokio_stream::wrappers::TcpListenerStream;
 use tonic::transport::{Channel, Server};
 use tonic::{Code, Status};
+use tracing::field::{Field, Visit};
+use tracing::{Event as TracingEvent, Subscriber, span};
+use tracing_subscriber::Layer;
+use tracing_subscriber::layer::{Context, SubscriberExt};
+use tracing_subscriber::registry::LookupSpan;
 
 /// Upper bound for anything that could hang, so a failure reports instead of blocking.
 const LIMIT: Duration = Duration::from_secs(10);
@@ -574,4 +580,190 @@ async fn failing_commit_delivers_chunks_then_unavailable_and_no_turn_complete() 
 
     assert_eq!(outcome.events, vec![delta("one "), delta("two")]);
     assert_eq!(outcome.code(), Some(Code::Unavailable), "{outcome:?}");
+}
+
+// ---------------------------------------------------------------- span capture
+
+#[derive(Debug, Default, Clone)]
+struct SpanRecord {
+    name: String,
+    fields: HashMap<String, String>,
+}
+
+#[derive(Debug, Clone)]
+struct EventRecord {
+    parent_span: Option<String>,
+    fields: HashMap<String, String>,
+}
+
+#[derive(Default)]
+struct Captured {
+    spans: HashMap<span::Id, SpanRecord>,
+    events: Vec<EventRecord>,
+}
+
+/// Records spans (with the last value recorded per field) and events with their parent span.
+#[derive(Clone, Default)]
+struct SpanCapture {
+    state: Arc<Mutex<Captured>>,
+    changed: Arc<Notify>,
+}
+
+struct FieldMap<'a>(&'a mut HashMap<String, String>);
+
+impl Visit for FieldMap<'_> {
+    fn record_str(&mut self, field: &Field, value: &str) {
+        self.0.insert(field.name().to_string(), value.to_string());
+    }
+
+    fn record_debug(&mut self, field: &Field, value: &dyn std::fmt::Debug) {
+        self.0
+            .insert(field.name().to_string(), format!("{value:?}"));
+    }
+}
+
+impl<S: Subscriber + for<'a> LookupSpan<'a>> Layer<S> for SpanCapture {
+    fn on_new_span(&self, attrs: &span::Attributes<'_>, id: &span::Id, _ctx: Context<'_, S>) {
+        let mut record = SpanRecord {
+            name: attrs.metadata().name().to_string(),
+            fields: HashMap::new(),
+        };
+        attrs.record(&mut FieldMap(&mut record.fields));
+        self.state.lock().unwrap().spans.insert(id.clone(), record);
+        self.changed.notify_one();
+    }
+
+    fn on_record(&self, id: &span::Id, values: &span::Record<'_>, _ctx: Context<'_, S>) {
+        if let Some(record) = self.state.lock().unwrap().spans.get_mut(id) {
+            values.record(&mut FieldMap(&mut record.fields));
+        }
+        self.changed.notify_one();
+    }
+
+    fn on_event(&self, event: &TracingEvent<'_>, ctx: Context<'_, S>) {
+        let parent_span = ctx.event_span(event).map(|s| s.name().to_string());
+        let mut fields = HashMap::new();
+        event.record(&mut FieldMap(&mut fields));
+        self.state.lock().unwrap().events.push(EventRecord {
+            parent_span,
+            fields,
+        });
+        self.changed.notify_one();
+    }
+}
+
+impl SpanCapture {
+    fn install() -> (Self, tracing::subscriber::DefaultGuard) {
+        let capture = Self::default();
+        let subscriber = tracing_subscriber::registry().with(capture.clone());
+        (capture, tracing::subscriber::set_default(subscriber))
+    }
+
+    fn decide_spans(&self) -> Vec<SpanRecord> {
+        let state = self.state.lock().unwrap();
+        state
+            .spans
+            .values()
+            .filter(|s| s.name == "decide")
+            .cloned()
+            .collect()
+    }
+
+    fn decide_events(&self) -> Vec<EventRecord> {
+        let state = self.state.lock().unwrap();
+        state
+            .events
+            .iter()
+            .filter(|e| e.parent_span.as_deref() == Some("decide"))
+            .cloned()
+            .collect()
+    }
+
+    /// Waits (woken by each recorded span/event change, bounded by `LIMIT`) until `ready` holds.
+    async fn wait_until(&self, what: &str, ready: impl Fn(&Self) -> bool) {
+        let waited = timeout(LIMIT, async {
+            while !ready(self) {
+                self.changed.notified().await;
+            }
+        })
+        .await;
+        assert!(waited.is_ok(), "timed out waiting for {what}");
+    }
+}
+
+fn is_error_status(span: &SpanRecord) -> bool {
+    span.fields.get("otel.status_code").map(String::as_str) == Some("ERROR")
+}
+
+fn has_outcome(capture: &SpanCapture, outcome: &str, session_id: &str) -> bool {
+    capture.decide_events().iter().any(|e| {
+        e.fields.get("outcome").map(String::as_str) == Some(outcome)
+            && e.fields.get("session_id").map(String::as_str) == Some(session_id)
+    })
+}
+
+#[tokio::test]
+async fn backend_failure_marks_decide_span_error_with_backend_error_event() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![chunk("partial"), fail()]);
+    let mut client = serve(backend, History::default()).await;
+
+    decide(&mut client, "span-session", "hello").await;
+
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a backend_error event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "backend_error", "span-session")
+            },
+        )
+        .await;
+}
+
+#[tokio::test]
+async fn cancelled_stream_marks_decide_span_error_with_cancelled_event() {
+    let (capture, _guard) = SpanCapture::install();
+    let mut client = serve(StallFirstCallBackend::default(), History::default()).await;
+
+    let mut stalled = client
+        .decide(request("cancel-session", "hello"))
+        .await
+        .expect("decide")
+        .into_inner();
+    timeout(LIMIT, stalled.next())
+        .await
+        .expect("first chunk timed out")
+        .expect("stream ended early")
+        .expect("status");
+    drop(stalled);
+
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a cancelled event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "cancelled", "cancel-session")
+            },
+        )
+        .await;
+}
+
+#[tokio::test]
+async fn successful_turn_has_a_decide_span_that_is_not_marked_error() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two")]);
+    let mut client = serve(backend, History::default()).await;
+
+    let outcome = decide(&mut client, "ok-session", "hello").await;
+    assert_eq!(outcome.completes(), 1, "{outcome:?}");
+
+    let spans = capture.decide_spans();
+    assert_eq!(spans.len(), 1, "expected one decide span, got {spans:?}");
+    assert!(!is_error_status(&spans[0]), "{:?}", spans[0]);
+    assert!(
+        capture.decide_events().is_empty(),
+        "a clean turn records no failure event: {:?}",
+        capture.decide_events()
+    );
 }
