@@ -56,8 +56,8 @@ failure mode that makes people turn assistants off.
 ## Contract
 
 Not yet specified. It will be gRPC like every other internal service
-([D12](../decisions/0002-repo-proto-ci.md) versioning conventions apply:
-`proto/notify/v1/notify.proto`, `package aria.notify.v1;`).
+([D12](../decisions/0002-repo-proto-ci.md) versioning and [D87](../decisions/0020-proto-layout.md) path conventions apply:
+`proto/aria/notify/v1/notify.proto`, `package aria.notify.v1;`).
 
 ## Open items
 

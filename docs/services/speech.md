@@ -54,7 +54,7 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Contract
 
-Streaming `Transcribe` and `Synthesize` — `proto/speech/v1/speech.proto`
+Streaming `Transcribe` and `Synthesize` — `proto/aria/speech/v1/speech.proto`
 
 ## Open items
 

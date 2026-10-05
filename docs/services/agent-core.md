@@ -80,7 +80,7 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Contract
 
-`Decide` (server-streaming) — `proto/agent-core/v1/agent_core.proto`
+`Decide` (server-streaming) — `proto/aria/agent_core/v1/agent_core.proto`
 
 ## Open items
 

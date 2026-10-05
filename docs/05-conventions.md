@@ -38,8 +38,10 @@ Confluence page (children of "ARIA — Architecture & Hosting").
 - Shared crates: `proto` (generated `tonic`/`prost` types), `aria-identity` (Keycloak JWT
   validation, client-credentials middleware, and signed end-user context minting/verification),
   `mcp-client` (shared MCP client logic used by the Registry).
-- Protobuf schemas live in a top-level `proto/` directory at `proto/<service>/v1/<service>.proto`
-  with `package aria.<service>.v1;` — both the directory and the package carry the version.
+- Protobuf schemas live in a top-level `proto/` directory at `proto/aria/<service>/v1/<service>.proto`
+  with `package aria.<service>.v1;` — both the directory and the package carry the version, and the
+  directory matches the package so buf's default lint passes ([D87](decisions/0020-proto-layout.md);
+  `<service>` is the snake_case package segment, e.g. `agent_core`).
   Generated code is produced at build time into `OUT_DIR` via `tonic-build`; nothing generated is
   committed, and `protoc` is vendored so contributors need nothing installed.
 - Database access uses **`sqlx`** with compile-time-checked queries and its built-in migration
