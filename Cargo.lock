@@ -1090,6 +1090,7 @@ name = "proto"
 version = "0.1.0"
 dependencies = [
  "prost",
+ "prost-build",
  "protoc-bin-vendored",
  "tonic",
  "tonic-prost",
