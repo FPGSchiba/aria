@@ -188,3 +188,9 @@ naming the SHA and the pull events.
 **Done when.** Both pulls are evidenced on ARIA-123 and the pods are gone.
 
 ## Deviations
+- C1: the Confluence decision-log mirror was not updated with D86, at Jann's call (2026-10-05).
+  The repo copy is authoritative (D54); Confluence is stale for D86 until a later sync.
+- C4: the pull is evidenced by an anonymous pull into a local Docker daemon rather than a
+  throwaway cluster pod, because this session has no cluster access. Accepted by Jann as
+  sufficient evidence for the "no manual login" criterion: the cluster pulls the same public
+  image from the same registry with no credential. No pods are created or deleted.
