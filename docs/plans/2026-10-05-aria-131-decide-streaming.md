@@ -286,8 +286,9 @@ a new architecture decision.
   on: export was attempted against an unused endpoint, and the service kept serving.
 - C3: failure outcomes are `backend_error`, `cancelled`, `commit_failed`, `commit_interrupted`,
   `store_error` (which includes a busy rejection) and `invalid_input`. Progress events use `stage`,
-  so `outcome` only ever names a failure. (Amended after the milestone review.) The
-  last two go beyond the plan's list: any `Decide` that does not end in turn-complete marks its span.
+  so `outcome` only ever names a failure. (Amended after the milestone review.) The plan named
+  only the first two; the rest follow from one rule: any `Decide` that does not end in turn-complete
+  marks its span.
   Cancellation is reported by a drop guard owned by the response stream, because a cancelled stream
   is dropped rather than polled to an end.
 - C3: the response stream enters the span on every poll through a small in-crate adapter, because
