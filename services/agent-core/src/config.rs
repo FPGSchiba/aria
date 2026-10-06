@@ -22,12 +22,14 @@ pub enum ConfigError {
         value: String,
         reason: String,
     },
-    /// The OTLP endpoint is set but blank.
-    #[error("invalid OTLP endpoint in {variable}: value is blank")]
-    InvalidOtlpEndpoint { variable: &'static str },
     /// An environment variable holds bytes that are not valid Unicode.
     #[error("environment variable {variable} is not valid unicode")]
     NotUnicode { variable: &'static str },
+}
+
+/// Whether an environment value is empty or only whitespace.
+fn is_blank(value: &str) -> bool {
+    value.trim().is_empty()
 }
 
 /// The service configuration.
@@ -48,12 +50,12 @@ impl Config {
     }
 
     /// Builds the configuration from a lookup of variables by name (`Ok(None)` means unset).
-    /// The listen address defaults to all interfaces on the default port; a blank OTLP endpoint
-    /// is an error.
+    /// A blank value (empty or only whitespace) counts as unset. The listen address defaults to all
+    /// interfaces on the default port, and no OTLP endpoint means span export is off.
     pub fn from_lookup(
         lookup: impl Fn(&'static str) -> Result<Option<String>, ConfigError>,
     ) -> Result<Self, ConfigError> {
-        let listen_address = match lookup(LISTEN_ADDRESS_VAR)? {
+        let listen_address = match lookup(LISTEN_ADDRESS_VAR)?.filter(|v| !is_blank(v)) {
             Some(value) => {
                 SocketAddr::from_str(&value).map_err(|e| ConfigError::InvalidListenAddress {
                     variable: LISTEN_ADDRESS_VAR,
@@ -63,14 +65,7 @@ impl Config {
             }
             None => SocketAddr::from((Ipv4Addr::UNSPECIFIED, ARIA_AGENT_CORE_DEFAULT_PORT)),
         };
-        let otlp_endpoint = lookup(OTLP_ENDPOINT_VAR)?;
-        if let Some(endpoint) = &otlp_endpoint
-            && endpoint.trim().is_empty()
-        {
-            return Err(ConfigError::InvalidOtlpEndpoint {
-                variable: OTLP_ENDPOINT_VAR,
-            });
-        }
+        let otlp_endpoint = lookup(OTLP_ENDPOINT_VAR)?.filter(|v| !is_blank(v));
         Ok(Self {
             listen_address,
             otlp_endpoint,
@@ -121,10 +116,20 @@ mod tests {
     }
 
     #[test]
-    fn blank_otlp_endpoint_is_a_config_error_naming_the_variable() {
-        let err = Config::from_lookup(lookup_from(None, Some("   "))).expect_err("blank endpoint");
+    fn blank_otlp_endpoint_means_export_off() {
+        let config = Config::from_lookup(lookup_from(None, Some("   "))).expect("config");
 
-        assert!(err.to_string().contains(OTLP_ENDPOINT_VAR), "{err}");
+        assert_eq!(config.otlp_endpoint(), None);
+    }
+
+    #[test]
+    fn blank_listen_address_uses_the_default() {
+        let config = Config::from_lookup(lookup_from(Some(""), None)).expect("config");
+
+        assert_eq!(
+            config.listen_address(),
+            SocketAddr::from((Ipv4Addr::UNSPECIFIED, ARIA_AGENT_CORE_DEFAULT_PORT))
+        );
     }
 
     #[test]

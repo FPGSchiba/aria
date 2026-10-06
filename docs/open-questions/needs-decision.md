@@ -419,4 +419,8 @@ Found while building `Decide` in the Agent Core. Recorded, not decided. Reasonin
   the `Decide` turn that is producing that speech. *Interim (ARIA-131):* the Agent Core refuses a
   second `Decide` on a busy session with `ABORTED` and assumes the caller cancels the first. Open:
   does the Gateway cancel the `Decide` stream, or does the Agent Core cancel the turn itself when a
-  new one arrives? Needed before the Gateway's barge-in story.
+  new one arrives? Needed before the Gateway's barge-in story. *Measured on the ARIA-131 branch:* a
+  `Decide` sent immediately after cancelling the previous one on the same session was refused as busy
+  in 10 of 50 in-process tries, because the cancelled turn is released only when the server drops its
+  stream. Any answer needs to cover that window: eager release, a short wait in `start_turn`, or the
+  Agent Core cancelling the old turn itself.

@@ -1127,3 +1127,35 @@ async fn empty_reply_releases_the_session_through_abort() {
 
     assert_ne!(second.code(), Some(Code::Aborted), "{second:?}");
 }
+
+#[tokio::test]
+async fn blank_reply_chunks_fail_the_turn_like_an_empty_reply() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![chunk(""), chunk("")]);
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
+
+    let first = decide(&mut client, "blank-1", "hello").await;
+    decide(&mut client, "blank-1", "again").await;
+
+    assert_eq!(first.code(), Some(Code::Internal), "{first:?}");
+    assert_eq!(first.completes(), 0, "{first:?}");
+    assert!(
+        first
+            .events
+            .iter()
+            .all(|e| matches!(e, Event::Delta(text) if text.is_empty())),
+        "no chunk may carry content: {first:?}"
+    );
+    let calls = backend.calls();
+    assert_eq!(calls.len(), 2);
+    assert!(calls[1].history.is_empty(), "no lone user entry is kept");
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a generation_failed event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "generation_failed", "blank-1")
+            },
+        )
+        .await;
+}

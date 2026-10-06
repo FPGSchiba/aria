@@ -7,6 +7,10 @@ use agent_core::telemetry::configure_tracing;
 use proto::agent_core::v1::agent_core_server::AgentCoreServer;
 use std::error::Error;
 use std::process::ExitCode;
+use std::time::Duration;
+use tokio::net::TcpListener;
+use tokio::sync::oneshot;
+use tokio_stream::wrappers::TcpListenerStream;
 
 /// Resolves when the process is asked to stop: SIGTERM or Ctrl-C on Unix, Ctrl-C, Ctrl-Break or
 /// console close on Windows. Logs which signal arrived. A handler that cannot be installed is
@@ -73,6 +77,10 @@ async fn main() -> ExitCode {
     }
 }
 
+/// How long in-flight requests get to finish after the shutdown signal. Kept below Kubernetes'
+/// default 30 s termination grace period, so the process exits on its own before the SIGKILL.
+const DRAIN_BOUND: Duration = Duration::from_secs(20);
+
 /// Reads the configuration, sets up tracing and serves until a shutdown signal arrives.
 async fn run() -> Result<(), Box<dyn Error>> {
     let config = Config::from_env()?;
@@ -82,19 +90,99 @@ async fn run() -> Result<(), Box<dyn Error>> {
     let backend = EchoBackend;
     let backend_name = backend.name();
     let service = Service::new(backend, InMemoryHistory::default());
+
+    // Bound here, not by tonic, so the log names the real address (even for port 0).
+    let listener = TcpListener::bind(config.listen_address()).await?;
     tracing::info!(
         "Starting agent-core service with '{backend_name}' backend on '{}'",
-        config.listen_address()
+        listener.local_addr()?
     );
 
-    let served = tonic::transport::Server::builder()
+    let (signalled_tx, signalled_rx) = oneshot::channel();
+    let serve = tonic::transport::Server::builder()
         .add_service(AgentCoreServer::new(service))
-        .serve_with_shutdown(config.listen_address(), shutdown_signal())
-        .await;
+        .serve_with_incoming_shutdown(TcpListenerStream::new(listener), async move {
+            shutdown_signal().await;
+            // The receiver is gone only when serving already ended.
+            let _ = signalled_tx.send(());
+        });
+    let served = serve_with_bounded_drain(serve, signalled_rx, DRAIN_BOUND).await;
 
     if let Some(Err(e)) = provider.map(|p| p.shutdown()) {
         tracing::error!(error = %e, "failed to shut down OTLP tracer provider");
     }
 
-    Ok(served?)
+    Ok(served.unwrap_or(Ok(()))?)
+}
+
+/// Runs `serve` to completion, but once `shutdown_started` fires gives it only `bound` more time.
+/// Returns `None`, after logging a warning, when the bound was hit and `serve` was dropped.
+async fn serve_with_bounded_drain<R>(
+    serve: impl Future<Output = R>,
+    shutdown_started: oneshot::Receiver<()>,
+    bound: Duration,
+) -> Option<R> {
+    tokio::select! {
+        result = serve => Some(result),
+        () = async {
+            // A dropped sender means serving ended on its own, which the other branch reports.
+            if shutdown_started.await.is_ok() {
+                tokio::time::sleep(bound).await;
+            } else {
+                std::future::pending::<()>().await;
+            }
+        } => {
+            tracing::warn!(?bound, "in-flight requests did not finish in time, stopping anyway");
+            None
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn drain_gives_up_after_the_bound_once_shutdown_started() {
+        let (tx, rx) = oneshot::channel();
+        tx.send(()).unwrap();
+        let started = std::time::Instant::now();
+
+        let result = serve_with_bounded_drain(
+            std::future::pending::<&str>(),
+            rx,
+            Duration::from_millis(100),
+        )
+        .await;
+
+        assert_eq!(result, None);
+        assert!(started.elapsed() < Duration::from_secs(5));
+    }
+
+    #[tokio::test]
+    async fn drain_returns_the_result_of_a_serve_that_finishes_in_time() {
+        let (tx, rx) = oneshot::channel();
+        let serve = async {
+            tokio::time::sleep(Duration::from_millis(50)).await;
+            "done"
+        };
+        tx.send(()).unwrap();
+
+        let result = serve_with_bounded_drain(serve, rx, Duration::from_secs(5)).await;
+
+        assert_eq!(result, Some("done"));
+    }
+
+    #[tokio::test]
+    async fn drain_waits_indefinitely_while_no_shutdown_has_started() {
+        let (_tx, rx) = oneshot::channel::<()>();
+        let serve = async {
+            tokio::time::sleep(Duration::from_millis(150)).await;
+            "done"
+        };
+
+        let result = serve_with_bounded_drain(serve, rx, Duration::from_millis(10)).await;
+
+        assert_eq!(result, Some("done"));
+    }
 }

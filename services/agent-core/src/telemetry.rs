@@ -17,11 +17,18 @@ use tracing_subscriber::{EnvFilter, Layer};
 pub fn configure_tracing(
     otlp_endpoint: Option<String>,
 ) -> Result<Option<SdkTracerProvider>, Box<dyn std::error::Error>> {
-    // `RUST_LOG` filters the stdout logs only; an unset or invalid value falls back to `info`.
+    // `RUST_LOG` filters the stdout logs only; an unset, blank or invalid value falls back to `info`.
     // Span export has its own filter, so a quiet log level never thins the traces.
-    let (filter, invalid_filter) = match EnvFilter::try_from_default_env() {
-        Ok(filter) => (filter, None),
-        Err(_) => (EnvFilter::new("info"), std::env::var("RUST_LOG").ok()),
+    // A blank `RUST_LOG` counts as unset.
+    let rust_log = std::env::var("RUST_LOG")
+        .ok()
+        .filter(|v| !v.trim().is_empty());
+    let (filter, invalid_filter) = match rust_log {
+        None => (EnvFilter::new("info"), None),
+        Some(value) => match EnvFilter::try_new(&value) {
+            Ok(filter) => (filter, None),
+            Err(_) => (EnvFilter::new("info"), Some(value)),
+        },
     };
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stdout)

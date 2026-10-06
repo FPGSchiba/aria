@@ -145,9 +145,14 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                 match chunk {
                     Ok(chunk) => {
                         push_conversation(&mut conversation, &chunk);
-                        num_chunks += 1;
                         match chunk {
                             Chunk::Text { text } => {
+                                if text.is_empty() {
+                                    tracing::warn!(stage = "empty_chunk", session_id = %session_id, "Backend produced an empty text chunk");
+                                    continue;
+                                }
+                                num_chunks += 1;
+
                                 tracing::trace!(stage = "streaming", session_id = %session_id, "Streaming text chunk to client");
                                 yield DecideResponse {
                                     payload: Some(proto::agent_core::v1::decide_response::Payload::TextDelta(text)),

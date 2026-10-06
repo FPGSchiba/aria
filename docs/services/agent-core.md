@@ -58,11 +58,16 @@ skeleton does until the named story replaces it.
   it without changing the `Decide` handler. *Replaced by:* the story that persists history (D36).
 - **A second `Decide` on a session with a turn in flight is refused** with `ABORTED`, not queued, and
   the backend is not called. This assumes the caller cancels an in-flight turn on barge-in, which is
-  **open**: D27 only has the Gateway cancel the outbound TTS stream.
+  **open**: D27 only has the Gateway cancel the outbound TTS stream. A cancelled turn is released
+  only when the server drops the cancelled stream, so a `Decide` sent immediately after cancelling
+  can briefly still see `ABORTED`. That is transient and safe to retry after a short delay.
   *Revisit if:* the Gateway's barge-in design needs the Agent Core to cancel the turn itself.
 - **An exchange is committed only when the turn finishes cleanly.** The commit happens before
-  turn-complete is sent. A backend error, a cancelled client stream or a failed commit leaves
-  history unchanged, so after a cancelled turn there is no memory of the half answer the user heard.
+  turn-complete is sent. A backend error, an empty reply, a failed commit, or a client cancel before
+  the commit starts leaves history unchanged. After a cancelled turn there is no memory of the half
+  answer the user heard. Two edge cases are accepted: a cancel *during* the commit may or may not
+  have stored the exchange (reported as `commit_interrupted`), and a client that disconnects after
+  the commit but before turn-complete has its exchange stored without having seen turn-complete.
   A failed commit ends the stream with `INTERNAL` in place of turn-complete. *Revisit with:* D61's
   turn log, which is where a turn status such as "interrupted" belongs.
 - **The binary serves an `echo` backend.** It streams the user's text back and is not a product
@@ -86,7 +91,7 @@ skeleton does until the named story replaces it.
 | Status | When |
 |---|---|
 | `INVALID_ARGUMENT` | Empty `session_id` or `text`. The backend is not called. |
-| `ABORTED` | The session already has a turn in flight. |
+| `ABORTED` | The session already has a turn in flight. Right after the caller cancels its own turn this can be transient; retry after a short delay. |
 | `UNAVAILABLE` | The history store failed before the turn started. Nothing has happened, so a retry is safe. |
 | `INTERNAL` | The backend failed or replied with nothing, or the commit failed after the reply was streamed. A fault, not a transient outage. Because it arrives mid-stream, after the response headers, no gRPC retry policy would retry it whatever the code. |
 

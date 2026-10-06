@@ -346,3 +346,14 @@ a new architecture decision.
   `Commit`, `Abort`, `Backend` and `EmptyReply` give `INTERNAL`. `tests/binary.rs` covers the binary
   end to end on Unix: startup, one `Decide`, SIGTERM, and a bad listen address. The OTel service name
   is `aria-agent-core`.
+- After the third fresh branch review, recorded rather than fixed:
+  - A `Decide` sent immediately after the caller cancels its own turn can see `ABORTED` until the
+    server drops the cancelled stream. Documented as transient; the real answer belongs to the
+    barge-in open question.
+  - When an abort fails, the two failure paths report differently. After a backend error the span
+    records `abort_failed` then `backend_error`. After an empty reply it records only
+    `abort_failed`, and the client gets the abort message. A cancel during either abort is reported
+    as `cancelled`. Accepted for now; no test store fails its abort.
+  - A client that disconnects after the commit but before turn-complete has its exchange stored
+    without seeing turn-complete. This is the mirror image of the case the commit-before-turn-complete
+    Decision rejects, and is accepted.
