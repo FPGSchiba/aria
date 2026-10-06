@@ -59,16 +59,22 @@ Confluence page (children of "ARIA — Architecture & Hosting").
   warnings`, `cargo test --workspace`, and the coverage gate below must all pass before a commit
   lands. Enforced locally via a checked-in pre-commit hook (`.githooks/pre-commit`) — enable it
   once per clone with `git config core.hooksPath .githooks`. Requires `cargo install
-  cargo-llvm-cov` and `rustup component add llvm-tools-preview` once per machine. Not yet mirrored
-  in CI: the only GitHub Actions workflow (`.github/workflows/images.yml`, ARIA-123) builds and
-  publishes images and does not run the gate, so the local hook is the only enforcement until a
-  gate workflow is added.
+  cargo-llvm-cov` and `rustup component add llvm-tools-preview` once per machine. **Also enforced
+  in CI** by `.github/workflows/ci.yml` (ARIA-140) on every push and pull request. fmt, clippy,
+  coverage and a Windows compile run there as parallel jobs, and one aggregate job, `gate`, is the
+  check `main` requires: a repository ruleset (`.github/rulesets/main.json`) allows changes only
+  through a pull request with a passing `gate`, with no bypass, admins included.
+- **Mirror rule (Jann's call, 2026-10-06): the gate is defined twice, in `.githooks/pre-commit` and
+  in `.github/workflows/ci.yml`, and a change to the gate changes both files in the same commit.**
+  Every check in the hook has a CI counterpart. Two differences are deliberate: CI has no separate
+  `cargo test` run, because the coverage job runs the whole suite and fails on a failing test; and
+  CI may add platform-only checks the hook cannot run (the Windows `cargo check`).
 - **Coverage rule (Jann's call, 2026-08-28): 80% minimum, for all automated testing.** Measured as
   line coverage via `cargo llvm-cov --workspace --fail-under-lines 80` — that's what "coverage"
   means in this repo unless stated otherwise, to avoid the term drifting between line/function/
-  region coverage across crates. Applies workspace-wide as each crate gains real code; enforced by
-  the same pre-commit hook as the repo gate above, so it's a hard floor per commit, not an
-  aspirational target.
+  region coverage across crates. Applies workspace-wide as each crate gains real code; enforced per
+  commit by the pre-commit hook and per pushed head by CI's coverage job, so it's a hard floor, not
+  an aspirational target.
 
 ### Definition of done (D84, 2026-09-23)
 
