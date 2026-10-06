@@ -309,7 +309,7 @@ a new architecture decision.
 
 ### C6 — gRPC health driven by dependency health
 
-status: pending
+status: done
 depends-on: 1, 2, 4
 
 **Responsibility.** Serve the standard gRPC health service from the Agent Core binary, and let the
@@ -450,3 +450,10 @@ The milestone review and three fresh branch reviews added the failure handling r
   both" and makes a wrong target impossible. The export filter is fixed for every service, with no
   caller-tunable fields. Setup returns a `#[must_use]` guard that flushes on explicit shutdown and,
   as a fallback, on drop. Errors are a typed enum. A blank endpoint means unset inside the crate.
+- C6: Jann kept a health struct per dependency (store: healthy and service name; backend: also an
+  `is_backup` flag), anticipating D35 failover where the serving dependency can change at runtime.
+  `is_backup` is logged and does not affect status. Each implementation owns its sender, and the
+  traits only hand out a subscription. A dependency whose sender is dropped keeps its last value; no
+  current implementation drops its sender. The health task is the only writer to the tonic
+  reporter. Shutdown sets both statuses to not-serving and waits for that write to be acknowledged
+  before the drain starts. C6 was written by the code-agent at Jann's request.

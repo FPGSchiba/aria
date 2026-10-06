@@ -4,8 +4,10 @@
 
 use crate::BoxError;
 use crate::conversation::ConversationPart;
+use crate::health::BackendHealth;
 use futures_core::Stream;
 use std::pin::Pin;
+use tokio::sync::watch;
 
 pub mod echo;
 #[cfg(feature = "test-util")]
@@ -39,6 +41,12 @@ impl BackendError {
 pub trait Backend: Send + Sync {
     /// A short, stable name for this backend, used in the startup log.
     fn name(&self) -> &'static str;
+
+    /// A subscription to this backend's own health.
+    ///
+    /// The backend owns the sender and pushes every change itself; nothing probes it. Subscribing
+    /// late yields the current value. A backend that cannot tell its health reports healthy.
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth>;
 
     /// Streams a conversation to the backend, returning a stream of chunks.
     ///

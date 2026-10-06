@@ -1,7 +1,7 @@
 use agent_core::backend::Backend;
 use agent_core::backend::echo::EchoBackend;
 use agent_core::config::Config;
-use agent_core::history::InMemoryHistory;
+use agent_core::history::{HistoryStore, InMemoryHistory};
 use agent_core::service::Service;
 use proto::agent_core::v1::agent_core_server::AgentCoreServer;
 use std::error::Error;
@@ -98,9 +98,12 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     let telemetry = telemetry::init!("aria-agent-core", config.otlp_endpoint())?;
 
-    let backend = EchoBackend;
+    let backend = EchoBackend::new();
+    let history = InMemoryHistory::default();
     let backend_name = backend.name();
-    let service = Service::new(backend, InMemoryHistory::default());
+    let (health, health_server) =
+        agent_core::health::start(backend.subscribe_health(), history.subscribe_health()).await;
+    let service = Service::new(backend, history);
 
     // Bound here, not by tonic, so the log names the real address (even for port 0).
     let listener = TcpListener::bind(config.listen_address()).await?;
@@ -111,9 +114,12 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     let (signalled_tx, signalled_rx) = oneshot::channel();
     let serve = tonic::transport::Server::builder()
+        .add_service(health_server)
         .add_service(AgentCoreServer::new(service))
         .serve_with_incoming_shutdown(TcpListenerStream::new(listener), async move {
             shutdown_signal().await;
+            // Not-serving is reported before tonic starts draining, so new traffic stops first.
+            health.begin_shutdown().await;
             // The receiver is gone only when serving already ended.
             let _ = signalled_tx.send(());
         });

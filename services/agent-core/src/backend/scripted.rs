@@ -4,9 +4,11 @@
 
 use crate::backend::{Backend, BackendError, Chunk};
 use crate::conversation::ConversationPart;
+use crate::health::BackendHealth;
 use futures_core::Stream;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
+use tokio::sync::watch;
 
 /// One step of a script: a chunk to emit or an error that ends the stream.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -31,11 +33,16 @@ pub struct ScriptedConversation {
 pub struct ScriptedBackend {
     script: Vec<ScriptStep>,
     calls: Arc<Mutex<Vec<ScriptedConversation>>>,
+    health: Arc<watch::Sender<BackendHealth>>,
 }
 
 impl Backend for ScriptedBackend {
     fn name(&self) -> &'static str {
         "scripted"
+    }
+
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
+        self.health.subscribe()
     }
 
     fn stream_conversation(
@@ -71,7 +78,15 @@ impl ScriptedBackend {
         Self {
             script,
             calls: Arc::new(Mutex::new(Vec::new())),
+            health: Arc::new(watch::channel(BackendHealth::new("scripted", true, false)).0),
         }
+    }
+
+    /// Reports the backend healthy or unhealthy, as a real backend would on its own. Clones share
+    /// the health.
+    pub fn set_healthy(&self, healthy: bool) {
+        self.health
+            .send_replace(BackendHealth::new("scripted", healthy, false));
     }
 
     /// The recorded calls in order; the call count is its length.

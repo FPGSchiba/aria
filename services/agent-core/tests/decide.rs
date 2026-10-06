@@ -4,6 +4,7 @@
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::{Actor, Content, ConversationPart};
+use agent_core::health::{BackendHealth, HistoryHealth};
 use agent_core::history::{
     HistoryError, HistoryResult, HistoryStore, InMemoryHistory, InMemoryTurn,
 };
@@ -19,7 +20,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::net::TcpListener;
-use tokio::sync::{Notify, Semaphore};
+use tokio::sync::{Notify, Semaphore, watch};
 use tokio::time::timeout;
 use tokio_stream::StreamExt;
 use tokio_stream::wrappers::TcpListenerStream;
@@ -180,6 +181,10 @@ impl GatedBackend {
 }
 
 impl Backend for GatedBackend {
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
+        watch::channel(BackendHealth::new("test", true, false)).1
+    }
+
     fn name(&self) -> &'static str {
         "gated"
     }
@@ -211,6 +216,10 @@ struct StallFirstCallBackend {
 }
 
 impl Backend for StallFirstCallBackend {
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
+        watch::channel(BackendHealth::new("test", true, false)).1
+    }
+
     fn name(&self) -> &'static str {
         "stall-first-call"
     }
@@ -241,6 +250,10 @@ struct FailingCommitStore {
 impl HistoryStore for FailingCommitStore {
     type Turn = InMemoryTurn;
 
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth> {
+        self.inner.subscribe_health()
+    }
+
     async fn start_turn(
         &self,
         session_id: &str,
@@ -269,6 +282,10 @@ struct FailingStartStore {
 
 impl HistoryStore for FailingStartStore {
     type Turn = InMemoryTurn;
+
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth> {
+        self.inner.subscribe_health()
+    }
 
     async fn start_turn(
         &self,
@@ -299,6 +316,10 @@ struct StalledCommitStore {
 impl HistoryStore for StalledCommitStore {
     type Turn = InMemoryTurn;
 
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth> {
+        self.inner.subscribe_health()
+    }
+
     async fn start_turn(
         &self,
         session_id: &str,
@@ -327,6 +348,10 @@ struct FailFirstCallBackend {
 }
 
 impl Backend for FailFirstCallBackend {
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
+        watch::channel(BackendHealth::new("test", true, false)).1
+    }
+
     fn name(&self) -> &'static str {
         "fail-first-call"
     }
@@ -372,6 +397,10 @@ impl ManualReleaseStore {
 
 impl HistoryStore for ManualReleaseStore {
     type Turn = ManualTurn;
+
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth> {
+        self.inner.subscribe_health()
+    }
 
     async fn start_turn(
         &self,

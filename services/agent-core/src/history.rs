@@ -4,9 +4,11 @@
 
 use crate::BoxError;
 use crate::conversation::ConversationPart;
+use crate::health::HistoryHealth;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
+use tokio::sync::watch;
 
 #[derive(Clone, Debug)]
 struct TurnCounter {
@@ -60,6 +62,8 @@ pub struct InMemoryHistory {
     sessions: Arc<Mutex<HashMap<String, SessionHistory>>>,
     /// A counter for generating unique turn IDs.
     turn_counter: TurnCounter,
+    /// The sender of this store's health; it starts healthy and never changes.
+    health: Arc<watch::Sender<HistoryHealth>>,
 }
 
 /// The in-memory store's turn handle. Dropping it releases the session if neither commit nor
@@ -79,6 +83,7 @@ impl Default for InMemoryHistory {
                 next: Arc::new(AtomicU64::new(1)),
             },
             sessions: Arc::new(Mutex::new(HashMap::new())),
+            health: Arc::new(watch::channel(HistoryHealth::new("in-memory", true)).0),
         }
     }
 }
@@ -136,10 +141,20 @@ pub trait HistoryStore: Send + Sync {
     /// `StoreUnavailable` if the store cannot be used, `InvalidTurnOwner` if the turn was
     /// issued by another store.
     fn abort(&self, turn: Self::Turn) -> impl Future<Output = HistoryResult<()>> + Send;
+
+    /// A subscription to this store's own health.
+    ///
+    /// The store owns the sender and pushes every change itself; nothing probes it. Subscribing
+    /// late yields the current value. A store that cannot tell its health reports healthy.
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth>;
 }
 
 impl HistoryStore for InMemoryHistory {
     type Turn = InMemoryTurn;
+
+    fn subscribe_health(&self) -> watch::Receiver<HistoryHealth> {
+        self.health.subscribe()
+    }
 
     async fn start_turn(
         &self,

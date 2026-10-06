@@ -86,6 +86,21 @@ skeleton does until the named story replaces it.
 | Span export | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset, so export is off |
 | Stdout log level | `RUST_LOG` | `info` |
 
+**Health (`grpc.health.v1`, same port):**
+
+| Health service name | Serving when | Kubernetes probe |
+|---|---|---|
+| `""` (the server overall) | the process is up and shutdown has not begun | **liveness** |
+| `aria.agent_core.v1.AgentCore` | the history store **and** the backend both report healthy, and shutdown has not begun | **readiness** |
+
+The store and the backend each publish their own health. The health service only listens, and never
+calls a dependency to check it. On SIGTERM both statuses become not-serving **before** the drain
+starts, so new traffic stops while in-flight turns finish. A dependency that reports itself as a
+backup (for later failover, D35) still counts as healthy; the flag is only logged. **Accepted cost:**
+a backend outage makes every pod unready at once, so callers see "no endpoints" rather than a
+`Decide` error naming the backend. *Revisit if* that proves worse in practice than serving and
+failing turns.
+
 **Status codes `Decide` returns:**
 
 | Status | When |

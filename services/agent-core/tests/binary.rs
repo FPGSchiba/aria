@@ -10,6 +10,9 @@ use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use tokio_stream::StreamExt;
+use tonic_health::pb::HealthCheckRequest;
+use tonic_health::pb::health_check_response::ServingStatus;
+use tonic_health::pb::health_client::HealthClient;
 
 /// Upper bound for anything that could hang, so a failure reports instead of blocking.
 const LIMIT: Duration = Duration::from_secs(20);
@@ -207,4 +210,34 @@ async fn invalid_listen_address_exits_non_zero_with_a_readable_message() {
         "{stderr}"
     );
     assert!(stderr.contains("not-an-address"), "{stderr}");
+}
+
+#[tokio::test]
+async fn binary_reports_serving_for_the_overall_server_and_agent_core_over_its_port() {
+    let mut server = Server::spawn("127.0.0.1:0");
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+    let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut health = HealthClient::new(channel);
+
+    for service in ["", "aria.agent_core.v1.AgentCore"] {
+        let response = tokio::time::timeout(
+            LIMIT,
+            health.check(HealthCheckRequest {
+                service: service.to_string(),
+            }),
+        )
+        .await
+        .expect("check timed out")
+        .expect("check");
+        assert_eq!(
+            response.into_inner().status(),
+            ServingStatus::Serving,
+            "{service:?}"
+        );
+    }
 }

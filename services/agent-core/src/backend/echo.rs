@@ -4,17 +4,42 @@
 
 use crate::backend::{Backend, BackendError, Chunk};
 use crate::conversation::{Content, ConversationPart};
+use crate::health::BackendHealth;
 use futures_core::Stream;
 use std::pin::Pin;
+use std::sync::Arc;
+use tokio::sync::watch;
 
 /// Echoes the user's text back in at least two chunks (for text of two or more chars), ignores
 /// history, and ends cleanly. The chunks are produced when the stream is first polled.
-#[derive(Debug, Clone, Default)]
-pub struct EchoBackend;
+#[derive(Debug, Clone)]
+pub struct EchoBackend {
+    /// The sender of this backend's health; it starts healthy and never changes.
+    health: Arc<watch::Sender<BackendHealth>>,
+}
+
+impl EchoBackend {
+    /// Creates an echo backend, always healthy.
+    pub fn new() -> Self {
+        Self {
+            health: Arc::new(watch::channel(BackendHealth::new("echo", true, false)).0),
+        }
+    }
+}
+
+impl Default for EchoBackend {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl Backend for EchoBackend {
     fn name(&self) -> &'static str {
         "echo"
+    }
+
+    fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
+        self.health.subscribe()
     }
 
     fn stream_conversation(
@@ -49,7 +74,7 @@ mod tests {
     #[tokio::test]
     async fn echoes_input_in_at_least_two_chunks_that_concatenate_to_the_input() {
         let input = "hello from the echo backend";
-        let items: Vec<_> = EchoBackend
+        let items: Vec<_> = EchoBackend::new()
             .stream_conversation(
                 Vec::new(),
                 vec![ConversationPart {
