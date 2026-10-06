@@ -33,8 +33,8 @@ pub enum ConfigError {
 /// The service configuration.
 #[derive(Debug, Clone)]
 pub struct Config {
-    listen_address: SocketAddr,
-    otlp_endpoint: Option<String>,
+    pub listen_address: SocketAddr,
+    pub otlp_endpoint: Option<String>,
 }
 
 impl Config {

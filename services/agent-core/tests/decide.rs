@@ -4,7 +4,8 @@
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::history::{
-    Actor, Content, ConversationPart, History, HistoryError, HistoryResult, HistoryStore, Token,
+    Actor, Content, ConversationPart, HistoryError, HistoryResult, HistoryStore, InMemoryHistory,
+    Token,
 };
 use agent_core::service::Service;
 use futures_core::Stream;
@@ -226,7 +227,7 @@ impl Backend for StallFirstCallBackend {
 /// An in-memory store whose commit always fails (the turn is consumed, so the session is freed).
 #[derive(Clone, Default)]
 struct FailingCommitStore {
-    inner: History,
+    inner: InMemoryHistory,
 }
 
 impl HistoryStore for FailingCommitStore {
@@ -283,7 +284,7 @@ impl LogBuffer {
 #[tokio::test]
 async fn three_chunks_arrive_in_order_then_exactly_one_turn_complete() {
     let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two "), chunk("three")]);
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "s1", "hello").await;
 
@@ -303,7 +304,7 @@ async fn three_chunks_arrive_in_order_then_exactly_one_turn_complete() {
 async fn first_chunk_reaches_the_caller_before_the_backend_finishes() {
     let backend = GatedBackend::new();
     let gate = backend.gate.clone();
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     let mut stream = client
         .decide(request("s1", "hello"))
@@ -328,7 +329,7 @@ async fn first_chunk_reaches_the_caller_before_the_backend_finishes() {
 #[tokio::test]
 async fn second_decide_on_same_session_passes_first_exchange_to_backend() {
     let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two")]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     decide(&mut client, "s1", "hello").await;
     let outcome = decide(&mut client, "s1", "again").await;
@@ -350,7 +351,7 @@ async fn second_decide_on_same_session_passes_first_exchange_to_backend() {
 #[tokio::test]
 async fn sessions_do_not_share_history() {
     let backend = ScriptedBackend::new(vec![chunk("reply")]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     decide(&mut client, "s1", "hello").await;
     decide(&mut client, "s2", "other").await;
@@ -363,7 +364,7 @@ async fn sessions_do_not_share_history() {
 #[tokio::test]
 async fn backend_failing_after_one_chunk_delivers_chunk_then_error_and_is_called_once() {
     let backend = ScriptedBackend::new(vec![chunk("partial"), fail()]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "s1", "hello").await;
 
@@ -377,7 +378,7 @@ async fn backend_failing_after_one_chunk_delivers_chunk_then_error_and_is_called
 #[tokio::test]
 async fn decide_after_a_failed_turn_sees_no_history() {
     let backend = ScriptedBackend::new(vec![chunk("partial"), fail()]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     decide(&mut client, "s1", "hello").await;
     decide(&mut client, "s1", "again").await;
@@ -390,7 +391,7 @@ async fn decide_after_a_failed_turn_sees_no_history() {
 #[tokio::test]
 async fn backend_failing_before_any_chunk_yields_error_status_and_no_chunks() {
     let backend = ScriptedBackend::new(vec![fail()]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "s1", "hello").await;
 
@@ -406,7 +407,7 @@ async fn concurrent_decide_on_busy_session_is_aborted_while_first_completes() {
     let backend = GatedBackend::new();
     let gate = backend.gate.clone();
     let calls = backend.calls.clone();
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     // Hold the first turn in flight: once its first chunk is here, the session is reserved.
     let mut first = client
@@ -442,7 +443,7 @@ async fn concurrent_decide_on_busy_session_is_aborted_while_first_completes() {
 async fn busy_session_does_not_block_a_different_session() {
     let backend = GatedBackend::new();
     let gate = backend.gate.clone();
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     let mut first = client
         .decide(request("s1", "hello"))
@@ -466,7 +467,7 @@ async fn busy_session_does_not_block_a_different_session() {
 async fn cancelled_client_stream_leaves_no_history_and_frees_the_session() {
     let backend = StallFirstCallBackend::default();
     let histories = backend.histories.clone();
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     // Start a turn that never finishes, see its first chunk, then walk away.
     let mut stalled = client
@@ -509,7 +510,7 @@ async fn cancelled_client_stream_leaves_no_history_and_frees_the_session() {
 #[tokio::test]
 async fn empty_session_id_is_invalid_argument_without_calling_the_backend() {
     let backend = ScriptedBackend::new(vec![chunk("a")]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "", "hello").await;
 
@@ -521,7 +522,7 @@ async fn empty_session_id_is_invalid_argument_without_calling_the_backend() {
 #[tokio::test]
 async fn empty_text_is_invalid_argument_without_calling_the_backend() {
     let backend = ScriptedBackend::new(vec![chunk("a")]);
-    let mut client = serve(backend.clone(), History::default()).await;
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "s1", "").await;
 
@@ -543,7 +544,7 @@ async fn backend_failure_emits_an_error_level_log_record_carrying_the_session_id
     let _guard = tracing::subscriber::set_default(subscriber);
 
     let backend = ScriptedBackend::new(vec![chunk("partial"), fail()]);
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     decide(&mut client, "session-under-test", "hello").await;
 
@@ -706,7 +707,7 @@ fn has_outcome(capture: &SpanCapture, outcome: &str, session_id: &str) -> bool {
 async fn backend_failure_marks_decide_span_error_with_backend_error_event() {
     let (capture, _guard) = SpanCapture::install();
     let backend = ScriptedBackend::new(vec![chunk("partial"), fail()]);
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     decide(&mut client, "span-session", "hello").await;
 
@@ -724,7 +725,7 @@ async fn backend_failure_marks_decide_span_error_with_backend_error_event() {
 #[tokio::test]
 async fn cancelled_stream_marks_decide_span_error_with_cancelled_event() {
     let (capture, _guard) = SpanCapture::install();
-    let mut client = serve(StallFirstCallBackend::default(), History::default()).await;
+    let mut client = serve(StallFirstCallBackend::default(), InMemoryHistory::default()).await;
 
     let mut stalled = client
         .decide(request("cancel-session", "hello"))
@@ -753,7 +754,7 @@ async fn cancelled_stream_marks_decide_span_error_with_cancelled_event() {
 async fn successful_turn_has_a_decide_span_that_is_not_marked_error() {
     let (capture, _guard) = SpanCapture::install();
     let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two")]);
-    let mut client = serve(backend, History::default()).await;
+    let mut client = serve(backend, InMemoryHistory::default()).await;
 
     let outcome = decide(&mut client, "ok-session", "hello").await;
     assert_eq!(outcome.completes(), 1, "{outcome:?}");

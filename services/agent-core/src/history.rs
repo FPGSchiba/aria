@@ -80,7 +80,7 @@ impl SessionHistory {
 
 /// The in-memory history store. Cloning shares the same sessions.
 #[derive(Debug, Clone)]
-pub struct History {
+pub struct InMemoryHistory {
     /// The session history store.
     sessions: Arc<Mutex<HashMap<String, SessionHistory>>>,
     /// A counter for generating unique token IDs.
@@ -92,12 +92,12 @@ pub struct History {
 #[must_use = "dropping the token immediately frees the session; hold it for the whole turn"]
 #[derive(Debug)]
 pub struct Token {
-    store: History,
+    store: InMemoryHistory,
     session_id: String,
     token_id: u64,
 }
 
-impl Default for History {
+impl Default for InMemoryHistory {
     fn default() -> Self {
         Self {
             request_counter: RequestCounter {
@@ -159,7 +159,7 @@ pub trait HistoryStore: Send + Sync {
     fn abort(&self, token: Self::Turn) -> impl Future<Output = HistoryResult<()>> + Send;
 }
 
-impl HistoryStore for History {
+impl HistoryStore for InMemoryHistory {
     type Turn = Token;
 
     async fn start_turn(&self, session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
@@ -285,14 +285,14 @@ mod tests {
 
     #[tokio::test]
     async fn new_session_has_empty_history() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         let (_turn, history) = store.start_turn("s1").await.expect("start_turn");
         assert!(history.is_empty());
     }
 
     #[tokio::test]
     async fn committed_turn_is_visible_to_next_turn() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         commit_exchange(&store, "s1", "hello", "hi there").await;
 
         assert_eq!(
@@ -303,7 +303,7 @@ mod tests {
 
     #[tokio::test]
     async fn two_committed_turns_are_visible_oldest_first() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         commit_exchange(&store, "s1", "first", "one").await;
         commit_exchange(&store, "s1", "second", "two").await;
 
@@ -314,7 +314,7 @@ mod tests {
 
     #[tokio::test]
     async fn aborted_turn_leaves_history_unchanged_and_frees_session() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         commit_exchange(&store, "s1", "first", "one").await;
 
         let (turn, _) = store.start_turn("s1").await.expect("start_turn");
@@ -330,7 +330,7 @@ mod tests {
 
     #[tokio::test]
     async fn dropped_turn_frees_session_and_leaves_history_unchanged() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         commit_exchange(&store, "s1", "first", "one").await;
 
         let (turn, _) = store.start_turn("s1").await.expect("start_turn");
@@ -345,7 +345,7 @@ mod tests {
 
     #[tokio::test]
     async fn second_turn_on_busy_session_is_refused_as_turn_in_flight() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         let (_turn, _) = store.start_turn("s1").await.expect("start_turn");
 
         let second = store.start_turn("s1").await;
@@ -359,7 +359,7 @@ mod tests {
 
     #[tokio::test]
     async fn busy_session_does_not_block_a_different_session() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         let (_busy, _) = store.start_turn("s1").await.expect("start_turn");
 
         let other = store.start_turn("s2").await;
@@ -369,7 +369,7 @@ mod tests {
 
     #[tokio::test]
     async fn commit_on_one_session_does_not_change_another() {
-        let store = History::default();
+        let store = InMemoryHistory::default();
         commit_exchange(&store, "s1", "first", "one").await;
 
         assert!(history_of(&store, "s2").await.is_empty());
@@ -377,8 +377,8 @@ mod tests {
 
     #[tokio::test]
     async fn committing_a_turn_from_another_store_is_refused_as_invalid_turn_owner() {
-        let store_a = History::default();
-        let store_b = History::default();
+        let store_a = InMemoryHistory::default();
+        let store_b = InMemoryHistory::default();
         let (foreign_turn, _) = store_a.start_turn("s1").await.expect("start_turn");
 
         let result = store_b.commit(foreign_turn, exchange("x", "y")).await;
@@ -391,8 +391,8 @@ mod tests {
 
     #[tokio::test]
     async fn aborting_a_turn_from_another_store_is_refused_as_invalid_turn_owner() {
-        let store_a = History::default();
-        let store_b = History::default();
+        let store_a = InMemoryHistory::default();
+        let store_b = InMemoryHistory::default();
         let (foreign_turn, _) = store_a.start_turn("s1").await.expect("start_turn");
 
         let result = store_b.abort(foreign_turn).await;

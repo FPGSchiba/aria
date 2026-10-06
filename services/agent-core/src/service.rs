@@ -143,7 +143,7 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                         chunks.push(chunk.clone());
                         match chunk {
                             Chunk::Text { text } => {
-                                tracing::debug!(outcome = "streaming", session_id = %session_id, "Streaming text chunk to client");
+                                tracing::trace!(outcome = "streaming", session_id = %session_id, "Streaming text chunk to client");
                                 yield DecideResponse {
                                     payload: Some(proto::agent_core::v1::decide_response::Payload::TextDelta(text)),
                                 };

@@ -227,7 +227,7 @@ whose commit fails delivers the chunks, then an unavailable status, and no turn-
 
 ### C4 — Service binary and telemetry setup
 
-status: pending
+status: done
 depends-on: 2, 3
 
 **Responsibility.** Turn the crate into a runnable service: read configuration from the environment,
@@ -275,7 +275,7 @@ a new architecture decision.
   the whole turn is a documented obligation on `start_turn`. `#[must_use]` sits on the in-memory
   `Token`.
 - C3: serving requires the store to be cheaply `Clone`, because a clone moves into the `'static`
-  response stream to commit after the last chunk. `History` satisfies this through its shared `Arc`.
+  response stream to commit after the last chunk. `InMemoryHistory` satisfies this through its shared `Arc`.
 - C4: the pure constructor takes a lookup by variable name in place of two positional values, so the
   arguments cannot be swapped. A non-UTF-8 value is an error rather than "unset", and every error
   names the variable and the offending value.
@@ -291,3 +291,8 @@ a new architecture decision.
   `tracing::Instrument` covers futures only and the alternative was the `tracing-futures` crate.
 - C3: a committed reply is one assistant entry whose adjacent text chunks coalesce into one part,
   so ARIA-143's tool calls can interleave later without breaking order.
+- C4: `RUST_LOG` filters the stdout layer only, defaulting to `info`, so a quiet log level never
+  thins exported spans. An invalid value warns and falls back. Not in the contract; added after the
+  smoke run showed TRACE output from tonic, h2 and hyper by default.
+- C4: the shutdown signal also handles Windows (Ctrl-C, Ctrl-Break, console close). That branch is
+  not compiled in CI or locally yet, because no Windows target is installed.
