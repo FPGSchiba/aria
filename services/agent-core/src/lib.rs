@@ -7,6 +7,6 @@ pub type BoxError = Box<dyn std::error::Error + Send + Sync>;
 pub mod backend;
 pub mod config;
 pub mod conversation;
+pub mod health;
 pub mod history;
 pub mod service;
-pub mod telemetry;

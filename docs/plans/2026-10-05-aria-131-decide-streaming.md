@@ -338,7 +338,7 @@ is updated.
 
 ### C7 — Shared telemetry crate
 
-status: pending
+status: done
 
 **Responsibility.** Move the Agent Core's telemetry setup into a workspace crate of its own, so every
 service sets up stdout logging, optional OTLP export, the export filter and the provider shutdown
@@ -444,3 +444,9 @@ The milestone review and three fresh branch reviews added the failure handling r
   - A client that disconnects after the commit but before turn-complete has its exchange stored
     without seeing turn-complete. This is the mirror image of the case the commit-before-turn-complete
     Decision rejects, and is accepted.
+- C7 (after its API review): one string cannot be both the OTel `service.name` (`aria-agent-core`)
+  and a tracing target (`agent_core`). So the public entry point is a macro that takes the service
+  name and captures the caller's crate target where it is called. That keeps C7's "one input drives
+  both" and makes a wrong target impossible. The export filter is fixed for every service, with no
+  caller-tunable fields. Setup returns a `#[must_use]` guard that flushes on explicit shutdown and,
+  as a fallback, on drop. Errors are a typed enum. A blank endpoint means unset inside the crate.

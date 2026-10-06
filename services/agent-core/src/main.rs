@@ -3,7 +3,6 @@ use agent_core::backend::echo::EchoBackend;
 use agent_core::config::Config;
 use agent_core::history::InMemoryHistory;
 use agent_core::service::Service;
-use agent_core::telemetry::configure_tracing;
 use proto::agent_core::v1::agent_core_server::AgentCoreServer;
 use std::error::Error;
 use std::process::ExitCode;
@@ -71,7 +70,7 @@ async fn main() -> ExitCode {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             // Printed with `Display`: returning the error from `main` would print its `Debug`.
-            eprintln!("agent-core: {e}");
+            eprintln!("agent-core: {}", error_chain(e.as_ref()));
             ExitCode::FAILURE
         }
     }
@@ -81,11 +80,23 @@ async fn main() -> ExitCode {
 /// default 30 s termination grace period, so the process exits on its own before the SIGKILL.
 const DRAIN_BOUND: Duration = Duration::from_secs(20);
 
+/// The error and its sources, joined with ": ", so the cause is not lost.
+fn error_chain(error: &(dyn Error + 'static)) -> String {
+    let mut message = error.to_string();
+    let mut source = error.source();
+    while let Some(cause) = source {
+        message.push_str(": ");
+        message.push_str(&cause.to_string());
+        source = cause.source();
+    }
+    message
+}
+
 /// Reads the configuration, sets up tracing and serves until a shutdown signal arrives.
 async fn run() -> Result<(), Box<dyn Error>> {
     let config = Config::from_env()?;
 
-    let provider = configure_tracing(config.otlp_endpoint().map(str::to_owned))?;
+    let telemetry = telemetry::init!("aria-agent-core", config.otlp_endpoint())?;
 
     let backend = EchoBackend;
     let backend_name = backend.name();
@@ -108,8 +119,8 @@ async fn run() -> Result<(), Box<dyn Error>> {
         });
     let served = serve_with_bounded_drain(serve, signalled_rx, DRAIN_BOUND).await;
 
-    if let Some(Err(e)) = provider.map(|p| p.shutdown()) {
-        tracing::error!(error = %e, "failed to shut down OTLP tracer provider");
+    if let Err(e) = telemetry.shutdown() {
+        tracing::error!(error = %error_chain(&e), "failed to shut down telemetry");
     }
 
     Ok(served.unwrap_or(Ok(()))?)

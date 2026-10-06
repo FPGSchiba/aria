@@ -8,6 +8,7 @@ members = [
     "services/speech",
     "crates/identity",
     "crates/shared",
+    "crates/telemetry",
     "proto"
 ]
 
@@ -24,6 +25,7 @@ mcp-registry   = { path = "services/mcp-registry" }
 speech         = { path = "services/speech" }
 identity       = { path = "crates/identity" }
 shared         = { path = "crates/shared" }
+telemetry      = { path = "crates/telemetry" }
 proto          = { path = "proto" }
 
 tonic                 = { version = "0.14.6" }
@@ -41,3 +43,4 @@ opentelemetry         = { version = "0.32.0" }
 opentelemetry_sdk     = { version = "0.32.0" }
 opentelemetry-otlp    = { version = "0.32.0", default-features = false, features = ["trace", "grpc-tonic"] }
 thiserror             = { version = "2.0.20" }
+tonic-health          = { version = "0.14.6" }
