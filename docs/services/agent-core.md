@@ -108,8 +108,8 @@ a backend outage makes every pod unready at once, so callers see "no endpoints" 
 failing turns.
 
 **Version:** every response carries an `x-aria-version` header with the build version. The
-startup log and the OTel `service.version` attribute carry it too. CI can add a git SHA at build
-time through `ARIA_GIT_SHA`. No call checks compatibility yet; that is an open question.
+startup log and the OTel `service.version` attribute carry it too. CI images carry the git SHA, passed as the
+`ARIA_GIT_SHA` Docker build argument; a local build without it reports `unknown`. No call checks compatibility yet; that is an open question.
 
 **Status codes `Decide` returns:**
 

@@ -9,9 +9,17 @@ use tower::{Layer, Service};
 /// The package version, from `CARGO_PKG_VERSION`.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-/// The git commit the build came from, if `ARIA_GIT_SHA` was set when it was built. Absent in a
-/// local build.
-pub const GIT_SHA: Option<&str> = option_env!("ARIA_GIT_SHA");
+/// The git commit the build came from, if `ARIA_GIT_SHA` was set to a non-empty value when it was
+/// built. Absent in a local build.
+pub const GIT_SHA: Option<&str> = non_empty(option_env!("ARIA_GIT_SHA"));
+
+/// `None` for an unset or empty value, so a blank build argument counts as no SHA.
+const fn non_empty(value: Option<&'static str>) -> Option<&'static str> {
+    match value {
+        Some(v) if !v.is_empty() => Some(v),
+        _ => None,
+    }
+}
 
 /// The name of the header every gRPC response carries.
 pub const VERSION_HEADER: &str = "x-aria-version";
@@ -60,5 +68,17 @@ where
                 .insert(VERSION_HEADER, HeaderValue::from_static(VERSION));
             Ok(response)
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::non_empty;
+
+    #[test]
+    fn an_empty_sha_counts_as_none() {
+        assert_eq!(non_empty(None), None);
+        assert_eq!(non_empty(Some("")), None);
+        assert_eq!(non_empty(Some("abc1234")), Some("abc1234"));
     }
 }

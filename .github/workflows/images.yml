@@ -7,6 +7,10 @@
 # pulled anonymously (D86); the only credential is the workflow's own token.
 # No `latest` tag: a moving tag conflicts with D45 and with pinned chart values.
 #
+# The commit is baked into each image (ARIA_GIT_SHA) so a running service reports it. On pull
+# requests github.sha is the merge commit GitHub creates for the run, not a commit on the branch,
+# so those builds pass the PR head SHA instead.
+#
 # Both targets build in one job on one builder, so the workspace compiles once
 # and the second target reuses the first's builder stage.
 
@@ -51,6 +55,7 @@ jobs:
           target: gateway
           platforms: ${{ env.PLATFORMS }}
           push: false
+          build-args: ARIA_GIT_SHA=${{ github.event.pull_request.head.sha }}
           cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
           cache-to: type=gha,mode=max,scope=${{ env.CACHE_SCOPE }}
 
@@ -61,6 +66,7 @@ jobs:
           target: agent-core
           platforms: ${{ env.PLATFORMS }}
           push: false
+          build-args: ARIA_GIT_SHA=${{ github.event.pull_request.head.sha }}
           cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
           cache-to: type=gha,mode=max,scope=${{ env.CACHE_SCOPE }}
 
@@ -97,6 +103,7 @@ jobs:
           target: gateway
           platforms: ${{ env.PLATFORMS }}
           push: true
+          build-args: ARIA_GIT_SHA=${{ github.sha }}
           tags: ${{ steps.ns.outputs.prefix }}/aria-gateway:${{ github.sha }}
           labels: org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
@@ -110,6 +117,7 @@ jobs:
           target: agent-core
           platforms: ${{ env.PLATFORMS }}
           push: true
+          build-args: ARIA_GIT_SHA=${{ github.sha }}
           tags: ${{ steps.ns.outputs.prefix }}/aria-agent-core:${{ github.sha }}
           labels: org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
