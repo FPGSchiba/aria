@@ -2,7 +2,8 @@
 #
 # MIRROR RULE: the gate is defined twice, here and in .githooks/pre-commit. A change to the gate
 # changes both files in the same commit (docs/05-conventions.md). Two differences are deliberate:
-#   - no plain `cargo test` job: the coverage job runs the whole suite and fails on a failing test;
+#   - no plain `cargo test` job: the coverage job runs the unit and integration tests, and the
+#     doctest job runs the doctests, which `cargo llvm-cov` skips;
 #   - CI adds platform-only checks the hook cannot run (the Windows compile).
 #
 # Plan: docs/plans/2026-10-06-aria-140-ci-gate.md. The jobs run in parallel; `gate` aggregates
@@ -12,6 +13,8 @@ name: ci
 
 on:
   push:
+    # Branches only: a tag push would rerun the gate on a commit that already passed it.
+    branches: ['**']
   pull_request:
 
 # Nothing by default; each job asks for what it needs.
@@ -19,8 +22,10 @@ permissions: {}
 
 concurrency:
   # Keyed by event too, so a PR branch's push run and pull_request run never cancel each other.
-  group: ci-${{ github.event_name }}-${{ github.ref }}
-  # A newer push supersedes the older run. Runs on main are never cancelled.
+  # On main each commit gets its own group: a shared group would still cancel a *pending* run
+  # when a third one queues, losing that commit's result and cache save.
+  group: ci-${{ github.event_name }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  # A newer push to a branch supersedes the older run.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
@@ -37,6 +42,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Explicit, like every job: rustup 1.28+ need not auto-install from rust-toolchain.toml.
+      - run: rustup toolchain install
       # No build, no cache: this is the cheapest failure and should report first.
       - run: cargo fmt --all -- --check
 
@@ -76,6 +83,22 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: cargo llvm-cov --workspace --fail-under-lines 80
 
+  # `cargo llvm-cov` does not run doctests (its --doctests flag is unstable), and the identity
+  # crate's compile_fail doctests are what keep UserContext and Claims unconstructible outside it.
+  doctest:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo test --workspace --doc
+
   # Compile-only: agent-core's shutdown signal has a Windows branch nothing else builds.
   windows-check:
     runs-on: windows-2025
@@ -95,7 +118,7 @@ jobs:
   # failed is skipped by default, and GitHub counts a skipped required check as passing.
   gate:
     if: always()
-    needs: [fmt, clippy, coverage, windows-check]
+    needs: [fmt, clippy, coverage, doctest, windows-check]
     runs-on: ubuntu-24.04
     steps:
       - name: Every job succeeded
