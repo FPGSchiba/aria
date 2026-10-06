@@ -216,7 +216,7 @@ turn-complete marker on success. A backend error ends the stream with an error s
 is called exactly once (no retry), and history is unchanged. A client that cancels mid-stream
 leaves history unchanged and the session free. A busy session yields a status that callers can tell
 apart from a backend error and from invalid input. A commit that fails ends the stream with an
-unavailable status in place of the turn-complete marker. Invalid input yields an invalid-argument status
+internal status in place of the turn-complete marker (amended 2026-10-06). Invalid input yields an invalid-argument status
 without calling the backend. Each `Decide` runs inside a span. A failed turn marks that span as an
 error, attaches an event naming the outcome (backend error or cancelled) and the session id, and
 emits an error-level log record.
@@ -230,7 +230,7 @@ status and no chunks. A second concurrent `Decide` on a session with a turn in f
 busy, and the first completes normally. A cancelled client stream leaves the session with no history
 and free for a new turn. An empty `session_id`, and separately empty `text`, return invalid argument
 with zero backend calls. A backend failure emits an error-level record carrying the session id. A store
-whose commit fails delivers the chunks, then an unavailable status, and no turn-complete marker.
+whose commit fails delivers the chunks, then an internal status, and no turn-complete marker.
 
 **Done when.** Those tests pass over an in-process gRPC server and client, and the linter is clean.
 
@@ -279,7 +279,7 @@ a new architecture decision.
   also removes a second clone per turn. Found in API review round 2.
 - C1: the in-memory store checks that a turn was issued by the same store (identity of its shared
   map) before committing or aborting. A foreign turn is refused as `InvalidTurnOwner`, which maps to
-  `UNAVAILABLE` like every commit failure.
+  `INTERNAL` at commit, like every commit failure, and to `UNAVAILABLE` from `start_turn`.
 - C1: generic callers get no `#[must_use]` lint on the associated turn type, so holding the turn for
   the whole turn is a documented obligation on `start_turn`. `#[must_use]` sits on the in-memory
   `Token`.
@@ -312,7 +312,8 @@ a new architecture decision.
 - C1: the in-memory store is `InMemoryHistory`, renamed from `History` during implementation.
 - C3 (after milestone review): a backend error maps to `INTERNAL`, not `UNAVAILABLE`, because default
   gRPC retry policies retry `UNAVAILABLE` and would re-run a failed turn, against D39's posture.
-  A store or commit failure stays `UNAVAILABLE`, as decided above. A busy rejection is marked as a
+  A store failure in `start_turn` stays `UNAVAILABLE`; a commit failure became `INTERNAL` in the
+  2026-10-06 amendment above. A busy rejection is marked as a
   failed span (`store_error`), so error traces include ordinary barge-in races.
 - C3 (after milestone review): a drop while a commit is in flight reports `commit_interrupted`,
   because the history may or may not hold the exchange. The store trait now asks for commit to be
