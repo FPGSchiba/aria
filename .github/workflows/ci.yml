@@ -1,0 +1,111 @@
+# The repo gate in CI (ARIA-140).
+#
+# MIRROR RULE: the gate is defined twice, here and in .githooks/pre-commit. A change to the gate
+# changes both files in the same commit (docs/05-conventions.md). Two differences are deliberate:
+#   - no plain `cargo test` job: the coverage job runs the whole suite and fails on a failing test;
+#   - CI adds platform-only checks the hook cannot run (the Windows compile).
+#
+# Plan: docs/plans/2026-10-06-aria-140-ci-gate.md. The jobs run in parallel; `gate` aggregates
+# them and is the only check `main` requires, so jobs can change without touching the ruleset.
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+# Nothing by default; each job asks for what it needs.
+permissions: {}
+
+concurrency:
+  # Keyed by event too, so a PR branch's push run and pull_request run never cancel each other.
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  # A newer push supersedes the older run. Runs on main are never cancelled.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  # Incremental artifacts are useless across runs and only bloat the cache.
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  fmt:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No build, no cache: this is the cheapest failure and should report first.
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Install the toolchain from rust-toolchain.toml first, so the cache key sees it.
+      - run: rustup toolchain install
+      # One cache per job (keyed on the job id by default); saved from main only so PR runs
+      # restore without churning the repository cache quota shared with images.yml.
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+
+  coverage:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: rustup toolchain install
+      - run: rustup component add llvm-tools-preview
+      # Prebuilt binary: seconds, not minutes of `cargo install`.
+      - uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: cargo-llvm-cov
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo llvm-cov --workspace --fail-under-lines 80
+
+  # Compile-only: agent-core's shutdown signal has a Windows branch nothing else builds.
+  windows-check:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo check --workspace --all-targets
+
+  # The one required check. It must run even when a dependency failed: a job whose `needs`
+  # failed is skipped by default, and GitHub counts a skipped required check as passing.
+  gate:
+    if: always()
+    needs: [fmt, clippy, coverage, windows-check]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Every job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: ${RESULTS}"
+          for r in ${RESULTS}; do
+            if [ "$r" != "success" ]; then
+              echo "::error::a gate job ended as '${r}'"
+              exit 1
+            fi
+          done
