@@ -62,14 +62,32 @@ skeleton does until the named story replaces it.
 - **An exchange is committed only when the turn finishes cleanly.** The commit happens before
   turn-complete is sent. A backend error, a cancelled client stream or a failed commit leaves
   history unchanged, so after a cancelled turn there is no memory of the half answer the user heard.
-  A failed commit ends the stream with `UNAVAILABLE` in place of turn-complete. *Revisit with:* D61's
+  A failed commit ends the stream with `INTERNAL` in place of turn-complete. *Revisit with:* D61's
   turn log, which is where a turn status such as "interrupted" belongs.
 - **The binary serves an `echo` backend.** It streams the user's text back and is not a product
   backend; startup logs which backend is serving. *Replaced by:* ARIA-143 (hosted backend, D85).
 - **Spans are exported only when an OTLP endpoint is configured** (`OTEL_EXPORTER_OTLP_ENDPOINT`).
   Without one, no exporter is created and logs still go to stdout. `RUST_LOG` filters stdout only, so
-  a quiet log level never thins exported spans. *Replaced by:* the in-cluster collector (D82), at
-  which point the endpoint is always set.
+  a quiet log level never thins exported spans. Export has its own fixed filter: this service at
+  `debug`, dependencies at `warn`. *Replaced by:* the in-cluster collector (D82), at which point the
+  endpoint is always set.
+
+**Running it (interim values, not settled):**
+
+| Setting | Variable | Default |
+|---|---|---|
+| Listen address | `ARIA_AGENT_CORE_LISTEN_ADDRESS` | `0.0.0.0:6517`. Port `6517` is a skeleton default, not an allocation. |
+| Span export | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset, so export is off |
+| Stdout log level | `RUST_LOG` | `info` |
+
+**Status codes `Decide` returns:**
+
+| Status | When |
+|---|---|
+| `INVALID_ARGUMENT` | Empty `session_id` or `text`. The backend is not called. |
+| `ABORTED` | The session already has a turn in flight. |
+| `UNAVAILABLE` | The history store failed before the turn started. Nothing has happened, so a retry is safe. |
+| `INTERNAL` | The backend failed mid-turn, or the commit failed after the reply was streamed. Deliberately not `UNAVAILABLE`, because default gRPC retry policies retry that code and would re-run the turn. |
 
 ---
 

@@ -396,3 +396,21 @@ Found while reviewing `main` against the decisions. Recorded, not decided.
   [D87](../decisions/0020-proto-layout.md) fixed the directory layout and deliberately left this
   alone. Open: rename (a wire-visible change to the gRPC method paths) or except the rule. Cheapest to
   settle before clients exist.
+
+## Surfaced by ARIA-131 (2026-10-06)
+
+Found while building `Decide` in the Agent Core. Recorded, not decided. Reasoning is in the
+[ARIA-131 plan](../plans/2026-10-05-aria-131-decide-streaming.md#open-questions).
+
+- **Where [D49](../decisions/0009-measurement-session.md)'s canonical conversation and tool-call type
+  lives once it crosses a service boundary**: when history is persisted to the Knowledge Core
+  ([D36](../decisions/README.md)), and in the turn log ([D61](../decisions/0012-clients-gateway-surface.md)).
+  It could be a type in `crates/shared`, or a proto message plus a domain type in each service that
+  converts at the boundary. *Interim:* a small typed conversation model internal to `agent-core`,
+  extendable with tool calls without breaking changes. To be settled by the story that first persists
+  history.
+- **Whether stored system entries are replayed to the backend.** *Direction agreed while planning
+  ARIA-131, not yet a decision:* system entries are **stored** for debugging, but only the fresh system
+  entry for the current call is **sent**. Replaying stored ones would give the model several
+  contradictory "today is" statements. It becomes concrete with the date/time injection item under
+  D85 above, so settle the two together. Affects ARIA-143 and ARIA-61.
