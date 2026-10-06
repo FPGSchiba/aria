@@ -2,6 +2,9 @@
 # ARIA repo gate. Runs before every commit once enabled (see docs/05-conventions.md).
 # Enable once per clone with:
 #   git config core.hooksPath .githooks
+#
+# MIRROR RULE: the gate is defined twice, here and in .github/workflows/ci.yml. A change to the
+# gate changes both files in the same commit (docs/05-conventions.md).
 set -e
 
 echo "== cargo fmt --check =="

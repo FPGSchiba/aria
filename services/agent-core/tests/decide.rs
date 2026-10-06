@@ -1,6 +1,8 @@
 //! `Decide` over a real in-process gRPC server and client (tonic over loopback TCP).
 //! The handler is never called directly: every assertion is about what the caller receives.
 
+mod common;
+
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::{Actor, Content, ConversationPart};
@@ -731,6 +733,7 @@ async fn empty_text_is_invalid_argument_without_calling_the_backend() {
 
 #[tokio::test]
 async fn backend_failure_emits_an_error_level_log_record_carrying_the_session_id() {
+    common::keep_tracing_interest_global();
     let logs = LogBuffer::default();
     let subscriber = tracing_subscriber::fmt()
         .with_writer(logs.clone())
@@ -851,6 +854,7 @@ impl<S: Subscriber + for<'a> LookupSpan<'a>> Layer<S> for SpanCapture {
 
 impl SpanCapture {
     fn install() -> (Self, tracing::subscriber::DefaultGuard) {
+        common::keep_tracing_interest_global();
         let capture = Self::default();
         let subscriber = tracing_subscriber::registry().with(capture.clone());
         (capture, tracing::subscriber::set_default(subscriber))

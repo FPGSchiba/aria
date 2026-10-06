@@ -1,6 +1,8 @@
 //! gRPC health over a real in-process server: the statuses follow the backend and the store, and
 //! shutdown reports not-serving before the drain, while a turn is still in flight.
 
+mod common;
+
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::ConversationPart;
@@ -125,7 +127,8 @@ impl Backend for GatedBackend {
 
 /// Counts spans named `decide` and events at info or above, to show health checks create none.
 /// Installed with `set_default`, which is per thread: the tests using it run on tokio's default
-/// current-thread runtime, so the server tasks run on the same thread and are seen.
+/// current-thread runtime, so the server tasks run on the same thread and are seen. Each test calls
+/// `common::keep_tracing_interest_global` first, or a parallel test can hide events from it.
 #[derive(Clone, Default)]
 struct Counts {
     decide_spans: Arc<AtomicUsize>,
@@ -255,6 +258,7 @@ async fn started_server_reports_serving_overall_and_for_agent_core() {
 
 #[tokio::test]
 async fn health_checks_create_no_decide_spans_and_no_info_log_lines() {
+    common::keep_tracing_interest_global();
     let counts = Counts::default();
     let _guard =
         tracing::subscriber::set_default(tracing_subscriber::registry().with(counts.clone()));
