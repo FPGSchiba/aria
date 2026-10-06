@@ -2,7 +2,7 @@
 title: Stream Decide from the Agent Core with in-memory session history (ARIA-131)
 slug: aria-131-decide-streaming
 tier: technical
-status: active
+status: complete
 created: 2026-10-05
 branch: aria-131-decide-streaming
 owns_branch: true
@@ -278,6 +278,11 @@ page says so. Then check whether Confluence or Jira (ARIA-143) need the same not
 a new architecture decision.
 
 ## Deviations
+
+*Closed out 2026-10-06.* Everything the plan described was built; nothing was dropped. The entries
+below cover where the build differs from the plan's text, in the order they were found. C1 and C2
+were implemented together with the API shape (commit `3f693b2`), not as separate Phase 4 components.
+The milestone review and three fresh branch reviews added the failure handling recorded at the end.
 
 - C1: `start_turn` returns the owned history snapshot alongside the turn, so a handler that is
   generic over the store can pass history to the backend without naming the in-memory token. It
