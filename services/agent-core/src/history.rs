@@ -2,6 +2,7 @@
 //! Owns every session's conversation so far and whether a turn is in flight on it.
 //! Decides whether a turn may start and what a finished turn adds.
 
+use crate::BoxError;
 use crate::conversation::ConversationPart;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -24,9 +25,9 @@ pub enum HistoryError {
     /// Another turn is already in flight on the session.
     #[error("turn already in flight")]
     TurnInFlight,
-    /// The store could not be reached or used.
-    #[error("history store not available")]
-    StoreUnavailable,
+    /// The store could not be reached or used. Carries the cause.
+    #[error("history store not available: {0}")]
+    StoreUnavailable(#[source] BoxError),
     /// The turn does not hold the session it was handed back for.
     #[error("the turn does not hold the session it was handed back for")]
     InvalidTurnOwner,

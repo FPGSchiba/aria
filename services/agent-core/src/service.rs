@@ -16,46 +16,48 @@ use tonic::{Request, Response, Status};
 use tracing::{Instrument, Span};
 
 /// Why a `Decide` call failed. Converts to a gRPC `Status` with generic client texts.
+/// Every variant is built explicitly at its call site: none converts from an inner error, so a
+/// store failure cannot take the status of a different operation by accident.
 #[derive(Debug, thiserror::Error)]
 pub enum ServiceError {
-    /// The backend failed while producing the reply.
-    #[error("streaming failed in the backend: {0}")]
-    StreamError(#[from] BackendError),
-    /// The history store refused or failed to start the turn.
-    #[error("history store error: {0}")]
-    Store(#[from] HistoryError),
-    /// The history store failed to commit a finished turn.
-    #[error("history store failed to commit: {0}")]
-    Commit(HistoryError),
     /// A request field was missing or empty.
     #[error("invalid input in field: {field}")]
     InvalidInput { field: &'static str },
+    /// The history store refused or failed to start the turn.
+    #[error("history store failed to start the turn: {0}")]
+    Store(HistoryError),
+    /// The history store failed to commit a finished turn.
+    #[error("history store failed to commit: {0}")]
+    Commit(HistoryError),
+    /// The history store failed to abort a turn that had ended without a reply.
+    #[error("history store failed to abort: {0}")]
+    Abort(HistoryError),
+    /// The backend failed while producing the reply.
+    #[error("backend failed: {0}")]
+    Backend(BackendError),
+    /// The backend ended cleanly without sending any reply.
+    #[error("backend produced no reply")]
+    EmptyReply,
 }
 
 impl From<ServiceError> for Status {
     fn from(err: ServiceError) -> Self {
         match err {
-            ServiceError::StreamError(e) => match e {
-                BackendError::UnexpectedError => Status::internal("Unexpected error in backend"),
-                BackendError::GenerationFailed => {
-                    Status::internal("Backend failed to generate a reply")
-                }
-            },
+            ServiceError::InvalidInput { field } => {
+                Status::invalid_argument(format!("Invalid input in field: {}", field))
+            }
             ServiceError::Store(e) => match e {
                 HistoryError::TurnInFlight => {
                     Status::aborted("Session is busy with another request")
                 }
-                HistoryError::StoreUnavailable => {
-                    Status::unavailable("History store is unavailable")
-                }
-                HistoryError::InvalidTurnOwner => {
+                HistoryError::StoreUnavailable(_) | HistoryError::InvalidTurnOwner => {
                     Status::unavailable("History store is unavailable")
                 }
             },
             ServiceError::Commit(_) => Status::internal("History store failed to commit the turn"),
-            ServiceError::InvalidInput { field } => {
-                Status::invalid_argument(format!("Invalid input in field: {}", field))
-            }
+            ServiceError::Abort(_) => Status::internal("History store failed to abort the turn"),
+            ServiceError::Backend(_) => Status::internal("Unexpected error in backend"),
+            ServiceError::EmptyReply => Status::internal("Backend failed to generate a reply"),
         }
     }
 }
@@ -73,20 +75,6 @@ impl<B: Backend, H: HistoryStore> Service<B, H> {
     /// the response stream.
     pub fn new(backend: B, history: H) -> Self {
         Self { backend, history }
-    }
-}
-
-/// Builds a service from the default backend and the default (empty) store.
-impl<B, H> Default for Service<B, H>
-where
-    B: Backend + Default,
-    H: HistoryStore + Default,
-{
-    fn default() -> Self {
-        Self {
-            backend: B::default(),
-            history: H::default(),
-        }
     }
 }
 
@@ -182,7 +170,7 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                 }
                 cancel_guard.finish();
                 report_failure(&stream_span, &session_id, "backend_error", &e);
-                Err(ServiceError::StreamError(e))?;
+                Err(ServiceError::Backend(e))?;
             } else if num_chunks == 0 {
                 // The backend never sent any text, so the conversation is just the user's part.
                 // Abort this turn so it does not appear in the history, and report the failure. The client gets a generic error.
@@ -190,12 +178,12 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                 if let Err(e) = history.abort(turn).await {
                     cancel_guard.finish();
                     report_failure(&stream_span, &session_id, "abort_failed", &e);
-                    Err(ServiceError::Commit(e))?;
+                    Err(ServiceError::Abort(e))?;
                 }
                 cancel_guard.finish();
-                let e = BackendError::GenerationFailed;
+                let e = ServiceError::EmptyReply;
                 report_failure(&stream_span, &session_id, "generation_failed", &e);
-                Err(ServiceError::StreamError(e))?;
+                Err(e)?;
             } else {
                 tracing::info!(stage = "committing", session_id = %session_id, "Committing conversation");
                 cancel_guard.committing();

@@ -43,18 +43,13 @@ pub fn configure_tracing(
             .with_batch_exporter(exporter)
             .with_resource(
                 opentelemetry_sdk::Resource::builder()
-                    .with_service_name("agent-core")
+                    .with_service_name("aria-agent-core")
                     .build(),
             )
             .build();
-        // Export this crate's spans down to `debug`; dependencies only at `warn`, so their
-        // per-request spans do not flood the collector.
-        let export_filter = Targets::new()
-            .with_default(Level::WARN)
-            .with_target(env!("CARGO_CRATE_NAME"), Level::DEBUG);
         let otel_layer = tracing_opentelemetry::layer()
-            .with_tracer(provider.tracer("agent-core"))
-            .with_filter(export_filter);
+            .with_tracer(provider.tracer("aria-agent-core"))
+            .with_filter(export_filter());
         tracing::subscriber::set_global_default(subscriber.with(otel_layer))?;
 
         tracing::info!("OTLP tracing enabled");
@@ -70,4 +65,39 @@ pub fn configure_tracing(
         tracing::warn!(rust_log = %value, "invalid RUST_LOG, falling back to 'info'");
     }
     Ok(provider)
+}
+
+/// The filter on span export: this crate's spans down to `debug`; dependencies only at `warn`, so
+/// their per-request spans do not flood the collector.
+fn export_filter() -> Targets {
+    Targets::new()
+        .with_default(Level::WARN)
+        .with_target(env!("CARGO_CRATE_NAME"), Level::DEBUG)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn export_filter_passes_this_crates_decide_span() {
+        let filter = export_filter();
+
+        assert!(filter.would_enable("agent_core::service", &Level::INFO));
+        assert!(filter.would_enable("agent_core::service", &Level::DEBUG));
+    }
+
+    #[test]
+    fn export_filter_drops_dependency_debug_but_keeps_their_warnings() {
+        let filter = export_filter();
+
+        for target in [
+            "h2::proto::connection",
+            "hyper::proto::h2",
+            "tonic::transport::server",
+        ] {
+            assert!(!filter.would_enable(target, &Level::DEBUG), "{target}");
+            assert!(filter.would_enable(target, &Level::WARN), "{target}");
+        }
+    }
 }

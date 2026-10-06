@@ -340,3 +340,9 @@ a new architecture decision.
   gets `INTERNAL` with no turn-complete. Committing it would have left a lone user entry and broken
   the alternation the first Decision protects. Real causes include a reasoning budget spent before
   any visible text, and a content-filter stop.
+- After the final branch review: `BackendError` and `HistoryError::StoreUnavailable` carry a boxed
+  cause, which failure events and logs record. `ServiceError` has no `From` conversions, so every
+  call site picks its status explicitly: `Store` gives `UNAVAILABLE` (busy gives `ABORTED`), and
+  `Commit`, `Abort`, `Backend` and `EmptyReply` give `INTERNAL`. `tests/binary.rs` covers the binary
+  end to end on Unix: startup, one `Decide`, SIGTERM, and a bad listen address. The OTel service name
+  is `aria-agent-core`.

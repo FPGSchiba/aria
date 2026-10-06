@@ -13,8 +13,8 @@ use std::sync::{Arc, Mutex};
 pub enum ScriptStep {
     /// Emit this chunk.
     Chunk(Chunk),
-    /// Emit this error; nothing after it is emitted.
-    Error(BackendError),
+    /// Emit an error with this message; nothing after it is emitted.
+    Error(String),
 }
 
 /// What the backend was called with on one call.
@@ -55,8 +55,8 @@ impl Backend for ScriptedBackend {
         for step in script {
             match step {
                 ScriptStep::Chunk(chunk) => items.push(Ok(chunk)),
-                ScriptStep::Error(err) => {
-                    items.push(Err(err));
+                ScriptStep::Error(message) => {
+                    items.push(Err(BackendError::unexpected(message)));
                     break;
                 }
             }
@@ -77,12 +77,6 @@ impl ScriptedBackend {
     /// The recorded calls in order; the call count is its length.
     pub fn calls(&self) -> Vec<ScriptedConversation> {
         self.calls.lock().unwrap().clone()
-    }
-}
-
-impl Default for ScriptedBackend {
-    fn default() -> Self {
-        Self::new(Vec::new())
     }
 }
 
@@ -111,9 +105,15 @@ mod tests {
         }
     }
 
-    async fn drain(backend: &ScriptedBackend) -> Vec<Result<Chunk, BackendError>> {
+    /// Drains one call, reducing each error to its cause's message (errors are not `Eq`).
+    async fn drain(backend: &ScriptedBackend) -> Vec<Result<Chunk, String>> {
         backend
             .stream_conversation(Vec::new(), vec![part(Actor::User, "hi")])
+            .map(|item| {
+                item.map_err(|e| match e {
+                    BackendError::UnexpectedError(cause) => cause.to_string(),
+                })
+            })
             .collect()
             .await
     }
@@ -132,40 +132,34 @@ mod tests {
         let backend = ScriptedBackend::new(vec![
             chunk("a"),
             chunk("b"),
-            ScriptStep::Error(BackendError::UnexpectedError),
+            ScriptStep::Error("boom".to_string()),
         ]);
 
         let items = drain(&backend).await;
 
         assert_eq!(
             items,
-            vec![
-                Ok(text("a")),
-                Ok(text("b")),
-                Err(BackendError::UnexpectedError)
-            ]
+            vec![Ok(text("a")), Ok(text("b")), Err("boom".to_string())]
         );
     }
 
     #[tokio::test]
     async fn failing_immediately_yields_only_the_error() {
-        let backend = ScriptedBackend::new(vec![ScriptStep::Error(BackendError::UnexpectedError)]);
+        let backend = ScriptedBackend::new(vec![ScriptStep::Error("boom".to_string())]);
 
         let items = drain(&backend).await;
 
-        assert_eq!(items, vec![Err(BackendError::UnexpectedError)]);
+        assert_eq!(items, vec![Err("boom".to_string())]);
     }
 
     #[tokio::test]
     async fn nothing_is_emitted_after_an_error() {
-        let backend = ScriptedBackend::new(vec![
-            ScriptStep::Error(BackendError::UnexpectedError),
-            chunk("late"),
-        ]);
+        let backend =
+            ScriptedBackend::new(vec![ScriptStep::Error("boom".to_string()), chunk("late")]);
 
         let items = drain(&backend).await;
 
-        assert_eq!(items, vec![Err(BackendError::UnexpectedError)]);
+        assert_eq!(items, vec![Err("boom".to_string())]);
     }
 
     #[tokio::test]

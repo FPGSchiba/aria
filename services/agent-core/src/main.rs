@@ -91,9 +91,6 @@ async fn run() -> Result<(), Box<dyn Error>> {
         .add_service(AgentCoreServer::new(service))
         .serve_with_shutdown(config.listen_address(), shutdown_signal())
         .await;
-    if let Err(e) = &served {
-        tracing::error!(error = %e, "server failed");
-    }
 
     if let Some(Err(e)) = provider.map(|p| p.shutdown()) {
         tracing::error!(error = %e, "failed to shut down OTLP tracer provider");

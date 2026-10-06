@@ -2,6 +2,7 @@
 //! Defines what the Agent Core asks of any backend: prior exchanges plus new user
 //! text in, a stream of text chunks out, with a clean end distinguishable from an error.
 
+use crate::BoxError;
 use crate::conversation::ConversationPart;
 use futures_core::Stream;
 use std::pin::Pin;
@@ -17,15 +18,20 @@ pub enum Chunk {
     Text { text: String },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 /// A backend failure. It ends the turn; its text is for logs and telemetry, not the client.
+#[derive(Debug, thiserror::Error)]
 pub enum BackendError {
-    /// The backend failed in a way not covered by a more specific variant.
-    #[error("an unexpected error occurred in the backend")]
-    UnexpectedError,
-    /// The backend failed to generate a reply.
-    #[error("the backend failed to generate a reply")]
-    GenerationFailed,
+    /// The backend failed in a way not covered by a more specific variant. Carries the cause, so
+    /// an operator can tell, for example, a timeout from an HTTP error.
+    #[error("an unexpected error occurred in the backend: {0}")]
+    UnexpectedError(#[source] BoxError),
+}
+
+impl BackendError {
+    /// An unexpected backend failure with the given cause.
+    pub fn unexpected(cause: impl Into<BoxError>) -> Self {
+        Self::UnexpectedError(cause.into())
+    }
 }
 
 /// An LLM backend the Agent Core streams a reply from. One shared instance serves all

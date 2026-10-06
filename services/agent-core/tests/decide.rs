@@ -158,7 +158,7 @@ fn part(actor: Actor, s: &str) -> ConversationPart {
 }
 
 fn fail() -> ScriptStep {
-    ScriptStep::Error(BackendError::UnexpectedError)
+    ScriptStep::Error("scripted failure".to_string())
 }
 
 // ---------------------------------------------------------------- test doubles
@@ -253,7 +253,7 @@ impl HistoryStore for FailingCommitStore {
         _turn: InMemoryTurn,
         _new_parts: Vec<ConversationPart>,
     ) -> HistoryResult<()> {
-        Err(HistoryError::StoreUnavailable)
+        Err(HistoryError::StoreUnavailable("test store is down".into()))
     }
 
     async fn abort(&self, turn: InMemoryTurn) -> HistoryResult<()> {
@@ -274,7 +274,7 @@ impl HistoryStore for FailingStartStore {
         &self,
         _session_id: &str,
     ) -> HistoryResult<(InMemoryTurn, Vec<ConversationPart>)> {
-        Err(HistoryError::StoreUnavailable)
+        Err(HistoryError::StoreUnavailable("test store is down".into()))
     }
 
     async fn commit(
@@ -341,7 +341,9 @@ impl Backend for FailFirstCallBackend {
         histories.push(history);
         let a = tokio_stream::once::<Result<Chunk, BackendError>>(Ok(text("a")));
         if first_call {
-            Box::pin(a.chain(tokio_stream::once(Err(BackendError::UnexpectedError))))
+            Box::pin(a.chain(tokio_stream::once(Err(BackendError::unexpected(
+                "scripted failure",
+            )))))
         } else {
             Box::pin(tokio_stream::once(Ok(text("ok"))))
         }
