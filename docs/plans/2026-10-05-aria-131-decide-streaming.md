@@ -144,7 +144,7 @@ interim behaviour, not as decisions.
 
 ### C1 — Session history store
 
-status: pending
+status: done
 
 **Responsibility.** Own every session's conversation so far, and whether a turn is currently in
 flight on it. It is the one place that decides whether a turn may start and what a finished turn
@@ -170,7 +170,7 @@ different session.
 
 ### C2 — LLM backend contract, scripted backend and echo backend
 
-status: pending
+status: done
 
 **Responsibility.** Define what the Agent Core asks of any LLM backend, and provide two backends: a
 scripted one for tests and the trivial `echo` one the binary serves with.
@@ -194,7 +194,7 @@ ends cleanly.
 
 ### C3 — `Decide` service
 
-status: pending
+status: done
 depends-on: 1, 2
 
 **Responsibility.** Implement the `AgentCore` gRPC service. Validate the request, reserve the
@@ -283,3 +283,11 @@ a new architecture decision.
   in-test OTel exporter. The span is `decide`. A failed turn records `otel.status_code = "ERROR"` on
   it, and its failure event carries `outcome` (`backend_error` or `cancelled`) and `session_id`.
   Exporter wiring is C4's concern and is covered by the smoke run.
+- C3: failure outcomes are `backend_error`, `cancelled`, `commit_failed` and `invalid_input`. The
+  last two go beyond the plan's list: any `Decide` that does not end in turn-complete marks its span.
+  Cancellation is reported by a drop guard owned by the response stream, because a cancelled stream
+  is dropped rather than polled to an end.
+- C3: the response stream enters the span on every poll through a small in-crate adapter, because
+  `tracing::Instrument` covers futures only and the alternative was the `tracing-futures` crate.
+- C3: a committed reply is one assistant entry whose adjacent text chunks coalesce into one part,
+  so ARIA-143's tool calls can interleave later without breaking order.

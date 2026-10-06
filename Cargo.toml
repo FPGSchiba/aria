@@ -34,6 +34,7 @@ tracing               = { version = "0.1.44" }
 tracing-opentelemetry = { version = "0.33.0" }
 tokio-stream          = { version = "0.1.19" }
 futures-core          = { version = "0.3.34" }
+async-stream          = { version = "0.3.6" }
 tracing-subscriber    = { version = "0.3.23" }
 # opentelemetry crates must track the version tracing-opentelemetry 0.33 depends on (0.32)
 opentelemetry         = { version = "0.32.0" }

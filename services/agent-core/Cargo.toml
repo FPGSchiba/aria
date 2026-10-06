@@ -23,6 +23,7 @@ opentelemetry_sdk     = { workspace = true }
 opentelemetry-otlp    = { workspace = true }
 shared                = { workspace = true }
 thiserror             = { workspace = true }
+async-stream          = { workspace = true }
 
 [dev-dependencies]
 agent-core = { path = ".", features = ["test-util"] }

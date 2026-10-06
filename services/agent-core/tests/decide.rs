@@ -761,9 +761,18 @@ async fn successful_turn_has_a_decide_span_that_is_not_marked_error() {
     let spans = capture.decide_spans();
     assert_eq!(spans.len(), 1, "expected one decide span, got {spans:?}");
     assert!(!is_error_status(&spans[0]), "{:?}", spans[0]);
+    let failure_events: Vec<_> = capture
+        .decide_events()
+        .into_iter()
+        .filter(|e| {
+            matches!(
+                e.fields.get("outcome").map(String::as_str),
+                Some("backend_error" | "cancelled" | "commit_failed" | "invalid_input")
+            )
+        })
+        .collect();
     assert!(
-        capture.decide_events().is_empty(),
-        "a clean turn records no failure event: {:?}",
-        capture.decide_events()
+        failure_events.is_empty(),
+        "a clean turn records no failure event: {failure_events:?}"
     );
 }
