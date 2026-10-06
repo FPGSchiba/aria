@@ -1075,3 +1075,53 @@ async fn backend_failure_aborts_the_turn_so_the_next_decide_proceeds() {
     assert_eq!(histories.len(), 2);
     assert!(histories[1].is_empty(), "failed turn must leave no history");
 }
+
+#[tokio::test]
+async fn empty_reply_fails_the_turn_without_turn_complete_and_leaves_no_history() {
+    let backend = ScriptedBackend::new(vec![]);
+    let mut client = serve(backend.clone(), InMemoryHistory::default()).await;
+
+    let first = decide(&mut client, "empty-1", "hello").await;
+    let second = decide(&mut client, "empty-1", "again").await;
+
+    assert!(
+        first.status.is_some(),
+        "an empty reply must fail: {first:?}"
+    );
+    assert_eq!(first.completes(), 0, "{first:?}");
+    assert!(first.events.is_empty(), "{first:?}");
+    assert_ne!(second.code(), Some(Code::Aborted), "session must be free");
+    let calls = backend.calls();
+    assert_eq!(calls.len(), 2, "the second Decide must reach the backend");
+    assert!(calls[1].history.is_empty(), "no lone user entry is kept");
+}
+
+#[tokio::test]
+async fn empty_reply_marks_the_span_error_with_generation_failed_outcome() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![]);
+    let mut client = serve(backend, InMemoryHistory::default()).await;
+
+    decide(&mut client, "empty-span", "hello").await;
+
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a generation_failed event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "generation_failed", "empty-span")
+            },
+        )
+        .await;
+}
+
+#[tokio::test]
+async fn empty_reply_releases_the_session_through_abort() {
+    let backend = ScriptedBackend::new(vec![]);
+    let mut client = serve(backend, ManualReleaseStore::default()).await;
+
+    decide(&mut client, "empty-abort", "hello").await;
+    let second = decide(&mut client, "empty-abort", "again").await;
+
+    assert_ne!(second.code(), Some(Code::Aborted), "{second:?}");
+}

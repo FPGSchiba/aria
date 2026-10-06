@@ -23,6 +23,9 @@ pub enum BackendError {
     /// The backend failed in a way not covered by a more specific variant.
     #[error("an unexpected error occurred in the backend")]
     UnexpectedError,
+    /// The backend failed to generate a reply.
+    #[error("the backend failed to generate a reply")]
+    GenerationFailed,
 }
 
 /// An LLM backend the Agent Core streams a reply from. One shared instance serves all

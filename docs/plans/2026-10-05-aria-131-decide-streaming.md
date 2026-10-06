@@ -328,3 +328,8 @@ a new architecture decision.
 - Branch-review smells: the conversation model moved to `conversation.rs`, so backends no longer
   import from the store module. The in-memory turn handle is `InMemoryTurn`. `Backend::name()`
   feeds the startup log. `main` prints a config error with its readable message and exits 1.
+- C3 (after the final branch review): a backend that ends cleanly with no chunks fails the turn.
+  The turn is aborted, nothing is committed, the span is marked `generation_failed`, and the client
+  gets `INTERNAL` with no turn-complete. Committing it would have left a lone user entry and broken
+  the alternation the first Decision protects. Real causes include a reasoning budget spent before
+  any visible text, and a content-filter stop.

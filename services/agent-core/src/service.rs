@@ -37,6 +37,9 @@ impl From<ServiceError> for Status {
         match err {
             ServiceError::StreamError(e) => match e {
                 BackendError::UnexpectedError => Status::internal("Unexpected error in backend"),
+                BackendError::GenerationFailed => {
+                    Status::internal("Backend failed to generate a reply")
+                }
             },
             ServiceError::Store(e) => match e {
                 HistoryError::TurnInFlight => {
@@ -148,11 +151,13 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
 
         let reply = try_stream! {
             let mut backend_error = None;
+            let mut num_chunks = 0;
 
             while let Some(chunk) = backend_stream.next().await {
                 match chunk {
                     Ok(chunk) => {
                         push_conversation(&mut conversation, &chunk);
+                        num_chunks += 1;
                         match chunk {
                             Chunk::Text { text } => {
                                 tracing::trace!(stage = "streaming", session_id = %session_id, "Streaming text chunk to client");
@@ -177,6 +182,19 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                 }
                 cancel_guard.finish();
                 report_failure(&stream_span, &session_id, "backend_error", &e);
+                Err(ServiceError::StreamError(e))?;
+            } else if num_chunks == 0 {
+                // The backend never sent any text, so the conversation is just the user's part.
+                // Abort this turn so it does not appear in the history, and report the failure. The client gets a generic error.
+                tracing::warn!(stage = "no_reply", session_id = %session_id, "Backend produced no reply");
+                if let Err(e) = history.abort(turn).await {
+                    cancel_guard.finish();
+                    report_failure(&stream_span, &session_id, "abort_failed", &e);
+                    Err(ServiceError::Commit(e))?;
+                }
+                cancel_guard.finish();
+                let e = BackendError::GenerationFailed;
+                report_failure(&stream_span, &session_id, "generation_failed", &e);
                 Err(ServiceError::StreamError(e))?;
             } else {
                 tracing::info!(stage = "committing", session_id = %session_id, "Committing conversation");
