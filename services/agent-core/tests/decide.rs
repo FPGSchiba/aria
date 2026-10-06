@@ -180,6 +180,10 @@ impl GatedBackend {
 }
 
 impl Backend for GatedBackend {
+    fn name(&self) -> &'static str {
+        "gated"
+    }
+
     fn stream_conversation(
         &self,
         _history: Vec<ConversationPart>,
@@ -207,6 +211,10 @@ struct StallFirstCallBackend {
 }
 
 impl Backend for StallFirstCallBackend {
+    fn name(&self) -> &'static str {
+        "stall-first-call"
+    }
+
     fn stream_conversation(
         &self,
         history: Vec<ConversationPart>,
@@ -319,6 +327,10 @@ struct FailFirstCallBackend {
 }
 
 impl Backend for FailFirstCallBackend {
+    fn name(&self) -> &'static str {
+        "fail-first-call"
+    }
+
     fn stream_conversation(
         &self,
         history: Vec<ConversationPart>,

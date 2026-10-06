@@ -34,6 +34,10 @@ pub struct ScriptedBackend {
 }
 
 impl Backend for ScriptedBackend {
+    fn name(&self) -> &'static str {
+        "scripted"
+    }
+
     fn stream_conversation(
         &self,
         history: Vec<ConversationPart>,

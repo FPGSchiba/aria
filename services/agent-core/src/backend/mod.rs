@@ -28,10 +28,8 @@ pub enum BackendError {
 /// An LLM backend the Agent Core streams a reply from. One shared instance serves all
 /// turns, so implementations hold no per-conversation state.
 pub trait Backend: Send + Sync {
-    /// A short name for logs; defaults to the implementing type's name.
-    fn name(&self) -> &'static str {
-        std::any::type_name::<Self>()
-    }
+    /// A short, stable name for this backend, used in the startup log.
+    fn name(&self) -> &'static str;
 
     /// Streams a conversation to the backend, returning a stream of chunks.
     ///
