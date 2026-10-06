@@ -469,3 +469,7 @@ The milestone review and three fresh branch reviews added the failure handling r
   by `ARIA_AGENT_CORE_REFLECTION`, so the echo backend can be explored with Postman or grpcurl
   without the `.proto` file. The `proto` crate exposes its descriptor set for this. It is off by
   default so pods do not advertise their API surface unless someone opts in.
+- Added after close-out, at Jann's request: a separate health status for each dependency
+  (`aria.agent_core.v1.AgentCore.history` and `.backend`), so a caller can see which one is down.
+  The standard health response carries only a status, so a dependency's name and backup flag stay
+  in the change log lines. A richer status RPC would need a proto change and is left to a later story.

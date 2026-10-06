@@ -6,6 +6,15 @@
 //! server status (the empty service name) stays serving until shutdown begins, so liveness probes
 //! point at it and readiness probes at the Agent Core service. The monitor never probes a
 //! dependency; a dependency reports a change itself.
+//!
+//! The statuses, by service name:
+//! - `""`: the process, serving until shutdown begins.
+//! - [`SERVICE_NAME`]: serving only while both dependencies are healthy and shutdown has not begun.
+//! - [`HISTORY_SERVICE_NAME`] and [`BACKEND_SERVICE_NAME`]: whether that one dependency is
+//!   healthy, so an operator can see which one makes the Agent Core unready. `is_backup` does not
+//!   change them.
+//!
+//! Shutdown sets all four to not-serving, and every `Watch` stream ends after its last update.
 
 use proto::agent_core::v1::agent_core_server::SERVICE_NAME;
 use std::pin::Pin;
@@ -17,6 +26,13 @@ use tonic_health::pb::health_check_response::ServingStatus as WireStatus;
 use tonic_health::pb::health_server::{Health, HealthServer};
 use tonic_health::pb::{HealthCheckRequest, HealthCheckResponse};
 use tonic_health::server::{HealthReporter, HealthService};
+
+/// The history store's own status: `aria.agent_core.v1.AgentCore` plus `.history`. A test keeps it
+/// in step with the generated service name.
+pub const HISTORY_SERVICE_NAME: &str = "aria.agent_core.v1.AgentCore.history";
+
+/// The backend's own status: `aria.agent_core.v1.AgentCore` plus `.backend`.
+pub const BACKEND_SERVICE_NAME: &str = "aria.agent_core.v1.AgentCore.backend";
 
 /// Health of an LLM backend, as the backend itself reports it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -125,6 +141,8 @@ pub async fn start(
         last_status: None,
         last_backend: None,
         last_history: None,
+        last_backend_serving: None,
+        last_history_serving: None,
     };
     // The first evaluation happens here, so a check right after startup finds the status.
     state.evaluate().await;
@@ -144,6 +162,8 @@ struct MonitorState {
     last_status: Option<bool>,
     last_backend: Option<BackendHealth>,
     last_history: Option<HistoryHealth>,
+    last_backend_serving: Option<bool>,
+    last_history_serving: Option<bool>,
 }
 
 impl MonitorState {
@@ -161,6 +181,22 @@ impl MonitorState {
         if self.last_history.as_ref() != Some(&history) {
             log_history(&history);
             self.last_history = Some(history.clone());
+        }
+
+        // Each dependency's own status reflects only its `healthy`, and not-serving at shutdown.
+        let backend_serving = backend.is_healthy() && !shutting_down;
+        if self.last_backend_serving != Some(backend_serving) {
+            self.last_backend_serving = Some(backend_serving);
+            self.reporter
+                .set_service_status(BACKEND_SERVICE_NAME, status(backend_serving))
+                .await;
+        }
+        let history_serving = history.is_healthy() && !shutting_down;
+        if self.last_history_serving != Some(history_serving) {
+            self.last_history_serving = Some(history_serving);
+            self.reporter
+                .set_service_status(HISTORY_SERVICE_NAME, status(history_serving))
+                .await;
         }
 
         let serving = backend.is_healthy() && history.is_healthy() && !shutting_down;
@@ -297,5 +333,16 @@ impl Health for EndingHealth {
             }
         };
         Ok(Response::new(Box::pin(stream)))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dependency_names_extend_the_generated_service_name() {
+        assert_eq!(HISTORY_SERVICE_NAME, format!("{SERVICE_NAME}.history"));
+        assert_eq!(BACKEND_SERVICE_NAME, format!("{SERVICE_NAME}.backend"));
     }
 }

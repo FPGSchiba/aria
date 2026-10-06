@@ -4,7 +4,9 @@
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::ConversationPart;
-use agent_core::health::{self, BackendHealth, HistoryHealth};
+use agent_core::health::{
+    self, BACKEND_SERVICE_NAME, BackendHealth, HISTORY_SERVICE_NAME, HistoryHealth,
+};
 use agent_core::history::{HistoryResult, HistoryStore, InMemoryHistory, InMemoryTurn};
 use agent_core::service::Service;
 use futures_core::Stream;
@@ -449,4 +451,92 @@ async fn shutdown_ends_open_watch_streams_so_the_drain_is_not_held() {
         .await
         .expect("the server was held open by a watch stream")
         .expect("server task");
+}
+
+#[tokio::test]
+async fn started_server_reports_serving_for_each_dependency() {
+    let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+
+    assert_eq!(
+        check(&mut health, HISTORY_SERVICE_NAME).await,
+        ServingStatus::Serving
+    );
+    assert_eq!(
+        check(&mut health, BACKEND_SERVICE_NAME).await,
+        ServingStatus::Serving
+    );
+}
+
+#[tokio::test]
+async fn unhealthy_backend_shows_in_its_own_status_and_not_the_stores() {
+    let backend = ScriptedBackend::new(vec![]);
+    let harness = serve(backend.clone(), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let (mut backend_status, _) = watch_status(&mut health, BACKEND_SERVICE_NAME).await;
+
+    backend.set_healthy(false);
+
+    assert_eq!(
+        next_status(&mut backend_status).await,
+        ServingStatus::NotServing
+    );
+    assert_eq!(
+        check(&mut health, HISTORY_SERVICE_NAME).await,
+        ServingStatus::Serving
+    );
+    assert_eq!(
+        check(&mut health, SERVICE_NAME).await,
+        ServingStatus::NotServing
+    );
+}
+
+#[tokio::test]
+async fn unhealthy_store_shows_in_its_own_status_and_not_the_backends() {
+    let store = ToggleStore::new();
+    let harness = serve(ScriptedBackend::new(vec![]), store.clone()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let (mut history_status, _) = watch_status(&mut health, HISTORY_SERVICE_NAME).await;
+
+    store.set_healthy(false);
+
+    assert_eq!(
+        next_status(&mut history_status).await,
+        ServingStatus::NotServing
+    );
+    assert_eq!(
+        check(&mut health, BACKEND_SERVICE_NAME).await,
+        ServingStatus::Serving
+    );
+    assert_eq!(
+        check(&mut health, SERVICE_NAME).await,
+        ServingStatus::NotServing
+    );
+}
+
+#[tokio::test]
+async fn shutdown_sets_all_four_statuses_to_not_serving() {
+    let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let names = ["", SERVICE_NAME, HISTORY_SERVICE_NAME, BACKEND_SERVICE_NAME];
+    let mut streams = Vec::new();
+    for name in names {
+        let (stream, first) = watch_status(&mut health, name).await;
+        assert_eq!(first, ServingStatus::Serving, "{name:?}");
+        streams.push(stream);
+    }
+
+    harness.shutdown.send(()).expect("server is running");
+
+    for (name, stream) in names.iter().zip(streams.iter_mut()) {
+        assert_eq!(
+            next_status(stream).await,
+            ServingStatus::NotServing,
+            "{name:?}"
+        );
+        let end = timeout(LIMIT, stream.next())
+            .await
+            .expect("stream did not end");
+        assert!(end.is_none(), "{name:?}: {end:?}");
+    }
 }

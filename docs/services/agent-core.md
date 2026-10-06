@@ -93,6 +93,8 @@ skeleton does until the named story replaces it.
 |---|---|---|
 | `""` (the server overall) | the process is up and shutdown has not begun | **liveness** |
 | `aria.agent_core.v1.AgentCore` | the history store **and** the backend both report healthy, and shutdown has not begun | **readiness** |
+| `aria.agent_core.v1.AgentCore.history` | the history store reports healthy, and shutdown has not begun | none; for diagnosis |
+| `aria.agent_core.v1.AgentCore.backend` | the backend reports healthy, and shutdown has not begun | none; for diagnosis |
 
 The store and the backend each publish their own health. The health service only listens, and never
 calls a dependency to check it. On SIGTERM both statuses become not-serving **before** the drain
