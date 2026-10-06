@@ -2,7 +2,7 @@
 title: Stream Decide from the Agent Core with in-memory session history (ARIA-131)
 slug: aria-131-decide-streaming
 tier: technical
-status: complete
+status: active
 created: 2026-10-05
 branch: aria-131-decide-streaming
 owns_branch: true
@@ -114,6 +114,36 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
 - **The acceptance tests exercise the real gRPC surface.** They run against an in-process server and
   client, not by calling the handler directly, because AC3 is a statement about the status the
   caller receives, which only the wire proves.
+
+- **Reopened 2026-10-06, before merge: gRPC health and a shared telemetry crate.** The plan was
+  written from ARIA-131's story text and missed two of its Jira subtasks. ARIA-141 (gRPC health) was
+  never built. ARIA-139 asked for the tracing setup in a shared crate, but it was built inside the
+  Agent Core. ARIA-179 (Helm probes) needs the first, and the Gateway (ARIA-159) and Knowledge Core
+  (ARIA-205) need the second. Both are added as C6 and C7 on this branch instead of a follow-up, so
+  the story lands whole.
+- **Health reflects whether this pod can serve a turn, not just whether the process is up.** Chosen
+  by Jann: a `Decide` needs both the history store and the backend, so each reports its own health,
+  and the Agent Core service is serving only while both are healthy and the process is not shutting
+  down. The overall server status stays process-only: up and not shutting down. Kubernetes points
+  **liveness** at the overall status and **readiness** at the Agent Core service, so a dependency
+  outage takes pods out of rotation without putting them in a restart loop.
+  Rejected: *process-only health* (it reports ready when no turn can succeed); *one status for both
+  probes* (a remote outage would restart pods that a restart cannot fix).
+  **Accepted cost:** a backend outage makes every pod unready at once, so callers see "no
+  endpoints" rather than a `Decide` error naming the backend. The Gateway's error handling has to
+  expect that state. *Revisit if:* that proves worse in practice than serving and failing turns.
+- **Dependencies push their health; the health service never probes them.** Each history store and
+  backend tracks its own health and publishes changes. How it decides, whether from real call
+  outcomes or a cheap check it chooses, is up to the implementation. Chosen because a probe-driven
+  check would make the hosted backend (ARIA-143) call its provider every few seconds per pod just to
+  answer a probe. Rejected: *poll each dependency on an interval* (simple, but it puts the checking
+  cost and cadence in the wrong place).
+- **The telemetry setup moves to its own crate, not into `crates/shared`.** `identity` depends on
+  `shared`, so putting it there would pull OpenTelemetry, the OTLP exporter and tonic into crates
+  that never set up tracing. Rejected: *a feature flag on `shared`* (matches ARIA-139's wording, but
+  turns `shared` into a pile of optional pieces). ARIA-139 gets a comment noting the location. The
+  setup takes the service's name as input, so `service.name` and the export filter's "this service
+  at `debug`" are correct for every service that uses it.
 
 ## Open questions
 
@@ -276,6 +306,58 @@ page says so. Then check whether Confluence or Jira (ARIA-143) need the same not
 
 **Done when.** The page states each interim with its replacement trigger, and nothing on it reads as
 a new architecture decision.
+
+### C6 — gRPC health driven by dependency health
+
+status: pending
+depends-on: 1, 2, 4
+
+**Responsibility.** Serve the standard gRPC health service from the Agent Core binary, and let the
+history store and the backend report their own health into it.
+
+**Contracts.** The history-store and backend contracts gain the ability to report current health and
+to publish changes, without the health service calling them. The in-memory store and the echo
+backend are always healthy. The scripted backend and test stores can be told to become unhealthy and
+healthy again. The overall server status is serving from the moment the server listens until
+shutdown begins. The Agent Core service status is serving only while the store and the backend are
+both healthy and shutdown has not begun. A dependency turning unhealthy, or healthy again, changes it
+without a restart. When the shutdown signal arrives, both statuses become not-serving **before** the
+drain starts, so new traffic stops while in-flight turns finish. Health checks produce no `decide`
+spans and no per-check log lines at the default level.
+
+**Tests.** A started server reports serving overall and for the Agent Core service. Marking the
+backend unhealthy makes the Agent Core service not-serving while the overall status stays serving.
+Marking it healthy again restores serving. The same holds for the store. With both unhealthy, the
+service is not-serving, and fixing one is not enough. After the shutdown signal, both statuses read
+not-serving while an in-flight turn is still draining. The binary test checks health over the real
+port.
+
+**Done when.** Those tests pass and the linter is clean. The Agent Core page names the health
+service, the two statuses, which probe uses which, and the accepted cost of a backend outage. ARIA-141
+is updated.
+
+### C7 — Shared telemetry crate
+
+status: pending
+
+**Responsibility.** Move the Agent Core's telemetry setup into a workspace crate of its own, so every
+service sets up stdout logging, optional OTLP export, the export filter and the provider shutdown
+the same way.
+
+**Contracts.** Behaviour is unchanged for the Agent Core: the same environment variables, defaults,
+blank-means-unset handling, `RUST_LOG` on stdout, export only when an endpoint is set, the export
+filter, ANSI only on a terminal, and a flush on shutdown. The service's name is an input, and it
+determines both `service.name` and which targets the export filter keeps at `debug`. A service that
+does not use the crate gets none of its dependencies. The Agent Core binary uses the crate, and its
+own telemetry module goes away.
+
+**Tests.** The export-filter tests move with the setup and are parameterised by service name: a span
+from the named service passes, and dependency debug output does not. A different service name keeps
+that service's spans and not the Agent Core's. The Agent Core's existing binary and span tests pass
+unchanged.
+
+**Done when.** Those tests pass, the linter is clean, `identity` and `shared` do not depend on
+OpenTelemetry, and ARIA-139 has a comment noting the crate.
 
 ## Deviations
 
