@@ -14,6 +14,7 @@ pub mod conversation;
 pub mod health;
 pub mod history;
 pub mod service;
+pub mod version;
 
 #[cfg(test)]
 mod tests {

@@ -1,6 +1,7 @@
 //! gRPC health for the Agent Core.
 //!
-//! Serves the standard gRPC health service. The history store and the backend push their own
+//! Serves the standard gRPC health service (`grpc.health.v1.Health`: Check, List and Watch). The
+//! history store and the backend push their own
 //! health through watch channels, and a [`HealthMonitor`] task turns the two into the Agent Core
 //! service's status: serving only while both are healthy and shutdown has not begun. The overall
 //! server status (the empty service name) stays serving until shutdown begins, so liveness probes
@@ -17,15 +18,16 @@
 //! Shutdown sets all four to not-serving, and every `Watch` stream ends after its last update.
 
 use proto::agent_core::v1::agent_core_server::SERVICE_NAME;
+use proto::grpc::health::v1::health_check_response::ServingStatus;
+use proto::grpc::health::v1::health_server::{Health, HealthServer};
+use proto::grpc::health::v1::{
+    HealthCheckRequest, HealthCheckResponse, HealthListRequest, HealthListResponse,
+};
+use std::collections::HashMap;
 use std::pin::Pin;
 use tokio::sync::watch;
-use tokio_stream::{Stream, StreamExt};
+use tokio_stream::Stream;
 use tonic::{Request, Response, Status};
-use tonic_health::ServingStatus;
-use tonic_health::pb::health_check_response::ServingStatus as WireStatus;
-use tonic_health::pb::health_server::{Health, HealthServer};
-use tonic_health::pb::{HealthCheckRequest, HealthCheckResponse};
-use tonic_health::server::{HealthReporter, HealthService};
 
 /// The history store's own status: `aria.agent_core.v1.AgentCore` plus `.history`. A test keeps it
 /// in step with the generated service name.
@@ -105,47 +107,81 @@ pub struct HealthMonitor {
 }
 
 impl HealthMonitor {
-    /// Marks the Agent Core service and the overall server not-serving, and returns only once the
-    /// health service shows it. Call it when the shutdown signal arrives and before the server
-    /// starts draining, so new traffic stops while in-flight turns finish.
+    /// Marks the Agent Core service, the overall server and both dependency statuses not-serving,
+    /// and returns only once the health service shows it. Call it when the shutdown signal arrives
+    /// and before the server starts draining, so new traffic stops while in-flight turns finish.
     pub async fn begin_shutdown(&self) {
         self.shutdown.send_replace(true);
-        // The task is the only writer of statuses, so waiting for its acknowledgement means the
-        // reporter is updated. An error means the task is gone; there is nothing left to wait for.
+        // The task is the only writer of statuses, so waiting for its acknowledgement means they
+        // are published. An error means the task is gone; there is nothing left to wait for.
         let _ = self.reported.clone().wait_for(|done| *done).await;
+    }
+}
+
+/// The four published statuses. The health task is their only writer.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Statuses {
+    overall: ServingStatus,
+    agent_core: ServingStatus,
+    history: ServingStatus,
+    backend: ServingStatus,
+}
+
+impl Statuses {
+    /// The status of the named service, or `None` if the name is not one of the four.
+    fn get(&self, name: &str) -> Option<ServingStatus> {
+        match name {
+            "" => Some(self.overall),
+            SERVICE_NAME => Some(self.agent_core),
+            HISTORY_SERVICE_NAME => Some(self.history),
+            BACKEND_SERVICE_NAME => Some(self.backend),
+            _ => None,
+        }
+    }
+
+    fn all(&self) -> [(&'static str, ServingStatus); 4] {
+        [
+            ("", self.overall),
+            (SERVICE_NAME, self.agent_core),
+            (HISTORY_SERVICE_NAME, self.history),
+            (BACKEND_SERVICE_NAME, self.backend),
+        ]
     }
 }
 
 /// Starts the health task and returns its handle with the health service to add to the server.
 ///
 /// `backend` and `history` are the subscriptions the backend and the store hand out. The statuses
-/// are set before this returns, so the first check already sees them. Must be called inside a
-/// tokio runtime.
+/// are published before this returns, so the first check already sees them. Must be called inside
+/// a tokio runtime.
 pub async fn start(
     backend: watch::Receiver<BackendHealth>,
     history: watch::Receiver<HistoryHealth>,
 ) -> (HealthMonitor, HealthServer<impl Health>) {
-    let reporter = HealthReporter::new();
+    let (published, statuses) = watch::channel(Statuses {
+        overall: ServingStatus::Serving,
+        agent_core: ServingStatus::NotServing,
+        history: ServingStatus::NotServing,
+        backend: ServingStatus::NotServing,
+    });
     let (shutdown, shutdown_rx) = watch::channel(false);
     let (reported_tx, reported) = watch::channel(false);
-    let server = HealthServer::new(EndingHealth {
-        inner: HealthService::from_health_reporter(reporter.clone()),
+    let server = HealthServer::new(HealthImpl {
+        statuses,
         reported: reported.clone(),
     });
 
     let mut state = MonitorState {
-        reporter,
+        published,
         backend,
         history,
         shutdown: shutdown_rx,
-        last_status: None,
+        last_serving: None,
         last_backend: None,
         last_history: None,
-        last_backend_serving: None,
-        last_history_serving: None,
     };
-    // The first evaluation happens here, so a check right after startup finds the status.
-    state.evaluate().await;
+    // The first evaluation happens here, so a check right after startup finds the statuses.
+    state.evaluate();
     tokio::spawn(async move {
         state.run().await;
         reported_tx.send_replace(true);
@@ -155,21 +191,19 @@ pub async fn start(
 
 /// What the health task knows between evaluations.
 struct MonitorState {
-    reporter: HealthReporter,
+    published: watch::Sender<Statuses>,
     backend: watch::Receiver<BackendHealth>,
     history: watch::Receiver<HistoryHealth>,
     shutdown: watch::Receiver<bool>,
-    last_status: Option<bool>,
+    last_serving: Option<bool>,
     last_backend: Option<BackendHealth>,
     last_history: Option<HistoryHealth>,
-    last_backend_serving: Option<bool>,
-    last_history_serving: Option<bool>,
 }
 
 impl MonitorState {
-    /// Re-evaluates every input, updates the reporter, and logs changes. Returns true once
-    /// shutdown has been reported, after which nothing else is written.
-    async fn evaluate(&mut self) -> bool {
+    /// Re-evaluates every input, publishes the statuses and logs changes. Returns true once
+    /// shutdown has been published, after which nothing else is written.
+    fn evaluate(&mut self) -> bool {
         let shutting_down = *self.shutdown.borrow_and_update();
         let backend = self.backend.borrow_and_update().clone();
         let history = self.history.borrow_and_update().clone();
@@ -183,35 +217,19 @@ impl MonitorState {
             self.last_history = Some(history.clone());
         }
 
-        // Each dependency's own status reflects only its `healthy`, and not-serving at shutdown.
-        let backend_serving = backend.is_healthy() && !shutting_down;
-        if self.last_backend_serving != Some(backend_serving) {
-            self.last_backend_serving = Some(backend_serving);
-            self.reporter
-                .set_service_status(BACKEND_SERVICE_NAME, status(backend_serving))
-                .await;
-        }
-        let history_serving = history.is_healthy() && !shutting_down;
-        if self.last_history_serving != Some(history_serving) {
-            self.last_history_serving = Some(history_serving);
-            self.reporter
-                .set_service_status(HISTORY_SERVICE_NAME, status(history_serving))
-                .await;
-        }
-
         let serving = backend.is_healthy() && history.is_healthy() && !shutting_down;
-        if self.last_status != Some(serving) {
+        if self.last_serving != Some(serving) {
             tracing::info!(serving, shutting_down, "agent core health status changed");
-            self.last_status = Some(serving);
-            self.reporter
-                .set_service_status(SERVICE_NAME, status(serving))
-                .await;
+            self.last_serving = Some(serving);
         }
-        if shutting_down {
-            self.reporter
-                .set_service_status("", ServingStatus::NotServing)
-                .await;
-        }
+        // Each dependency's own status reflects only its `healthy`; every status is not-serving
+        // at shutdown.
+        self.published.send_replace(Statuses {
+            overall: status(!shutting_down),
+            agent_core: status(serving),
+            history: status(history.is_healthy() && !shutting_down),
+            backend: status(backend.is_healthy() && !shutting_down),
+        });
         shutting_down
     }
 
@@ -227,7 +245,7 @@ impl MonitorState {
                     }
                 }
             }
-            if self.evaluate().await {
+            if self.evaluate() {
                 return;
             }
         }
@@ -247,6 +265,12 @@ fn status(serving: bool) -> ServingStatus {
         ServingStatus::Serving
     } else {
         ServingStatus::NotServing
+    }
+}
+
+fn response(status: ServingStatus) -> HealthCheckResponse {
+    HealthCheckResponse {
+        status: status.into(),
     }
 }
 
@@ -274,23 +298,41 @@ fn log_history(health: &HistoryHealth) {
     }
 }
 
-/// The health service, with `Watch` streams that end once shutdown has been reported. tonic's
-/// graceful shutdown waits for open streams, so a watcher left open would hold the drain for its
-/// whole bound; ending it after its last update lets the drain wait only for real turns.
-struct EndingHealth {
-    inner: HealthService,
+/// The `grpc.health.v1.Health` service over the published statuses. `Watch` streams end once
+/// shutdown has been reported: tonic's graceful shutdown waits for open streams, so a watcher left
+/// open would hold the drain for its whole bound.
+struct HealthImpl {
+    statuses: watch::Receiver<Statuses>,
     reported: watch::Receiver<bool>,
 }
 
 type WatchStream = Pin<Box<dyn Stream<Item = Result<HealthCheckResponse, Status>> + Send>>;
 
 #[tonic::async_trait]
-impl Health for EndingHealth {
+impl Health for HealthImpl {
     async fn check(
         &self,
         request: Request<HealthCheckRequest>,
     ) -> Result<Response<HealthCheckResponse>, Status> {
-        self.inner.check(request).await
+        let name = request.into_inner().service;
+        match self.statuses.borrow().get(&name) {
+            Some(status) => Ok(Response::new(response(status))),
+            None => Err(Status::not_found("service not registered")),
+        }
+    }
+
+    async fn list(
+        &self,
+        _request: Request<HealthListRequest>,
+    ) -> Result<Response<HealthListResponse>, Status> {
+        let statuses: HashMap<String, HealthCheckResponse> = self
+            .statuses
+            .borrow()
+            .all()
+            .into_iter()
+            .map(|(name, status)| (name.to_string(), response(status)))
+            .collect();
+        Ok(Response::new(HealthListResponse { statuses }))
     }
 
     type WatchStream = WatchStream;
@@ -299,35 +341,46 @@ impl Health for EndingHealth {
         &self,
         request: Request<HealthCheckRequest>,
     ) -> Result<Response<Self::WatchStream>, Status> {
-        let mut inner = self.inner.watch(request).await?.into_inner();
+        let name = request.into_inner().service;
+        let mut statuses = self.statuses.clone();
         let mut reported = self.reported.clone();
         let stream = async_stream::stream! {
+            let known = statuses.borrow().get(&name).is_some();
+            if !known {
+                // An unknown name is reported as such and the call stays open, as the protocol
+                // says; it ends with the others at shutdown.
+                yield Ok(response(ServingStatus::ServiceUnknown));
+                let _ = reported.wait_for(|done| *done).await;
+                return;
+            }
             let mut last = None;
             loop {
+                let current = statuses.borrow_and_update().get(&name);
+                if let Some(current) = current && last != Some(current) {
+                    last = Some(current);
+                    yield Ok(response(current));
+                }
                 let shutdown_reported = async {
                     // A dropped sender means the task is gone, which ends the watchers too.
                     let _ = reported.wait_for(|done| *done).await;
                 };
                 tokio::select! {
-                    item = inner.next() => match item {
-                        Some(Ok(response)) => {
-                            last = Some(response.status());
-                            yield Ok(response);
+                    changed = statuses.changed() => {
+                        if changed.is_err() {
+                            return;
                         }
-                        Some(Err(status)) => {
-                            yield Err(status);
-                            break;
-                        }
-                        None => break,
-                    },
+                    }
                     () = shutdown_reported => {
                         // Shutdown is reported: the last update must be not-serving, then end.
-                        if last != Some(WireStatus::NotServing) {
-                            yield Ok(HealthCheckResponse {
-                                status: WireStatus::NotServing.into(),
-                            });
+                        let current = statuses.borrow().get(&name);
+                        if current != last && let Some(current) = current {
+                            yield Ok(response(current));
+                            last = Some(current);
                         }
-                        break;
+                        if last != Some(ServingStatus::NotServing) {
+                            yield Ok(response(ServingStatus::NotServing));
+                        }
+                        return;
                     }
                 }
             }

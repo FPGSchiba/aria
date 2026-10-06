@@ -76,7 +76,8 @@ impl Drop for TelemetryGuard {
 /// Installs the global tracing subscriber for a service and returns the guard to hold until exit.
 ///
 /// `$service_name` is the OpenTelemetry `service.name` and tracer name, for example
-/// `"aria-agent-core"`. `$otlp_endpoint` is an `Option<&str>`: with an endpoint, spans are also
+/// `"aria-agent-core"`. The macro also records the calling crate's version (`CARGO_PKG_VERSION`,
+/// read where the macro expands) as `service.version`. `$otlp_endpoint` is an `Option<&str>`: with an endpoint, spans are also
 /// exported to it; with `None`, or a blank value (empty or only whitespace), nothing is exported
 /// and no collector is contacted.
 ///
@@ -106,10 +107,16 @@ macro_rules! init {
             $service_name,
             $otlp_endpoint,
             ::core::env!("CARGO_CRATE_NAME"),
+            ::core::env!("CARGO_PKG_VERSION"),
         )
     };
     ($service_name:expr, $otlp_endpoint:expr, target = $target:expr $(,)?) => {
-        $crate::__init($service_name, $otlp_endpoint, $target)
+        $crate::__init(
+            $service_name,
+            $otlp_endpoint,
+            $target,
+            ::core::env!("CARGO_PKG_VERSION"),
+        )
     };
 }
 
@@ -119,6 +126,7 @@ pub fn __init(
     service_name: &str,
     otlp_endpoint: Option<&str>,
     own_target: &str,
+    service_version: &str,
 ) -> Result<TelemetryGuard, TelemetryError> {
     // Checked before anything is installed, so a failure leaves the process untouched.
     let endpoint = resolve_endpoint(otlp_endpoint);
@@ -160,11 +168,7 @@ pub fn __init(
             .map_err(TelemetryError::ExporterBuild)?;
         let provider = SdkTracerProvider::builder()
             .with_batch_exporter(exporter)
-            .with_resource(
-                opentelemetry_sdk::Resource::builder()
-                    .with_service_name(service_name.to_owned())
-                    .build(),
-            )
+            .with_resource(resource(service_name, service_version))
             .build();
         let otel_layer = tracing_opentelemetry::layer()
             .with_tracer(provider.tracer(service_name.to_owned()))
@@ -191,6 +195,17 @@ pub fn __init(
         tracing::warn!(rust_log = %value, "invalid RUST_LOG, falling back to 'info'");
     }
     Ok(TelemetryGuard { provider })
+}
+
+/// The resource attached to every exported span: the service's name and version.
+fn resource(service_name: &str, service_version: &str) -> opentelemetry_sdk::Resource {
+    opentelemetry_sdk::Resource::builder()
+        .with_service_name(service_name.to_owned())
+        .with_attribute(opentelemetry::KeyValue::new(
+            "service.version",
+            service_version.to_owned(),
+        ))
+        .build()
 }
 
 /// The endpoint to export to: `None` when unset or blank, otherwise the trimmed value.
@@ -284,13 +299,26 @@ mod tests {
 
     #[test]
     fn endpoint_without_a_runtime_is_no_runtime_and_installs_nothing() {
-        let result = __init("svc", Some("http://localhost:4317"), "svc");
+        let result = __init("svc", Some("http://localhost:4317"), "svc", "1.2.3");
 
         assert!(matches!(result, Err(TelemetryError::NoRuntime)));
         assert!(
             tracing::subscriber::set_global_default(tracing_subscriber::registry()).is_ok(),
             "NoRuntime must be reported before any subscriber is installed"
         );
+    }
+
+    #[test]
+    fn resource_carries_the_service_name_and_version() {
+        let resource = resource("aria-svc", "1.2.3");
+
+        let get = |key: &str| {
+            resource
+                .get(&opentelemetry::Key::new(key.to_owned()))
+                .map(|v| v.to_string())
+        };
+        assert_eq!(get("service.name").as_deref(), Some("aria-svc"));
+        assert_eq!(get("service.version").as_deref(), Some("1.2.3"));
     }
 
     #[test]

@@ -80,7 +80,7 @@ is now ARIA's own choice and nobody has made it.
 
 | | A — needs a decision | B — awaiting a measurement |
 |---|---|---|
-| **Newly surfaced** | 3 (where D49's conversation type lives; replaying stored system entries, with a direction agreed; who cancels an in-flight `Decide` on barge-in) | — |
+| **Newly surfaced** | 4 (where D49's conversation type lives; replaying stored system entries, with a direction agreed; who cancels an in-flight `Decide` on barge-in; whether services expose a version-check call) | — |
 
 Three things were **deliberately left open** by the decisions that could have settled them, and must
 not be read as decided: **service-to-service mTLS** (D81 supersedes D6 but does not answer it),

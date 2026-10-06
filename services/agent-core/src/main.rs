@@ -92,7 +92,6 @@ fn reflection_services() -> Result<
     let builder = || {
         tonic_reflection::server::Builder::configure()
             .register_encoded_file_descriptor_set(proto::FILE_DESCRIPTOR_SET)
-            .register_encoded_file_descriptor_set(tonic_health::pb::FILE_DESCRIPTOR_SET)
             .with_service_name(proto::agent_core::v1::agent_core_server::SERVICE_NAME)
             .with_service_name("grpc.health.v1.Health")
     };
@@ -140,12 +139,15 @@ async fn run() -> Result<(), Box<dyn Error>> {
     // Bound here, not by tonic, so the log names the real address (even for port 0).
     let listener = TcpListener::bind(config.listen_address()).await?;
     tracing::info!(
+        version = agent_core::version::VERSION,
+        git_sha = agent_core::version::GIT_SHA.unwrap_or("unknown"),
         "Starting agent-core service with '{backend_name}' backend on '{}'",
         listener.local_addr()?
     );
 
     let (signalled_tx, signalled_rx) = oneshot::channel();
     let mut router = tonic::transport::Server::builder()
+        .layer(agent_core::version::VersionLayer)
         .add_service(health_server)
         .add_service(AgentCoreServer::new(service));
     if config.reflection() {

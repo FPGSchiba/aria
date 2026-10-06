@@ -10,8 +10,8 @@ test-util = []
 [dependencies]
 proto                 = { workspace = true }
 telemetry             = { workspace = true }
-tonic-health          = { workspace = true }
 tonic-reflection      = { workspace = true }
+tower                 = { workspace = true }
 tonic                 = { workspace = true }
 tokio                 = { workspace = true, features = ["macros", "rt-multi-thread", "signal", "sync", "time", "net"] }
 tokio-stream          = { workspace = true, features = ["net"] }

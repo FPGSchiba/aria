@@ -13,6 +13,9 @@ use futures_core::Stream;
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::agent_core_server::{AgentCoreServer, SERVICE_NAME};
 use proto::agent_core::v1::{DecideRequest, decide_response};
+use proto::grpc::health::v1::health_check_response::ServingStatus;
+use proto::grpc::health::v1::health_client::HealthClient;
+use proto::grpc::health::v1::{HealthCheckRequest, HealthCheckResponse, HealthListRequest};
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -24,9 +27,6 @@ use tokio_stream::StreamExt;
 use tokio_stream::wrappers::TcpListenerStream;
 use tonic::Streaming;
 use tonic::transport::{Channel, Server};
-use tonic_health::pb::health_check_response::ServingStatus;
-use tonic_health::pb::health_client::HealthClient;
-use tonic_health::pb::{HealthCheckRequest, HealthCheckResponse};
 use tracing::span;
 use tracing_subscriber::Layer;
 use tracing_subscriber::layer::{Context, SubscriberExt};
@@ -539,4 +539,114 @@ async fn shutdown_sets_all_four_statuses_to_not_serving() {
             .expect("stream did not end");
         assert!(end.is_none(), "{name:?}: {end:?}");
     }
+}
+
+/// Calls `List` and returns each name with its status.
+async fn list(
+    client: &mut HealthClient<Channel>,
+) -> std::collections::BTreeMap<String, ServingStatus> {
+    let response = timeout(LIMIT, client.list(HealthListRequest {}))
+        .await
+        .expect("list timed out")
+        .expect("list");
+    response
+        .into_inner()
+        .statuses
+        .into_iter()
+        .map(|(name, response)| (name, response.status()))
+        .collect()
+}
+
+#[tokio::test]
+async fn list_returns_all_four_statuses() {
+    let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+
+    let statuses = list(&mut health).await;
+
+    let expected: std::collections::BTreeMap<String, ServingStatus> = [
+        ("", ServingStatus::Serving),
+        (SERVICE_NAME, ServingStatus::Serving),
+        (HISTORY_SERVICE_NAME, ServingStatus::Serving),
+        (BACKEND_SERVICE_NAME, ServingStatus::Serving),
+    ]
+    .into_iter()
+    .map(|(name, status)| (name.to_string(), status))
+    .collect();
+    assert_eq!(statuses, expected);
+}
+
+#[tokio::test]
+async fn list_reflects_a_toggled_dependency() {
+    let backend = ScriptedBackend::new(vec![]);
+    let harness = serve(backend.clone(), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let (mut backend_status, _) = watch_status(&mut health, BACKEND_SERVICE_NAME).await;
+
+    backend.set_healthy(false);
+    assert_eq!(
+        next_status(&mut backend_status).await,
+        ServingStatus::NotServing
+    );
+
+    let statuses = list(&mut health).await;
+    assert_eq!(statuses[""], ServingStatus::Serving);
+    assert_eq!(statuses[SERVICE_NAME], ServingStatus::NotServing);
+    assert_eq!(statuses[HISTORY_SERVICE_NAME], ServingStatus::Serving);
+    assert_eq!(statuses[BACKEND_SERVICE_NAME], ServingStatus::NotServing);
+}
+
+#[tokio::test]
+async fn list_after_shutdown_reads_all_not_serving() {
+    // The server is not told to stop here, so List can still be called once shutdown is reported.
+    let backend = ScriptedBackend::new(vec![]);
+    let store = ToggleStore::new();
+    let (monitor, health_server) =
+        health::start(backend.subscribe_health(), store.subscribe_health()).await;
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let addr = listener.local_addr().expect("local addr");
+    tokio::spawn(async move {
+        Server::builder()
+            .add_service(health_server)
+            .serve_with_incoming(TcpListenerStream::new(listener))
+            .await
+            .expect("server");
+    });
+    let channel = Channel::from_shared(format!("http://{addr}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut health = HealthClient::new(channel);
+    assert!(
+        list(&mut health)
+            .await
+            .values()
+            .all(|s| *s == ServingStatus::Serving)
+    );
+
+    timeout(LIMIT, monitor.begin_shutdown())
+        .await
+        .expect("begin_shutdown timed out");
+
+    let statuses = list(&mut health).await;
+    assert_eq!(statuses.len(), 4);
+    assert!(
+        statuses.values().all(|s| *s == ServingStatus::NotServing),
+        "{statuses:?}"
+    );
+}
+
+#[tokio::test]
+async fn unknown_service_is_not_found_on_check_and_service_unknown_on_watch() {
+    let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+
+    let status = health
+        .check(request("nope"))
+        .await
+        .expect_err("unknown service");
+    assert_eq!(status.code(), tonic::Code::NotFound);
+    let (_, first) = watch_status(&mut health, "nope").await;
+    assert_eq!(first, ServingStatus::ServiceUnknown);
 }

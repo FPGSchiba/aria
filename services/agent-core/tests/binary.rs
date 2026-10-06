@@ -4,15 +4,15 @@
 
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::{DecideRequest, decide_response};
+use proto::grpc::health::v1::HealthCheckRequest;
+use proto::grpc::health::v1::health_check_response::ServingStatus;
+use proto::grpc::health::v1::health_client::HealthClient;
 use std::io::{BufRead, BufReader, Read};
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use tokio_stream::StreamExt;
-use tonic_health::pb::HealthCheckRequest;
-use tonic_health::pb::health_check_response::ServingStatus;
-use tonic_health::pb::health_client::HealthClient;
 use tonic_reflection::pb::v1::ServerReflectionRequest;
 use tonic_reflection::pb::v1::server_reflection_client::ServerReflectionClient;
 use tonic_reflection::pb::v1::server_reflection_request::MessageRequest;
@@ -160,7 +160,7 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
             .expect("connect timed out")
             .expect("connect");
 
-    let mut stream = tokio::time::timeout(
+    let response = tokio::time::timeout(
         LIMIT,
         client.decide(DecideRequest {
             session_id: "binary-1".to_string(),
@@ -170,8 +170,12 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
     )
     .await
     .expect("decide timed out")
-    .expect("decide")
-    .into_inner();
+    .expect("decide");
+    let version_header = response
+        .metadata()
+        .get("x-aria-version")
+        .map(|v| v.to_str().expect("ascii").to_string());
+    let mut stream = response.into_inner();
 
     let mut echoed = String::new();
     let mut deltas = 0;
@@ -188,6 +192,12 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
             decide_response::Payload::TurnComplete(_) => completes += 1,
         }
     }
+    // Every response carries the build's version.
+    assert_eq!(
+        version_header.as_deref(),
+        Some(env!("CARGO_PKG_VERSION")),
+        "x-aria-version"
+    );
     assert!(deltas >= 2, "expected at least two chunks, got {deltas}");
     assert_eq!(echoed, "hello aria");
     assert_eq!(completes, 1);
@@ -336,6 +346,34 @@ async fn list_services(address: &str) -> Result<Vec<String>, tonic::Status> {
     }
 }
 
+/// The encoded file descriptors reflection returns for a symbol, concatenated.
+async fn describe_symbol(address: &str, symbol: &str) -> Vec<u8> {
+    let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut client = ServerReflectionClient::new(channel);
+    let request = ServerReflectionRequest {
+        host: String::new(),
+        message_request: Some(MessageRequest::FileContainingSymbol(symbol.to_string())),
+    };
+    let mut stream = client
+        .server_reflection_info(tokio_stream::once(request))
+        .await
+        .expect("reflection")
+        .into_inner();
+    let response = tokio::time::timeout(LIMIT, stream.next())
+        .await
+        .expect("reflection reply timed out")
+        .expect("stream ended")
+        .expect("status");
+    match response.message_response.expect("a response") {
+        MessageResponse::FileDescriptorResponse(files) => files.file_descriptor_proto.concat(),
+        other => panic!("unexpected reflection response: {other:?}"),
+    }
+}
+
 #[tokio::test]
 async fn reflection_on_lists_the_agent_core_and_health_services() {
     let mut server = Server::spawn_with("127.0.0.1:0", &[("ARIA_AGENT_CORE_REFLECTION", "true")]);
@@ -351,6 +389,12 @@ async fn reflection_on_lists_the_agent_core_and_health_services() {
     assert!(
         services.contains(&"grpc.health.v1.Health".to_string()),
         "{services:?}"
+    );
+    // The health service's descriptor is ours, so it includes `List`.
+    let descriptor = describe_symbol(&address, "grpc.health.v1.Health").await;
+    assert!(
+        descriptor.windows(15).any(|w| w == b"HealthListReque"),
+        "the health descriptor does not mention List"
     );
     // Logged before the startup line, so it is among the lines already read.
     assert!(

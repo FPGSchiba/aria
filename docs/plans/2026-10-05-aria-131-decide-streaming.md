@@ -473,3 +473,11 @@ The milestone review and three fresh branch reviews added the failure handling r
   (`aria.agent_core.v1.AgentCore.history` and `.backend`), so a caller can see which one is down.
   The standard health response carries only a status, so a dependency's name and backup flag stay
   in the change log lines. A richer status RPC would need a proto change and is left to a later story.
+- Added after close-out, at Jann's request:
+  - Health `List` from the current upstream `grpc.health.v1` proto, vendored in the `proto` crate,
+    returns every status in one call. tonic-health 0.14 lacks `List`, so the Agent Core now serves
+    its own health server, backed by the health task's state, and tonic-health was dropped. `Check`
+    and `Watch` behave as before.
+  - The build version is in the startup log, in OTel `service.version` and in an `x-aria-version`
+    response header.
+  - Whether a version-check call is needed is recorded as an open question, not decided.

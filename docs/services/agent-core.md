@@ -96,7 +96,8 @@ skeleton does until the named story replaces it.
 | `aria.agent_core.v1.AgentCore.history` | the history store reports healthy, and shutdown has not begun | none; for diagnosis |
 | `aria.agent_core.v1.AgentCore.backend` | the backend reports healthy, and shutdown has not begun | none; for diagnosis |
 
-The store and the backend each publish their own health. The health service only listens, and never
+`List` (from the current upstream `health.proto`, vendored in the `proto` crate) returns all four
+statuses in one call. The store and the backend each publish their own health. The health service only listens, and never
 calls a dependency to check it. On SIGTERM both statuses become not-serving **before** the drain
 starts. Watchers of the health status see the change, and then their streams end, so they do not
 hold up the drain. New connections stop because the listener closes; in-flight turns get up to 20 s
@@ -105,6 +106,10 @@ backup (for later failover, D35) still counts as healthy; the flag is only logge
 a backend outage makes every pod unready at once, so callers see "no endpoints" rather than a
 `Decide` error naming the backend. *Revisit if* that proves worse in practice than serving and
 failing turns.
+
+**Version:** every response carries an `x-aria-version` header with the build version. The
+startup log and the OTel `service.version` attribute carry it too. CI can add a git SHA at build
+time through `ARIA_GIT_SHA`. No call checks compatibility yet; that is an open question.
 
 **Status codes `Decide` returns:**
 

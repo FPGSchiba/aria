@@ -1,10 +1,12 @@
 use std::path::PathBuf;
 
-/// Schemas to compile, relative to the include root. Layout per D87:
+/// Schemas to compile, relative to the include root. ARIA's own follow the layout per D87:
 /// `aria/<service>/v1/<service>.proto`, matching `package aria.<service>.v1;`.
 const PROTOS: &[&str] = &[
     "aria/gateway/v1/gateway.proto",
     "aria/agent_core/v1/agent_core.proto",
+    // Vendored from grpc-proto (Apache-2.0), so the health service can serve `List`.
+    "grpc/health/v1/health.proto",
 ];
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {

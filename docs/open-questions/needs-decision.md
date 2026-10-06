@@ -424,3 +424,9 @@ Found while building `Decide` in the Agent Core. Recorded, not decided. Reasonin
   in 10 of 50 in-process tries, because the cancelled turn is released only when the server drops its
   stream. Any answer needs to cover that window: eager release, a short wait in `start_turn`, or the
   Agent Core cancelling the old turn itself.
+- **Whether services expose a version-check call, and who checks compatibility.** gRPC has no
+  standard version method. *Interim (ARIA-131):* the Agent Core reports its build version in the
+  startup log, in the OTel `service.version` attribute, and in an `x-aria-version` header on every
+  response. No call checks or enforces compatibility. Open: do native clients (D60) or the Gateway
+  need to check versions, against what (proto package version, build version, a capability list),
+  and what happens on a mismatch? Needed before the first native client ships.
