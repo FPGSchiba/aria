@@ -3,7 +3,26 @@ name = "agent-core"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+# Exposes the scripted backend to integration tests under tests/.
+test-util = []
+
 [dependencies]
+proto                 = { workspace = true }
+telemetry             = { workspace = true }
+tonic-reflection      = { workspace = true }
+tower                 = { workspace = true }
+tonic                 = { workspace = true }
+tokio                 = { workspace = true, features = ["macros", "rt-multi-thread", "signal", "sync", "time", "net"] }
+tokio-stream          = { workspace = true, features = ["net"] }
+futures-core          = { workspace = true }
+tracing               = { workspace = true }
+thiserror             = { workspace = true }
+async-stream          = { workspace = true }
+
+[dev-dependencies]
+agent-core = { path = ".", features = ["test-util"] }
+tracing-subscriber = { workspace = true, features = ["fmt"] }
 
 [lints]
 workspace = true

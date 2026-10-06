@@ -396,3 +396,37 @@ Found while reviewing `main` against the decisions. Recorded, not decided.
   [D87](../decisions/0020-proto-layout.md) fixed the directory layout and deliberately left this
   alone. Open: rename (a wire-visible change to the gRPC method paths) or except the rule. Cheapest to
   settle before clients exist.
+
+## Surfaced by ARIA-131 (2026-10-06)
+
+Found while building `Decide` in the Agent Core. Recorded, not decided. Reasoning is in the
+[ARIA-131 plan](../plans/2026-10-05-aria-131-decide-streaming.md#open-questions).
+
+- **Where [D49](../decisions/0009-measurement-session.md)'s canonical conversation and tool-call type
+  lives once it crosses a service boundary**: when history is persisted to the Knowledge Core
+  ([D36](../decisions/README.md)), and in the turn log ([D61](../decisions/0012-clients-gateway-surface.md)).
+  It could be a type in `crates/shared`, or a proto message plus a domain type in each service that
+  converts at the boundary. *Interim:* a small typed conversation model internal to `agent-core`,
+  extendable with tool calls without breaking changes. To be settled by the story that first persists
+  history.
+- **Whether stored system entries are replayed to the backend.** *Direction agreed while planning
+  ARIA-131, not yet a decision:* system entries are **stored** for debugging, but only the fresh system
+  entry for the current call is **sent**. Replaying stored ones would give the model several
+  contradictory "today is" statements. It becomes concrete with the date/time injection item under
+  D85 above, so settle the two together. Affects ARIA-143 and ARIA-61.
+- **Who cancels an in-flight `Decide` on barge-in.** [D27](../decisions/0004-audio-pipeline.md) has
+  the Gateway cancel the outbound TTS stream when Speech signals speech-start. It says nothing about
+  the `Decide` turn that is producing that speech. *Interim (ARIA-131):* the Agent Core refuses a
+  second `Decide` on a busy session with `ABORTED` and assumes the caller cancels the first. Open:
+  does the Gateway cancel the `Decide` stream, or does the Agent Core cancel the turn itself when a
+  new one arrives? Needed before the Gateway's barge-in story. *Measured on the ARIA-131 branch:* a
+  `Decide` sent immediately after cancelling the previous one on the same session was refused as busy
+  in 10 of 50 in-process tries, because the cancelled turn is released only when the server drops its
+  stream. Any answer needs to cover that window: eager release, a short wait in `start_turn`, or the
+  Agent Core cancelling the old turn itself.
+- **Whether services expose a version-check call, and who checks compatibility.** gRPC has no
+  standard version method. *Interim (ARIA-131):* the Agent Core reports its build version in the
+  startup log, in the OTel `service.version` attribute, and in an `x-aria-version` header on every
+  response. No call checks or enforces compatibility. Open: do native clients (D60) or the Gateway
+  need to check versions, against what (proto package version, build version, a capability list),
+  and what happens on a mismatch? Needed before the first native client ships.

@@ -6,6 +6,10 @@
 #   docker build --target gateway    -t aria-gateway .
 #   docker build --target agent-core -t aria-agent-core .
 #
+# Pass the commit so the service reports it (an empty value means "unknown"):
+#
+#   docker build --target agent-core --build-arg ARIA_GIT_SHA=$(git rev-parse HEAD) -t aria-agent-core .
+#
 # Both targets share the builder stage, so the workspace compiles once.
 # Dependencies are cooked into their own layer (cargo-chef), so a source-only
 # change does not rebuild the dependency tree.
@@ -37,6 +41,10 @@ FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --locked --recipe-path recipe.json
 COPY . .
+# Declared after the cook step and the source copy, so the dependency layer cache never sees it.
+# A build argument is visible to the RUN below as an environment variable, which the services read
+# at compile time.
+ARG ARIA_GIT_SHA=
 RUN cargo build --release --locked --package gateway --package agent-core
 
 # --- runtime targets ---------------------------------------------------------
