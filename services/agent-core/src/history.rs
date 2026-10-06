@@ -56,6 +56,8 @@ impl SessionHistory {
 }
 
 /// The in-memory history store. Cloning shares the same sessions.
+///
+/// It is always healthy, and reports itself as `in-memory` in health lines.
 #[derive(Debug, Clone)]
 pub struct InMemoryHistory {
     /// The session history store.

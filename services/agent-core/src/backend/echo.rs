@@ -19,10 +19,13 @@ pub struct EchoBackend {
 }
 
 impl EchoBackend {
+    /// The name this backend goes by, in the startup log and in health lines.
+    const NAME: &'static str = "echo";
+
     /// Creates an echo backend, always healthy.
     pub fn new() -> Self {
         Self {
-            health: Arc::new(watch::channel(BackendHealth::new("echo", true, false)).0),
+            health: Arc::new(watch::channel(BackendHealth::new(Self::NAME, true, false)).0),
         }
     }
 }
@@ -35,7 +38,7 @@ impl Default for EchoBackend {
 
 impl Backend for EchoBackend {
     fn name(&self) -> &'static str {
-        "echo"
+        Self::NAME
     }
 
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {

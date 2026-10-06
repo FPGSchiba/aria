@@ -1,7 +1,7 @@
 //! gRPC health over a real in-process server: the statuses follow the backend and the store, and
 //! shutdown reports not-serving before the drain, while a turn is still in flight.
 
-use agent_core::backend::scripted::ScriptedBackend;
+use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::ConversationPart;
 use agent_core::health::{self, BackendHealth, HistoryHealth};
@@ -96,7 +96,7 @@ impl Backend for GatedBackend {
     }
 
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
-        watch::channel(BackendHealth::new("gated", true, false)).1
+        watch::channel(BackendHealth::new(self.name(), true, false)).1
     }
 
     fn stream_conversation(
@@ -121,14 +121,25 @@ impl Backend for GatedBackend {
     }
 }
 
-/// Counts spans named `decide`, to show health checks create none.
+/// Counts spans named `decide` and events at info or above, to show health checks create none.
+/// Installed with `set_default`, which is per thread: the tests using it run on tokio's default
+/// current-thread runtime, so the server tasks run on the same thread and are seen.
 #[derive(Clone, Default)]
-struct DecideSpanCount(Arc<AtomicUsize>);
+struct Counts {
+    decide_spans: Arc<AtomicUsize>,
+    info_events: Arc<AtomicUsize>,
+}
 
-impl<S: tracing::Subscriber> Layer<S> for DecideSpanCount {
+impl<S: tracing::Subscriber> Layer<S> for Counts {
     fn on_new_span(&self, attrs: &span::Attributes<'_>, _id: &span::Id, _ctx: Context<'_, S>) {
         if attrs.metadata().name() == "decide" {
-            self.0.fetch_add(1, Ordering::SeqCst);
+            self.decide_spans.fetch_add(1, Ordering::SeqCst);
+        }
+    }
+
+    fn on_event(&self, event: &tracing::Event<'_>, _ctx: Context<'_, S>) {
+        if *event.metadata().level() <= tracing::Level::INFO {
+            self.info_events.fetch_add(1, Ordering::SeqCst);
         }
     }
 }
@@ -138,6 +149,8 @@ impl<S: tracing::Subscriber> Layer<S> for DecideSpanCount {
 struct Harness {
     channel: Channel,
     shutdown: oneshot::Sender<()>,
+    /// Finishes when the server has drained and stopped.
+    server: tokio::task::JoinHandle<()>,
 }
 
 /// Serves health and the Agent Core like the binary does: the shutdown future reports
@@ -153,7 +166,7 @@ where
     let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
     let addr = listener.local_addr().expect("local addr");
     let (shutdown, shutdown_rx) = oneshot::channel::<()>();
-    tokio::spawn(async move {
+    let server = tokio::spawn(async move {
         Server::builder()
             .add_service(health_server)
             .add_service(AgentCoreServer::new(service))
@@ -173,7 +186,11 @@ where
     .await
     .expect("connect timed out")
     .expect("connect");
-    Harness { channel, shutdown }
+    Harness {
+        channel,
+        shutdown,
+        server,
+    }
 }
 
 fn request(service: &str) -> HealthCheckRequest {
@@ -223,10 +240,7 @@ async fn assert_no_change(stream: &mut Streaming<HealthCheckResponse>) {
 // ---------------------------------------------------------------- tests
 
 #[tokio::test]
-async fn started_server_reports_serving_overall_and_for_agent_core_without_decide_spans() {
-    let count = DecideSpanCount::default();
-    let _guard =
-        tracing::subscriber::set_default(tracing_subscriber::registry().with(count.clone()));
+async fn started_server_reports_serving_overall_and_for_agent_core() {
     let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
     let mut health = HealthClient::new(harness.channel.clone());
 
@@ -235,10 +249,53 @@ async fn started_server_reports_serving_overall_and_for_agent_core_without_decid
         check(&mut health, SERVICE_NAME).await,
         ServingStatus::Serving
     );
+}
+
+#[tokio::test]
+async fn health_checks_create_no_decide_spans_and_no_info_log_lines() {
+    let counts = Counts::default();
+    let _guard =
+        tracing::subscriber::set_default(tracing_subscriber::registry().with(counts.clone()));
+    let backend = ScriptedBackend::new(vec![ScriptStep::Chunk(Chunk::Text {
+        text: "hi".to_string(),
+    })]);
+    let harness = serve(backend, ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let mut agent_core = AgentCoreClient::new(harness.channel.clone());
+
+    // A Decide first, so the counters are shown to count.
+    let turn = agent_core
+        .decide(DecideRequest {
+            session_id: "counted".to_string(),
+            speaker_name: None,
+            text: "hello".to_string(),
+        })
+        .await
+        .expect("decide")
+        .into_inner();
+    timeout(LIMIT, turn.collect::<Vec<_>>())
+        .await
+        .expect("turn timed out");
+    let spans_after_decide = counts.decide_spans.load(Ordering::SeqCst);
+    let events_after_decide = counts.info_events.load(Ordering::SeqCst);
+    assert!(spans_after_decide >= 1, "the counter must count a Decide");
+    assert!(
+        events_after_decide >= 1,
+        "the counter must count info events"
+    );
+
+    for _ in 0..3 {
+        check(&mut health, "").await;
+        check(&mut health, SERVICE_NAME).await;
+    }
+
     assert_eq!(
-        count.0.load(Ordering::SeqCst),
-        0,
-        "health checks must not create decide spans"
+        counts.decide_spans.load(Ordering::SeqCst),
+        spans_after_decide
+    );
+    assert_eq!(
+        counts.info_events.load(Ordering::SeqCst),
+        events_after_decide
     );
 }
 
@@ -363,4 +420,33 @@ async fn shutdown_reports_not_serving_while_an_in_flight_turn_is_still_draining(
             decide_response::Payload::TurnComplete(_)
         ] if text == "b"
     ));
+}
+
+#[tokio::test]
+async fn shutdown_ends_open_watch_streams_so_the_drain_is_not_held() {
+    let harness = serve(ScriptedBackend::new(vec![]), ToggleStore::new()).await;
+    let mut health = HealthClient::new(harness.channel.clone());
+    let (mut overall, first) = watch_status(&mut health, "").await;
+    assert_eq!(first, ServingStatus::Serving);
+    let (mut agent_core, first) = watch_status(&mut health, SERVICE_NAME).await;
+    assert_eq!(first, ServingStatus::Serving);
+
+    harness.shutdown.send(()).expect("server is running");
+
+    // Each watcher sees not-serving first, and then its stream ends.
+    for stream in [&mut overall, &mut agent_core] {
+        assert_eq!(next_status(stream).await, ServingStatus::NotServing);
+        let end = timeout(LIMIT, stream.next())
+            .await
+            .expect("stream did not end");
+        assert!(
+            end.is_none(),
+            "the stream must end after not-serving: {end:?}"
+        );
+    }
+    // No turn is in flight, so the server finishes well inside any drain bound.
+    timeout(Duration::from_secs(2), harness.server)
+        .await
+        .expect("the server was held open by a watch stream")
+        .expect("server task");
 }

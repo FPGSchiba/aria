@@ -96,7 +96,11 @@ fn error_chain(error: &(dyn Error + 'static)) -> String {
 async fn run() -> Result<(), Box<dyn Error>> {
     let config = Config::from_env()?;
 
-    let telemetry = telemetry::init!("aria-agent-core", config.otlp_endpoint())?;
+    let telemetry = telemetry::init!(
+        "aria-agent-core",
+        config.otlp_endpoint(),
+        target = agent_core::CRATE_NAME
+    )?;
 
     let backend = EchoBackend::new();
     let history = InMemoryHistory::default();

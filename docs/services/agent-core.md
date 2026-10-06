@@ -95,7 +95,9 @@ skeleton does until the named story replaces it.
 
 The store and the backend each publish their own health. The health service only listens, and never
 calls a dependency to check it. On SIGTERM both statuses become not-serving **before** the drain
-starts, so new traffic stops while in-flight turns finish. A dependency that reports itself as a
+starts. Watchers of the health status see the change, and then their streams end, so they do not
+hold up the drain. New connections stop because the listener closes; in-flight turns get up to 20 s
+to finish. A dependency that reports itself as a
 backup (for later failover, D35) still counts as healthy; the flag is only logged. **Accepted cost:**
 a backend outage makes every pod unready at once, so callers see "no endpoints" rather than a
 `Decide` error naming the backend. *Revisit if* that proves worse in practice than serving and

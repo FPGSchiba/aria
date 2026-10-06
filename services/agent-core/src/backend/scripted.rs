@@ -38,7 +38,7 @@ pub struct ScriptedBackend {
 
 impl Backend for ScriptedBackend {
     fn name(&self) -> &'static str {
-        "scripted"
+        Self::NAME
     }
 
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
@@ -73,12 +73,15 @@ impl Backend for ScriptedBackend {
 }
 
 impl ScriptedBackend {
+    /// The name this backend goes by, in the startup log and in health lines.
+    const NAME: &'static str = "scripted";
+
     /// Creates a backend that replays `script` on every call.
     pub fn new(script: Vec<ScriptStep>) -> Self {
         Self {
             script,
             calls: Arc::new(Mutex::new(Vec::new())),
-            health: Arc::new(watch::channel(BackendHealth::new("scripted", true, false)).0),
+            health: Arc::new(watch::channel(BackendHealth::new(Self::NAME, true, false)).0),
         }
     }
 
@@ -86,7 +89,7 @@ impl ScriptedBackend {
     /// the health.
     pub fn set_healthy(&self, healthy: bool) {
         self.health
-            .send_replace(BackendHealth::new("scripted", healthy, false));
+            .send_replace(BackendHealth::new(Self::NAME, healthy, false));
     }
 
     /// The recorded calls in order; the call count is its length.

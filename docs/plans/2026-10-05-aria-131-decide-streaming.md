@@ -447,7 +447,9 @@ The milestone review and three fresh branch reviews added the failure handling r
 - C7 (after its API review): one string cannot be both the OTel `service.name` (`aria-agent-core`)
   and a tracing target (`agent_core`). So the public entry point is a macro that takes the service
   name and captures the caller's crate target where it is called. That keeps C7's "one input drives
-  both" and makes a wrong target impossible. The export filter is fixed for every service, with no
+  both" and makes the default target right. After the second API review, an optional explicit
+  `target = "..."` was added for a binary whose name differs from its library's; a wrong value there
+  is the caller's responsibility. The export filter is fixed for every service, with no
   caller-tunable fields. Setup returns a `#[must_use]` guard that flushes on explicit shutdown and,
   as a fallback, on drop. Errors are a typed enum. A blank endpoint means unset inside the crate.
 - C6: Jann kept a health struct per dependency (store: healthy and service name; backend: also an
@@ -457,3 +459,8 @@ The milestone review and three fresh branch reviews added the failure handling r
   current implementation drops its sender. The health task is the only writer to the tonic
   reporter. Shutdown sets both statuses to not-serving and waits for that write to be acknowledged
   before the drain starts. C6 was written by the code-agent at Jann's request.
+- C6 (after its milestone review): health is served through a thin wrapper around tonic-health.
+  Checks are delegated unchanged. Watch streams receive not-serving and then end once shutdown
+  begins, because open Watch streams otherwise held the graceful drain for its full 20 s. `main` passes
+  the export target explicitly as `agent_core::CRATE_NAME`, and a test ties it to the crate's span
+  targets. Each backend's name has one source, used both for `name()` and for its health value.

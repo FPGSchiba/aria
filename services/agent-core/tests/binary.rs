@@ -241,3 +241,59 @@ async fn binary_reports_serving_for_the_overall_server_and_agent_core_over_its_p
         );
     }
 }
+
+#[tokio::test]
+async fn open_health_watch_does_not_hold_the_shutdown_drain() {
+    let mut server = Server::spawn("127.0.0.1:0");
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+    let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut health = HealthClient::new(channel);
+    let mut watch = health
+        .watch(HealthCheckRequest {
+            service: String::new(),
+        })
+        .await
+        .expect("watch")
+        .into_inner();
+    let first = tokio::time::timeout(LIMIT, watch.next())
+        .await
+        .expect("first status timed out")
+        .expect("stream ended")
+        .expect("status");
+    assert_eq!(first.status(), ServingStatus::Serving);
+
+    let started = Instant::now();
+    let pid = server.child.id().to_string();
+    let killed = Command::new("kill")
+        .args(["-TERM", &pid])
+        .status()
+        .expect("run kill");
+    assert!(killed.success());
+
+    // The watcher is told not-serving, and its stream ends.
+    let update = tokio::time::timeout(LIMIT, watch.next())
+        .await
+        .expect("no update after SIGTERM")
+        .expect("stream ended without an update")
+        .expect("status");
+    assert_eq!(update.status(), ServingStatus::NotServing);
+    let end = tokio::time::timeout(LIMIT, watch.next())
+        .await
+        .expect("the stream did not end");
+    assert!(end.is_none(), "{end:?}");
+
+    let status = server.wait_for_exit().await;
+    assert_eq!(status.code(), Some(0), "{status:?}");
+    assert!(
+        started.elapsed() < Duration::from_secs(5),
+        "shutdown took {:?}, so the drain bound was probably hit",
+        started.elapsed()
+    );
+    let stdout = server.drain_stdout();
+    assert!(!stdout.contains("did not finish in time"), "{stdout}");
+}

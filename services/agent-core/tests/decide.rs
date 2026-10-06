@@ -182,7 +182,7 @@ impl GatedBackend {
 
 impl Backend for GatedBackend {
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
-        watch::channel(BackendHealth::new("test", true, false)).1
+        watch::channel(BackendHealth::new(self.name(), true, false)).1
     }
 
     fn name(&self) -> &'static str {
@@ -217,7 +217,7 @@ struct StallFirstCallBackend {
 
 impl Backend for StallFirstCallBackend {
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
-        watch::channel(BackendHealth::new("test", true, false)).1
+        watch::channel(BackendHealth::new(self.name(), true, false)).1
     }
 
     fn name(&self) -> &'static str {
@@ -349,7 +349,7 @@ struct FailFirstCallBackend {
 
 impl Backend for FailFirstCallBackend {
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
-        watch::channel(BackendHealth::new("test", true, false)).1
+        watch::channel(BackendHealth::new(self.name(), true, false)).1
     }
 
     fn name(&self) -> &'static str {

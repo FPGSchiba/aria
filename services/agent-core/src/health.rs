@@ -8,10 +8,15 @@
 //! dependency; a dependency reports a change itself.
 
 use proto::agent_core::v1::agent_core_server::SERVICE_NAME;
+use std::pin::Pin;
 use tokio::sync::watch;
+use tokio_stream::{Stream, StreamExt};
+use tonic::{Request, Response, Status};
 use tonic_health::ServingStatus;
+use tonic_health::pb::health_check_response::ServingStatus as WireStatus;
 use tonic_health::pb::health_server::{Health, HealthServer};
-use tonic_health::server::{HealthReporter, health_reporter};
+use tonic_health::pb::{HealthCheckRequest, HealthCheckResponse};
+use tonic_health::server::{HealthReporter, HealthService};
 
 /// Health of an LLM backend, as the backend itself reports it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -75,8 +80,8 @@ impl HistoryHealth {
     }
 }
 
-/// The handle to the running health task. Dropping it does not stop the task; the task ends after
-/// shutdown has been reported.
+/// The handle to the running health task. Dropping it ends the task, and with it every open
+/// `Watch` stream; the task also ends once shutdown has been reported.
 #[derive(Debug)]
 pub struct HealthMonitor {
     shutdown: watch::Sender<bool>,
@@ -104,9 +109,13 @@ pub async fn start(
     backend: watch::Receiver<BackendHealth>,
     history: watch::Receiver<HistoryHealth>,
 ) -> (HealthMonitor, HealthServer<impl Health>) {
-    let (reporter, server) = health_reporter();
+    let reporter = HealthReporter::new();
     let (shutdown, shutdown_rx) = watch::channel(false);
     let (reported_tx, reported) = watch::channel(false);
+    let server = HealthServer::new(EndingHealth {
+        inner: HealthService::from_health_reporter(reporter.clone()),
+        reported: reported.clone(),
+    });
 
     let mut state = MonitorState {
         reporter,
@@ -118,15 +127,11 @@ pub async fn start(
         last_history: None,
     };
     // The first evaluation happens here, so a check right after startup finds the status.
-    let first_done = state.evaluate().await;
-    if first_done {
+    state.evaluate().await;
+    tokio::spawn(async move {
+        state.run().await;
         reported_tx.send_replace(true);
-    } else {
-        tokio::spawn(async move {
-            state.run().await;
-            reported_tx.send_replace(true);
-        });
-    }
+    });
     (HealthMonitor { shutdown, reported }, server)
 }
 
@@ -174,13 +179,17 @@ impl MonitorState {
         shutting_down
     }
 
-    /// Re-evaluates on every change until shutdown has been reported.
+    /// Re-evaluates on every change until shutdown has been reported or the monitor is dropped.
     async fn run(&mut self) {
         loop {
             tokio::select! {
                 () = changed(&mut self.backend) => {}
                 () = changed(&mut self.history) => {}
-                () = changed(&mut self.shutdown) => {}
+                result = self.shutdown.changed() => {
+                    if result.is_err() {
+                        return;
+                    }
+                }
             }
             if self.evaluate().await {
                 return;
@@ -226,5 +235,67 @@ fn log_history(health: &HistoryHealth) {
         tracing::info!(service = health.service(), "history store is healthy");
     } else {
         tracing::warn!(service = health.service(), "history store is unhealthy");
+    }
+}
+
+/// The health service, with `Watch` streams that end once shutdown has been reported. tonic's
+/// graceful shutdown waits for open streams, so a watcher left open would hold the drain for its
+/// whole bound; ending it after its last update lets the drain wait only for real turns.
+struct EndingHealth {
+    inner: HealthService,
+    reported: watch::Receiver<bool>,
+}
+
+type WatchStream = Pin<Box<dyn Stream<Item = Result<HealthCheckResponse, Status>> + Send>>;
+
+#[tonic::async_trait]
+impl Health for EndingHealth {
+    async fn check(
+        &self,
+        request: Request<HealthCheckRequest>,
+    ) -> Result<Response<HealthCheckResponse>, Status> {
+        self.inner.check(request).await
+    }
+
+    type WatchStream = WatchStream;
+
+    async fn watch(
+        &self,
+        request: Request<HealthCheckRequest>,
+    ) -> Result<Response<Self::WatchStream>, Status> {
+        let mut inner = self.inner.watch(request).await?.into_inner();
+        let mut reported = self.reported.clone();
+        let stream = async_stream::stream! {
+            let mut last = None;
+            loop {
+                let shutdown_reported = async {
+                    // A dropped sender means the task is gone, which ends the watchers too.
+                    let _ = reported.wait_for(|done| *done).await;
+                };
+                tokio::select! {
+                    item = inner.next() => match item {
+                        Some(Ok(response)) => {
+                            last = Some(response.status());
+                            yield Ok(response);
+                        }
+                        Some(Err(status)) => {
+                            yield Err(status);
+                            break;
+                        }
+                        None => break,
+                    },
+                    () = shutdown_reported => {
+                        // Shutdown is reported: the last update must be not-serving, then end.
+                        if last != Some(WireStatus::NotServing) {
+                            yield Ok(HealthCheckResponse {
+                                status: WireStatus::NotServing.into(),
+                            });
+                        }
+                        break;
+                    }
+                }
+            }
+        };
+        Ok(Response::new(Box::pin(stream)))
     }
 }
