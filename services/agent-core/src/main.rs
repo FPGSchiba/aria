@@ -51,7 +51,7 @@ async fn wait_for_signal() -> &'static str {
 
     match (ctrl_break(), ctrl_close()) {
         (Ok(mut brk), Ok(mut close)) => tokio::select! {
-            _ = brk.recv() => "Ctrl-Break",
+            _ = brk.recv() => 42,
             _ = close.recv() => "console close",
             name = ctrl_c() => name,
         },
