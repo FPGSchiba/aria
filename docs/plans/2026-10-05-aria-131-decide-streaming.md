@@ -251,7 +251,7 @@ agent-core` serves, and one `Decide` via `grpcurl` streams echoed chunks.
 ### C5 — Agent Core page: interim behaviour
 
 kind: chore
-status: pending
+status: done
 depends-on: 3, 4
 
 **Responsibility.** Update `docs/services/agent-core.md` so the library matches what runs. Record

@@ -48,6 +48,29 @@
   `request_information` tool when given one); and, if strict schemas are used, dropping null optional
   arguments before forwarding.
 
+## Interim behaviour from ARIA-131 (2026-10-06)
+
+`Decide` now runs. None of the following is an architecture decision; each is what the walking
+skeleton does until the named story replaces it.
+
+- **History lives in process memory** and is lost on restart, with no eviction. D36 rejected this as
+  an end state. It sits behind a history-store trait so that a Knowledge-Core-backed store can replace
+  it without changing the `Decide` handler. *Replaced by:* the story that persists history (D36).
+- **A second `Decide` on a session with a turn in flight is refused** with `ABORTED`, not queued, and
+  the backend is not called. Cancelling the in-flight turn on barge-in is the caller's job.
+  *Revisit if:* the Gateway's barge-in design needs the Agent Core to cancel the turn itself.
+- **An exchange is committed only when the turn finishes cleanly.** The commit happens before
+  turn-complete is sent. A backend error, a cancelled client stream or a failed commit leaves
+  history unchanged, so after a cancelled turn there is no memory of the half answer the user heard.
+  A failed commit ends the stream with `UNAVAILABLE` in place of turn-complete. *Revisit with:* D61's
+  turn log, which is where a turn status such as "interrupted" belongs.
+- **The binary serves an `echo` backend.** It streams the user's text back and is not a product
+  backend; startup logs which backend is serving. *Replaced by:* ARIA-143 (hosted backend, D85).
+- **Spans are exported only when an OTLP endpoint is configured** (`OTEL_EXPORTER_OTLP_ENDPOINT`).
+  Without one, no exporter is created and logs still go to stdout. `RUST_LOG` filters stdout only, so
+  a quiet log level never thins exported spans. *Replaced by:* the in-cluster collector (D82), at
+  which point the endpoint is always set.
+
 ---
 
 ## Purpose
@@ -94,8 +117,8 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 
 ## Jira stories
 
-ARIA-40, 48, 50, 53, 54, 56, 58, 61, 63, 109
+ARIA-40, 48, 50, 53, 54, 56, 58, 61, 63, 109, 131, 143
 
 ---
 
-*Derived from `03-architecture.md` and the Decision Log. Last updated 2026-08-19.*
+*Derived from `03-architecture.md` and the Decision Log. Last updated 2026-10-06.*
