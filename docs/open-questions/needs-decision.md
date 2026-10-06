@@ -414,3 +414,9 @@ Found while building `Decide` in the Agent Core. Recorded, not decided. Reasonin
   entry for the current call is **sent**. Replaying stored ones would give the model several
   contradictory "today is" statements. It becomes concrete with the date/time injection item under
   D85 above, so settle the two together. Affects ARIA-143 and ARIA-61.
+- **Who cancels an in-flight `Decide` on barge-in.** [D27](../decisions/0004-audio-pipeline.md) has
+  the Gateway cancel the outbound TTS stream when Speech signals speech-start. It says nothing about
+  the `Decide` turn that is producing that speech. *Interim (ARIA-131):* the Agent Core refuses a
+  second `Decide` on a busy session with `ABORTED` and assumes the caller cancels the first. Open:
+  does the Gateway cancel the `Decide` stream, or does the Agent Core cancel the turn itself when a
+  new one arrives? Needed before the Gateway's barge-in story.

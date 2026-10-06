@@ -57,7 +57,8 @@ skeleton does until the named story replaces it.
   an end state. It sits behind a history-store trait so that a Knowledge-Core-backed store can replace
   it without changing the `Decide` handler. *Replaced by:* the story that persists history (D36).
 - **A second `Decide` on a session with a turn in flight is refused** with `ABORTED`, not queued, and
-  the backend is not called. Cancelling the in-flight turn on barge-in is the caller's job.
+  the backend is not called. This assumes the caller cancels an in-flight turn on barge-in, which is
+  **open**: D27 only has the Gateway cancel the outbound TTS stream.
   *Revisit if:* the Gateway's barge-in design needs the Agent Core to cancel the turn itself.
 - **An exchange is committed only when the turn finishes cleanly.** The commit happens before
   turn-complete is sent. A backend error, a cancelled client stream or a failed commit leaves
@@ -87,7 +88,7 @@ skeleton does until the named story replaces it.
 | `INVALID_ARGUMENT` | Empty `session_id` or `text`. The backend is not called. |
 | `ABORTED` | The session already has a turn in flight. |
 | `UNAVAILABLE` | The history store failed before the turn started. Nothing has happened, so a retry is safe. |
-| `INTERNAL` | The backend failed mid-turn, or the commit failed after the reply was streamed. Deliberately not `UNAVAILABLE`, because default gRPC retry policies retry that code and would re-run the turn. |
+| `INTERNAL` | The backend failed or replied with nothing, or the commit failed after the reply was streamed. A fault, not a transient outage. Because it arrives mid-stream, after the response headers, no gRPC retry policy would retry it whatever the code. |
 
 ---
 
@@ -132,6 +133,9 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 - Whether the serving backend is exposed in the `Decide` response body or kept to traces only
 - Prompt formatting, and whether retrieval re-runs mid-loop
 - The numeric tool-loop iteration bound (deferred — C-4)
+- Who cancels an in-flight `Decide` on barge-in ([needs-decision](../open-questions/needs-decision.md#surfaced-by-aria-131-2026-10-06))
+- Where D49's conversation type lives once it crosses a service boundary (same section)
+- Whether stored system entries are replayed to the backend; a direction is agreed but not decided (same section)
 
 ## Jira stories
 

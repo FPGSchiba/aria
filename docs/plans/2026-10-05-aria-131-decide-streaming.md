@@ -25,8 +25,9 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
 - Evicting or expiring sessions. Memory grows with the number of sessions.
 - Tools, tool-call events, retrieval and consent prompts.
 - Using `speaker_name`. It is accepted and ignored.
-- Queueing or cancelling a competing turn on the same session. Barge-in cancellation belongs to the
-  caller (D29/D30 side).
+- Queueing or cancelling a competing turn on the same session. Who cancels an in-flight `Decide` on
+  barge-in is **open**: D27 has the Gateway cancel only the outbound TTS stream. This story assumes
+  the caller does it, as an interim (recorded in `needs-decision.md`).
 - Authenticating the caller or verifying end-user context.
 
 ## Constraints
@@ -67,8 +68,9 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
   OTel. Logs stay on stdout rather than OTLP, per D82.
 - **A second `Decide` on a busy session is rejected, not queued.** While a turn is in flight on a
   session, another `Decide` for that session fails immediately with a distinguishable "busy"
-  status, and the backend is not called. Chosen because barge-in cancellation is the caller's job,
-  and a clear status is something the caller can act on.
+  status, and the backend is not called. Chosen on the interim assumption that the caller cancels an
+  in-flight turn on barge-in (open, see Non-goals), and because a clear status is something the
+  caller can act on.
   Rejected *for now*, not for good: *serialize per session* (correct, but an abandoned slow turn
   blocks the user's next one); *snapshot at start and commit on finish* (no blocking, but history
   can interleave and break the alternation the first decision bought). Revisit if the Gateway's
@@ -103,9 +105,12 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
   **Amended 2026-10-06, after the branch review:** a failed **commit** maps to `INTERNAL`, not
   `UNAVAILABLE`. A store failure in `start_turn`, before anything has happened, stays `UNAVAILABLE`.
   Chosen by Jann because a failed commit is an internal fault that may run deeper, not a transient
-  outage. It also keeps default gRPC retry policies from re-running a turn whose reply the client
-  has already received. Rejected: *keep `UNAVAILABLE`* (accurate for a store outage, but invites a
-  retry that repeats the whole turn, tool calls included once they exist).
+  outage of the kind `UNAVAILABLE` signals. Rejected: *keep `UNAVAILABLE`* (it describes a store
+  outage before the turn starts, not a fault after the reply has been streamed).
+  *Corrected after the final branch review:* an earlier version also argued that `INTERNAL` avoids
+  automatic retries. That was wrong. gRPC has no default retry policy, and a configured one retries
+  only before response headers arrive, which for `Decide` is before the first chunk. So a status
+  sent mid-stream is never retried either way.
 - **The acceptance tests exercise the real gRPC surface.** They run against an in-process server and
   client, not by calling the handler directly, because AC3 is a statement about the status the
   caller receives, which only the wire proves.
@@ -279,7 +284,7 @@ a new architecture decision.
   also removes a second clone per turn. Found in API review round 2.
 - C1: the in-memory store checks that a turn was issued by the same store (identity of its shared
   map) before committing or aborting. A foreign turn is refused as `InvalidTurnOwner`, which maps to
-  `INTERNAL` at commit, like every commit failure, and to `UNAVAILABLE` from `start_turn`.
+  `INTERNAL` at commit, like every commit failure. It cannot arise from `start_turn`, which takes no turn.
 - C1: generic callers get no `#[must_use]` lint on the associated turn type, so holding the turn for
   the whole turn is a documented obligation on `start_turn`. `#[must_use]` sits on the in-memory
   `Token`.
@@ -294,7 +299,8 @@ a new architecture decision.
   Exporter wiring is C4's concern. The smoke run after the milestone review covered it with export
   on: export was attempted against an unused endpoint, and the service kept serving.
 - C3: failure outcomes are `backend_error`, `cancelled`, `commit_failed`, `commit_interrupted`,
-  `store_error` (which includes a busy rejection) and `invalid_input`. Progress events use `stage`,
+  `store_error` (which includes a busy rejection), `invalid_input`, `abort_failed` and
+  `generation_failed`. Progress events use `stage`,
   so `outcome` only ever names a failure. (Amended after the milestone review.) The plan named
   only the first two; the rest follow from one rule: any `Decide` that does not end in turn-complete
   marks its span.
@@ -310,8 +316,9 @@ a new architecture decision.
 - C4: the shutdown signal also handles Windows (Ctrl-C, Ctrl-Break, console close). That branch is
   not compiled in CI or locally yet, because no Windows target is installed.
 - C1: the in-memory store is `InMemoryHistory`, renamed from `History` during implementation.
-- C3 (after milestone review): a backend error maps to `INTERNAL`, not `UNAVAILABLE`, because default
-  gRPC retry policies retry `UNAVAILABLE` and would re-run a failed turn, against D39's posture.
+- C3 (after milestone review): a backend error maps to `INTERNAL`, not `UNAVAILABLE`, because a
+  failure mid-turn is a fault, not a transient outage. (The original reason given, avoiding default
+  gRPC retries, was wrong; see the amended commit-status Decision.)
   A store failure in `start_turn` stays `UNAVAILABLE`; a commit failure became `INTERNAL` in the
   2026-10-06 amendment above. A busy rejection is marked as a
   failed span (`store_error`), so error traces include ordinary barge-in races.
