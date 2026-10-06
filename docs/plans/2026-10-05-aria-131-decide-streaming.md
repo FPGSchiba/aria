@@ -282,8 +282,11 @@ a new architecture decision.
 - C3: telemetry names are pinned so tests can observe them at the `tracing` layer, without an
   in-test OTel exporter. The span is `decide`. A failed turn records `otel.status_code = "ERROR"` on
   it, and its failure event carries `outcome` (`backend_error` or `cancelled`) and `session_id`.
-  Exporter wiring is C4's concern and is covered by the smoke run.
-- C3: failure outcomes are `backend_error`, `cancelled`, `commit_failed` and `invalid_input`. The
+  Exporter wiring is C4's concern. The smoke run after the milestone review covered it with export
+  on: export was attempted against an unused endpoint, and the service kept serving.
+- C3: failure outcomes are `backend_error`, `cancelled`, `commit_failed`, `commit_interrupted`,
+  `store_error` (which includes a busy rejection) and `invalid_input`. Progress events use `stage`,
+  so `outcome` only ever names a failure. (Amended after the milestone review.) The
   last two go beyond the plan's list: any `Decide` that does not end in turn-complete marks its span.
   Cancellation is reported by a drop guard owned by the response stream, because a cancelled stream
   is dropped rather than polled to an end.
@@ -296,3 +299,14 @@ a new architecture decision.
   smoke run showed TRACE output from tonic, h2 and hyper by default.
 - C4: the shutdown signal also handles Windows (Ctrl-C, Ctrl-Break, console close). That branch is
   not compiled in CI or locally yet, because no Windows target is installed.
+- C1: the in-memory store is `InMemoryHistory`, renamed from `History` during implementation.
+- C3 (after milestone review): a backend error maps to `INTERNAL`, not `UNAVAILABLE`, because default
+  gRPC retry policies retry `UNAVAILABLE` and would re-run a failed turn, against D39's posture.
+  A store or commit failure stays `UNAVAILABLE`, as decided above. A busy rejection is marked as a
+  failed span (`store_error`), so error traces include ordinary barge-in races.
+- C3 (after milestone review): a drop while a commit is in flight reports `commit_interrupted`,
+  because the history may or may not hold the exchange. The store trait now asks for commit to be
+  atomic under cancellation, which the persistence story must honour.
+- C4 (after milestone review): exported spans have their own filter (this crate at `debug`,
+  dependencies at `warn`), separate from `RUST_LOG`. ANSI colour is on only when stdout is a
+  terminal. A serve error still flushes the tracer provider.

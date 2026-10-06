@@ -10,7 +10,7 @@ use agent_core::history::{
 use agent_core::service::Service;
 use futures_core::Stream;
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
-use proto::agent_core::v1::agent_core_server::AgentCoreServer;
+use proto::agent_core::v1::agent_core_server::{AgentCore, AgentCoreServer};
 use proto::agent_core::v1::{DecideRequest, decide_response};
 use std::collections::HashMap;
 use std::io;
@@ -246,6 +246,50 @@ impl HistoryStore for FailingCommitStore {
     }
 }
 
+/// An in-memory store whose `start_turn` always fails.
+#[derive(Clone, Default)]
+struct FailingStartStore {
+    inner: InMemoryHistory,
+}
+
+impl HistoryStore for FailingStartStore {
+    type Turn = Token;
+
+    async fn start_turn(&self, _session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+        Err(HistoryError::StoreUnavailable)
+    }
+
+    async fn commit(&self, token: Token, new_parts: Vec<ConversationPart>) -> HistoryResult<()> {
+        self.inner.commit(token, new_parts).await
+    }
+
+    async fn abort(&self, token: Token) -> HistoryResult<()> {
+        self.inner.abort(token).await
+    }
+}
+
+/// An in-memory store whose commit never finishes, so a turn can be interrupted mid-commit.
+#[derive(Clone, Default)]
+struct StalledCommitStore {
+    inner: InMemoryHistory,
+}
+
+impl HistoryStore for StalledCommitStore {
+    type Turn = Token;
+
+    async fn start_turn(&self, session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+        self.inner.start_turn(session_id).await
+    }
+
+    async fn commit(&self, _token: Token, _new_parts: Vec<ConversationPart>) -> HistoryResult<()> {
+        std::future::pending().await
+    }
+
+    async fn abort(&self, token: Token) -> HistoryResult<()> {
+        self.inner.abort(token).await
+    }
+}
+
 /// Captures log output of the current thread. Tests using it run on the default current-thread
 /// runtime, so the server tasks log on the same thread.
 #[derive(Clone, Default)]
@@ -370,6 +414,7 @@ async fn backend_failing_after_one_chunk_delivers_chunk_then_error_and_is_called
 
     assert_eq!(outcome.events, vec![delta("partial")]);
     let code = outcome.code().expect("an error status ends the stream");
+    assert_eq!(code, Code::Internal);
     assert_ne!(code, Code::Aborted, "must not look like busy");
     assert_ne!(code, Code::InvalidArgument, "must not look like bad input");
     assert_eq!(backend.calls().len(), 1, "no retry");
@@ -762,18 +807,130 @@ async fn successful_turn_has_a_decide_span_that_is_not_marked_error() {
     let spans = capture.decide_spans();
     assert_eq!(spans.len(), 1, "expected one decide span, got {spans:?}");
     assert!(!is_error_status(&spans[0]), "{:?}", spans[0]);
-    let failure_events: Vec<_> = capture
+    let outcome_events: Vec<_> = capture
         .decide_events()
         .into_iter()
-        .filter(|e| {
-            matches!(
-                e.fields.get("outcome").map(String::as_str),
-                Some("backend_error" | "cancelled" | "commit_failed" | "invalid_input")
-            )
-        })
+        .filter(|e| e.fields.contains_key("outcome"))
         .collect();
     assert!(
-        failure_events.is_empty(),
-        "a clean turn records no failure event: {failure_events:?}"
+        outcome_events.is_empty(),
+        "a clean turn records no outcome: {outcome_events:?}"
     );
+}
+
+#[tokio::test]
+async fn start_turn_store_failure_is_unavailable_and_marks_the_span_error() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![chunk("a")]);
+    let mut client = serve(backend.clone(), FailingStartStore::default()).await;
+
+    let outcome = decide(&mut client, "start-fail", "hello").await;
+
+    assert_eq!(outcome.code(), Some(Code::Unavailable), "{outcome:?}");
+    assert!(backend.calls().is_empty());
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a store_error event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "store_error", "start-fail")
+            },
+        )
+        .await;
+}
+
+#[tokio::test]
+async fn busy_rejection_marks_the_span_error_with_store_error_outcome() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = GatedBackend::new();
+    let gate = backend.gate.clone();
+    let mut client = serve(backend, InMemoryHistory::default()).await;
+
+    let mut first = client
+        .decide(request("busy-span", "hello"))
+        .await
+        .expect("decide")
+        .into_inner();
+    timeout(LIMIT, first.next())
+        .await
+        .expect("first chunk timed out")
+        .expect("stream ended early")
+        .expect("status");
+
+    let second = decide(&mut client, "busy-span", "interrupting").await;
+    assert_eq!(second.code(), Some(Code::Aborted), "{second:?}");
+
+    capture
+        .wait_until(
+            "the rejected decide span to be marked ERROR with a store_error event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "store_error", "busy-span")
+            },
+        )
+        .await;
+
+    gate.add_permits(1);
+    let rest = timeout(LIMIT, first.collect::<Vec<_>>())
+        .await
+        .expect("first turn did not finish");
+    assert_eq!(rest.len(), 2, "the first turn still completes");
+}
+
+#[tokio::test]
+async fn dropping_an_unpolled_response_stream_reports_cancelled() {
+    let (capture, _guard) = SpanCapture::install();
+    let service = Service::new(
+        ScriptedBackend::new(vec![chunk("a")]),
+        InMemoryHistory::default(),
+    );
+
+    // Called directly, not over the wire: tonic would poll the stream at once, and this contract
+    // is about a stream that was never polled.
+    let response = service
+        .decide(tonic::Request::new(request("unpolled", "hello")))
+        .await
+        .expect("decide");
+    drop(response);
+
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a cancelled event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "cancelled", "unpolled")
+            },
+        )
+        .await;
+}
+
+#[tokio::test]
+async fn cancel_while_commit_is_in_flight_reports_commit_interrupted() {
+    let (capture, _guard) = SpanCapture::install();
+    let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two")]);
+    let mut client = serve(backend, StalledCommitStore::default()).await;
+
+    let mut stream = client
+        .decide(request("mid-commit", "hello"))
+        .await
+        .expect("decide")
+        .into_inner();
+    for _ in 0..2 {
+        timeout(LIMIT, stream.next())
+            .await
+            .expect("chunk timed out")
+            .expect("stream ended early")
+            .expect("status");
+    }
+    drop(stream);
+
+    capture
+        .wait_until(
+            "the decide span to be marked ERROR with a commit_interrupted event",
+            |c| {
+                c.decide_spans().iter().any(is_error_status)
+                    && has_outcome(c, "commit_interrupted", "mid-commit")
+            },
+        )
+        .await;
 }

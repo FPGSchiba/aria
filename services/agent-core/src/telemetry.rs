@@ -4,21 +4,28 @@
 use opentelemetry::trace::TracerProvider;
 use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::trace::SdkTracerProvider;
-use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
+use std::io::IsTerminal;
+use tracing::Level;
+use tracing_subscriber::filter::Targets;
+use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{EnvFilter, Layer};
 
+/// Installs the global tracing subscriber and returns the span exporter's provider, if any.
+///
+/// Logs go to stdout, filtered by `RUST_LOG`. With an OTLP endpoint, spans are also exported to
+/// it, filtered separately. The caller must `shutdown` the returned provider on exit to flush.
 pub fn configure_tracing(
     otlp_endpoint: Option<String>,
 ) -> Result<Option<SdkTracerProvider>, Box<dyn std::error::Error>> {
     // `RUST_LOG` filters the stdout logs only; an unset or invalid value falls back to `info`.
-    // The filter is not applied to span export, so a quiet log level never thins the traces.
+    // Span export has its own filter, so a quiet log level never thins the traces.
     let (filter, invalid_filter) = match EnvFilter::try_from_default_env() {
         Ok(filter) => (filter, None),
         Err(_) => (EnvFilter::new("info"), std::env::var("RUST_LOG").ok()),
     };
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stdout)
-        .with_ansi(true)
+        .with_ansi(std::io::stdout().is_terminal())
         .with_target(false)
         .with_level(true)
         .with_thread_ids(true)
@@ -33,14 +40,21 @@ pub fn configure_tracing(
             .with_endpoint(endpoint)
             .build()?;
         let provider = opentelemetry_sdk::trace::SdkTracerProvider::builder()
-            .with_batch_exporter(exporter) // no runtime argument any more
+            .with_batch_exporter(exporter)
             .with_resource(
                 opentelemetry_sdk::Resource::builder()
                     .with_service_name("agent-core")
                     .build(),
             )
             .build();
-        let otel_layer = tracing_opentelemetry::layer().with_tracer(provider.tracer("agent-core"));
+        // Export this crate's spans down to `debug`; dependencies only at `warn`, so their
+        // per-request spans do not flood the collector.
+        let export_filter = Targets::new()
+            .with_default(Level::WARN)
+            .with_target(env!("CARGO_CRATE_NAME"), Level::DEBUG);
+        let otel_layer = tracing_opentelemetry::layer()
+            .with_tracer(provider.tracer("agent-core"))
+            .with_filter(export_filter);
         tracing::subscriber::set_global_default(subscriber.with(otel_layer))?;
 
         tracing::info!("OTLP tracing enabled");

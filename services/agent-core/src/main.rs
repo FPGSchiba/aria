@@ -63,22 +63,25 @@ async fn wait_for_signal() -> &'static str {
 async fn main() -> Result<(), Box<dyn Error>> {
     let config = Config::from_env()?;
 
-    let provider = configure_tracing(config.otlp_endpoint)?;
+    let provider = configure_tracing(config.otlp_endpoint().map(str::to_owned))?;
 
     let service: Service<EchoBackend, InMemoryHistory> = Service::default();
     tracing::info!(
         "Starting agent-core service with 'echo' backend on '{}'",
-        config.listen_address
+        config.listen_address()
     );
 
-    tonic::transport::Server::builder()
-        .add_service(AgentCoreServer::new(service)) // service: your Service<History, EchoBackend>
-        .serve_with_shutdown(config.listen_address, shutdown_signal()) // addr: SocketAddr from Config
-        .await?;
+    let served = tonic::transport::Server::builder()
+        .add_service(AgentCoreServer::new(service))
+        .serve_with_shutdown(config.listen_address(), shutdown_signal())
+        .await;
+    if let Err(e) = &served {
+        tracing::error!(error = %e, "server failed");
+    }
 
     if let Some(Err(e)) = provider.map(|p| p.shutdown()) {
         tracing::error!(error = %e, "failed to shut down OTLP tracer provider");
     }
 
-    Ok(())
+    Ok(served?)
 }

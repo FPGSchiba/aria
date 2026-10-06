@@ -37,8 +37,10 @@ pub trait Backend: Send + Sync {
     /// A stream of chunks.
     ///
     /// # Contract for implementors
-    /// * The returned stream is lazy: no work happens until it is first polled, and
-    ///   dropping it cancels the in-flight work.
+    /// * Dropping the returned stream cancels the in-flight work, and a stream that is dropped
+    ///   unpolled must cost nothing: start the work when the stream is first polled, not when
+    ///   it is created. (The scripted test double records the call at creation and is the
+    ///   exception.)
     /// * The stream ending (`None`) means the reply is complete. A truncated or
     ///   interrupted reply must be reported as an `Err` item, never as a clean end.
     /// * An `Err` item is final: nothing may follow it.

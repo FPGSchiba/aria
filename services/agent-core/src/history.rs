@@ -27,7 +27,7 @@ pub enum HistoryError {
     #[error("store not available")]
     StoreUnavailable,
     /// The turn does not hold the session it was handed back for.
-    #[error("owner of the turn is not the same as the token")]
+    #[error("the turn does not hold the session it was handed back for")]
     InvalidTurnOwner,
 }
 
@@ -140,6 +140,10 @@ pub trait HistoryStore: Send + Sync {
     ///
     /// On any error the turn is still consumed and the session freed.
     ///
+    /// The returned future may be dropped before it finishes (the client cancelled the stream).
+    /// Implementations must apply the commit atomically under that cancellation: the exchange
+    /// is stored in full or not at all, never in part.
+    ///
     /// # Errors
     /// `StoreUnavailable` if the store cannot be used, `InvalidTurnOwner` if the turn does not
     /// hold the session or was issued by another store.
@@ -191,11 +195,6 @@ impl HistoryStore for InMemoryHistory {
         new_parts: Vec<ConversationPart>,
     ) -> HistoryResult<()> {
         if !Arc::ptr_eq(&self.sessions, &token.store.sessions) {
-            tracing::error!(
-                session_id = %token.session_id,
-                token_id = token.token_id,
-                "commit discarded: the turn was issued by a different store"
-            );
             return Err(HistoryError::InvalidTurnOwner);
         }
         let mut sessions = self.sessions.lock().unwrap_or_else(PoisonError::into_inner);
@@ -208,14 +207,7 @@ impl HistoryStore for InMemoryHistory {
                 session_history.release_if_held(token.token_id);
                 Ok(())
             }
-            None => {
-                tracing::error!(
-                    session_id = %token.session_id,
-                    token_id = token.token_id,
-                    "commit discarded: the turn no longer holds the session"
-                );
-                Err(HistoryError::InvalidTurnOwner)
-            }
+            None => Err(HistoryError::InvalidTurnOwner),
         }
     }
 
