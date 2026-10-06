@@ -3,45 +3,47 @@
 //! Not a product backend.
 
 use crate::backend::{Backend, BackendError, Chunk};
-use crate::history::{Content, ConversationPart};
+use crate::conversation::{Content, ConversationPart};
 use futures_core::Stream;
 use std::pin::Pin;
 
 /// Echoes the user's text back in at least two chunks (for text of two or more chars), ignores
-/// history, and ends cleanly.
+/// history, and ends cleanly. The chunks are produced when the stream is first polled.
 #[derive(Debug, Clone, Default)]
 pub struct EchoBackend;
 
 impl Backend for EchoBackend {
+    fn name(&self) -> &'static str {
+        "echo"
+    }
+
     fn stream_conversation(
         &self,
         _history: Vec<ConversationPart>,
         input: Vec<ConversationPart>,
     ) -> Pin<Box<dyn Stream<Item = Result<Chunk, BackendError>> + Send + 'static>> {
-        // Split each text part by chars into pieces of ceil(n / 2), at most 8, so any text of
-        // two or more chars streams as at least two chunks and the pieces concatenate exactly.
-        let mut chunks = Vec::new();
-        for part in input {
-            match part.content {
-                Content::Text { text } => {
-                    let chars: Vec<char> = text.chars().collect();
-                    let size = chars.len().div_ceil(2).clamp(1, 8);
-                    for piece in chars.chunks(size) {
-                        chunks.push(Ok(Chunk::Text {
-                            text: piece.iter().collect(),
-                        }));
+        Box::pin(async_stream::stream! {
+            // Split each text part by chars into pieces of ceil(n / 2), at most 8, so any text of
+            // two or more chars streams as at least two chunks and the pieces concatenate exactly.
+            for part in input {
+                match part.content {
+                    Content::Text { text } => {
+                        let chars: Vec<char> = text.chars().collect();
+                        let size = chars.len().div_ceil(2).clamp(1, 8);
+                        for piece in chars.chunks(size) {
+                            yield Ok(Chunk::Text { text: piece.iter().collect() });
+                        }
                     }
                 }
             }
-        }
-        Box::pin(tokio_stream::iter(chunks))
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::history::Actor;
+    use crate::conversation::Actor;
     use tokio_stream::StreamExt;
 
     #[tokio::test]

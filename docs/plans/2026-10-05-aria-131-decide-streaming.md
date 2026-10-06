@@ -100,6 +100,12 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
   telling the client "done" for an exchange that the next turn will not see. A store failure maps to
   `UNAVAILABLE` with a generic message, distinct from busy (`ABORTED`) and invalid input
   (`INVALID_ARGUMENT`).
+  **Amended 2026-10-06, after the branch review:** a failed **commit** maps to `INTERNAL`, not
+  `UNAVAILABLE`. A store failure in `start_turn`, before anything has happened, stays `UNAVAILABLE`.
+  Chosen by Jann because a failed commit is an internal fault that may run deeper, not a transient
+  outage. It also keeps default gRPC retry policies from re-running a turn whose reply the client
+  has already received. Rejected: *keep `UNAVAILABLE`* (accurate for a store outage, but invites a
+  retry that repeats the whole turn, tool calls included once they exist).
 - **The acceptance tests exercise the real gRPC surface.** They run against an in-process server and
   client, not by calling the handler directly, because AC3 is a statement about the status the
   caller receives, which only the wire proves.
@@ -108,6 +114,9 @@ the walking skeleton. Story: [ARIA-131](https://firephoenixgames.atlassian.net/b
 
 None blocking. The busy-rejection and in-memory interim are recorded on the Agent Core page (C5) as
 interim behaviour, not as decisions.
+
+Both items below are also recorded in `docs/open-questions/needs-decision.md` (after the branch review),
+so later stories find them outside this plan.
 
 - **Where D49's canonical conversation and tool-call type lives once it crosses a service
   boundary** (persistence to the Knowledge Core under D36, the turn log under D61): a type in
@@ -315,3 +324,6 @@ a new architecture decision.
   so a store whose dropped turn releases only "eventually" still meets AC3. A cancelled stream still
   relies on drop, because `Drop` cannot await, so it stays on the trait's eventual-release contract.
   An abort failure is reported as `abort_failed`, but the client still gets the backend's `INTERNAL`.
+- Branch-review smells: the conversation model moved to `conversation.rs`, so backends no longer
+  import from the store module. The in-memory turn handle is `InMemoryTurn`. `Backend::name()`
+  feeds the startup log. `main` prints a config error with its readable message and exits 1.

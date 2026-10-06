@@ -10,8 +10,6 @@ test-util = []
 [dependencies]
 proto                 = { workspace = true }
 tonic                 = { workspace = true }
-tonic-prost           = { workspace = true }
-prost                 = { workspace = true }
 tokio                 = { workspace = true, features = ["macros", "rt-multi-thread", "sync", "signal", "net"] }
 tokio-stream          = { workspace = true }
 futures-core          = { workspace = true }
@@ -21,7 +19,6 @@ tracing-opentelemetry = { workspace = true }
 opentelemetry         = { workspace = true }
 opentelemetry_sdk     = { workspace = true }
 opentelemetry-otlp    = { workspace = true }
-shared                = { workspace = true }
 thiserror             = { workspace = true }
 async-stream          = { workspace = true }
 

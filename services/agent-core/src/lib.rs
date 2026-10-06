@@ -3,6 +3,7 @@
 
 pub mod backend;
 pub mod config;
+pub mod conversation;
 pub mod history;
 pub mod service;
 pub mod telemetry;

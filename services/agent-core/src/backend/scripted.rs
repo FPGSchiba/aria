@@ -3,7 +3,7 @@
 //! what it was called with and how many times.
 
 use crate::backend::{Backend, BackendError, Chunk};
-use crate::history::ConversationPart;
+use crate::conversation::ConversationPart;
 use futures_core::Stream;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
@@ -85,7 +85,7 @@ impl Default for ScriptedBackend {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::history::{Actor, Content};
+    use crate::conversation::{Actor, Content};
     use tokio_stream::StreamExt;
 
     fn text(s: &str) -> Chunk {

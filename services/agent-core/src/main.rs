@@ -1,3 +1,4 @@
+use agent_core::backend::Backend;
 use agent_core::backend::echo::EchoBackend;
 use agent_core::config::Config;
 use agent_core::history::InMemoryHistory;
@@ -5,6 +6,7 @@ use agent_core::service::Service;
 use agent_core::telemetry::configure_tracing;
 use proto::agent_core::v1::agent_core_server::AgentCoreServer;
 use std::error::Error;
+use std::process::ExitCode;
 
 /// Resolves when the process is asked to stop: SIGTERM or Ctrl-C on Unix, Ctrl-C, Ctrl-Break or
 /// console close on Windows. Logs which signal arrived. A handler that cannot be installed is
@@ -60,14 +62,28 @@ async fn wait_for_signal() -> &'static str {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> ExitCode {
+    match run().await {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            // Printed with `Display`: returning the error from `main` would print its `Debug`.
+            eprintln!("agent-core: {e}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+/// Reads the configuration, sets up tracing and serves until a shutdown signal arrives.
+async fn run() -> Result<(), Box<dyn Error>> {
     let config = Config::from_env()?;
 
     let provider = configure_tracing(config.otlp_endpoint().map(str::to_owned))?;
 
-    let service: Service<EchoBackend, InMemoryHistory> = Service::default();
+    let backend = EchoBackend;
+    let backend_name = backend.name();
+    let service = Service::new(backend, InMemoryHistory::default());
     tracing::info!(
-        "Starting agent-core service with 'echo' backend on '{}'",
+        "Starting agent-core service with '{backend_name}' backend on '{}'",
         config.listen_address()
     );
 

@@ -2,16 +2,17 @@
 //! Owns every session's conversation so far and whether a turn is in flight on it.
 //! Decides whether a turn may start and what a finished turn adds.
 
+use crate::conversation::ConversationPart;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
 #[derive(Clone, Debug)]
-struct RequestCounter {
+struct TurnCounter {
     next: Arc<AtomicU64>,
 }
 
-impl RequestCounter {
+impl TurnCounter {
     fn next_id(&self) -> u64 {
         self.next.fetch_add(1, Ordering::Relaxed)
     }
@@ -24,7 +25,7 @@ pub enum HistoryError {
     #[error("turn already in flight")]
     TurnInFlight,
     /// The store could not be reached or used.
-    #[error("store not available")]
+    #[error("history store not available")]
     StoreUnavailable,
     /// The turn does not hold the session it was handed back for.
     #[error("the turn does not hold the session it was handed back for")]
@@ -33,33 +34,6 @@ pub enum HistoryError {
 
 /// Result of a history store operation.
 pub type HistoryResult<T> = Result<T, HistoryError>;
-
-/// Who produced a part of the conversation.
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Actor {
-    /// The end user.
-    User,
-    /// The agent's reply.
-    Assistant,
-    /// A system instruction.
-    System,
-}
-
-/// The content of a conversation part.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Content {
-    /// Plain text.
-    Text { text: String },
-}
-
-/// One part of a conversation: who said it and what was said.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ConversationPart {
-    /// The content of this part (text today, extensible).
-    pub content: Content,
-    /// Whether this part is from the user, the assistant or the system.
-    pub actor: Actor,
-}
 
 #[derive(Debug, Clone)]
 struct SessionHistory {
@@ -70,9 +44,9 @@ struct SessionHistory {
 }
 
 impl SessionHistory {
-    /// Clears the holder if it is this token. Works on locked data: std `Mutex` is not re-entrant.
-    fn release_if_held(&mut self, token_id: u64) {
-        if self.turn_holder == Some(token_id) {
+    /// Clears the holder if it is this turn. Works on locked data: std `Mutex` is not re-entrant.
+    fn release_if_held(&mut self, turn_id: u64) {
+        if self.turn_holder == Some(turn_id) {
             self.turn_holder = None;
         }
     }
@@ -83,24 +57,24 @@ impl SessionHistory {
 pub struct InMemoryHistory {
     /// The session history store.
     sessions: Arc<Mutex<HashMap<String, SessionHistory>>>,
-    /// A counter for generating unique token IDs.
-    request_counter: RequestCounter,
+    /// A counter for generating unique turn IDs.
+    turn_counter: TurnCounter,
 }
 
 /// The in-memory store's turn handle. Dropping it releases the session if neither commit nor
 /// abort ran.
-#[must_use = "dropping the token immediately frees the session; hold it for the whole turn"]
+#[must_use = "dropping the turn immediately frees the session; hold it for the whole turn"]
 #[derive(Debug)]
-pub struct Token {
+pub struct InMemoryTurn {
     store: InMemoryHistory,
     session_id: String,
-    token_id: u64,
+    turn_id: u64,
 }
 
 impl Default for InMemoryHistory {
     fn default() -> Self {
         Self {
-            request_counter: RequestCounter {
+            turn_counter: TurnCounter {
                 next: Arc::new(AtomicU64::new(1)),
             },
             sessions: Arc::new(Mutex::new(HashMap::new())),
@@ -149,7 +123,7 @@ pub trait HistoryStore: Send + Sync {
     /// hold the session or was issued by another store.
     fn commit(
         &self,
-        token: Self::Turn,
+        turn: Self::Turn,
         new_parts: Vec<ConversationPart>,
     ) -> impl Future<Output = HistoryResult<()>> + Send;
 
@@ -160,15 +134,18 @@ pub trait HistoryStore: Send + Sync {
     /// # Errors
     /// `StoreUnavailable` if the store cannot be used, `InvalidTurnOwner` if the turn was
     /// issued by another store.
-    fn abort(&self, token: Self::Turn) -> impl Future<Output = HistoryResult<()>> + Send;
+    fn abort(&self, turn: Self::Turn) -> impl Future<Output = HistoryResult<()>> + Send;
 }
 
 impl HistoryStore for InMemoryHistory {
-    type Turn = Token;
+    type Turn = InMemoryTurn;
 
-    async fn start_turn(&self, session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+    async fn start_turn(
+        &self,
+        session_id: &str,
+    ) -> HistoryResult<(InMemoryTurn, Vec<ConversationPart>)> {
         let mut sessions = self.sessions.lock().unwrap_or_else(PoisonError::into_inner);
-        let token_id = self.request_counter.next_id();
+        let turn_id = self.turn_counter.next_id();
         let session_history = sessions
             .entry(session_id.to_string())
             .or_insert(SessionHistory {
@@ -180,54 +157,54 @@ impl HistoryStore for InMemoryHistory {
             return Err(HistoryError::TurnInFlight);
         }
 
-        session_history.turn_holder = Some(token_id);
-        let token = Token {
+        session_history.turn_holder = Some(turn_id);
+        let turn = InMemoryTurn {
             store: self.clone(),
             session_id: session_id.to_string(),
-            token_id,
+            turn_id,
         };
-        Ok((token, session_history.conversation.clone()))
+        Ok((turn, session_history.conversation.clone()))
     }
 
     async fn commit(
         &self,
-        token: Self::Turn,
+        turn: Self::Turn,
         new_parts: Vec<ConversationPart>,
     ) -> HistoryResult<()> {
-        if !Arc::ptr_eq(&self.sessions, &token.store.sessions) {
+        if !Arc::ptr_eq(&self.sessions, &turn.store.sessions) {
             return Err(HistoryError::InvalidTurnOwner);
         }
         let mut sessions = self.sessions.lock().unwrap_or_else(PoisonError::into_inner);
         let held = sessions
-            .get_mut(&token.session_id)
-            .filter(|session_history| session_history.turn_holder == Some(token.token_id));
+            .get_mut(&turn.session_id)
+            .filter(|session_history| session_history.turn_holder == Some(turn.turn_id));
         match held {
             Some(session_history) => {
                 session_history.conversation.extend(new_parts);
-                session_history.release_if_held(token.token_id);
+                session_history.release_if_held(turn.turn_id);
                 Ok(())
             }
             None => Err(HistoryError::InvalidTurnOwner),
         }
     }
 
-    async fn abort(&self, token: Self::Turn) -> HistoryResult<()> {
-        if !Arc::ptr_eq(&self.sessions, &token.store.sessions) {
+    async fn abort(&self, turn: Self::Turn) -> HistoryResult<()> {
+        if !Arc::ptr_eq(&self.sessions, &turn.store.sessions) {
             return Err(HistoryError::InvalidTurnOwner);
         }
-        token.release_turn();
+        turn.release_turn();
         Ok(())
     }
 }
 
-impl Drop for Token {
+impl Drop for InMemoryTurn {
     fn drop(&mut self) {
         self.release_turn()
     }
 }
 
-impl Token {
-    /// Releases the turn for this token, allowing another turn to start.
+impl InMemoryTurn {
+    /// Releases the turn for this turn, allowing another turn to start.
     fn release_turn(&self) {
         let mut sessions = self
             .store
@@ -235,7 +212,7 @@ impl Token {
             .lock()
             .unwrap_or_else(PoisonError::into_inner);
         if let Some(session_history) = sessions.get_mut(&self.session_id) {
-            session_history.release_if_held(self.token_id);
+            session_history.release_if_held(self.turn_id);
         }
     }
 }
@@ -243,6 +220,7 @@ impl Token {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::conversation::{Actor, Content};
 
     fn exchange(user: &str, assistant: &str) -> Vec<ConversationPart> {
         vec![

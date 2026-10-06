@@ -3,7 +3,8 @@
 //! commits the exchange on clean finish, and maps failures to gRPC statuses and telemetry.
 
 use crate::backend::{Backend, BackendError, Chunk};
-use crate::history::{Actor, Content, ConversationPart, HistoryError, HistoryStore};
+use crate::conversation::{Actor, Content, ConversationPart};
+use crate::history::{HistoryError, HistoryStore};
 use async_stream::try_stream;
 use futures_core::Stream;
 use proto::agent_core::v1::agent_core_server::AgentCore;
@@ -20,9 +21,12 @@ pub enum ServiceError {
     /// The backend failed while producing the reply.
     #[error("streaming failed in the backend: {0}")]
     StreamError(#[from] BackendError),
-    /// The conversation store refused or failed the operation.
-    #[error("conversation store error: {0}")]
+    /// The history store refused or failed to start the turn.
+    #[error("history store error: {0}")]
     Store(#[from] HistoryError),
+    /// The history store failed to commit a finished turn.
+    #[error("history store failed to commit: {0}")]
+    Commit(HistoryError),
     /// A request field was missing or empty.
     #[error("invalid input in field: {field}")]
     InvalidInput { field: &'static str },
@@ -39,12 +43,13 @@ impl From<ServiceError> for Status {
                     Status::aborted("Session is busy with another request")
                 }
                 HistoryError::StoreUnavailable => {
-                    Status::unavailable("Session store is unavailable")
+                    Status::unavailable("History store is unavailable")
                 }
                 HistoryError::InvalidTurnOwner => {
-                    Status::unavailable("Session store is unavailable")
+                    Status::unavailable("History store is unavailable")
                 }
             },
+            ServiceError::Commit(_) => Status::internal("History store failed to commit the turn"),
             ServiceError::InvalidInput { field } => {
                 Status::invalid_argument(format!("Invalid input in field: {}", field))
             }
@@ -52,7 +57,7 @@ impl From<ServiceError> for Status {
     }
 }
 
-/// The Agent Core service, generic over its LLM backend and conversation store.
+/// The Agent Core service, generic over its LLM backend and history store.
 pub struct Service<B: Backend, H: HistoryStore> {
     backend: B,
     history: H,
@@ -113,7 +118,7 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
             || tracing::info!(stage = "valid_input", session_id = %session_id, "Valid input received"),
         );
 
-        let (token, history_so_far) = match self
+        let (turn, history_so_far) = match self
             .history
             .start_turn(&session_id)
             .instrument(span.clone())
@@ -166,7 +171,7 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
 
             if let Some(e) = backend_error {
                 // The guard stays armed while the abort is awaited, so a cancel here still reports.
-                if let Err(abort_error) = history.abort(token).await {
+                if let Err(abort_error) = history.abort(turn).await {
                     // Logged only: the client still gets the backend error.
                     report_failure(&stream_span, &session_id, "abort_failed", &abort_error);
                 }
@@ -176,10 +181,10 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
             } else {
                 tracing::info!(stage = "committing", session_id = %session_id, "Committing conversation");
                 cancel_guard.committing();
-                if let Err(e) = history.commit(token, conversation).await {
+                if let Err(e) = history.commit(turn, conversation).await {
                     cancel_guard.finish();
                     report_failure(&stream_span, &session_id, "commit_failed", &e);
-                    Err(ServiceError::Store(e))?;
+                    Err(ServiceError::Commit(e))?;
                 }
             }
 

@@ -3,9 +3,9 @@
 
 use agent_core::backend::scripted::{ScriptStep, ScriptedBackend};
 use agent_core::backend::{Backend, BackendError, Chunk};
+use agent_core::conversation::{Actor, Content, ConversationPart};
 use agent_core::history::{
-    Actor, Content, ConversationPart, HistoryError, HistoryResult, HistoryStore, InMemoryHistory,
-    Token,
+    HistoryError, HistoryResult, HistoryStore, InMemoryHistory, InMemoryTurn,
 };
 use agent_core::service::Service;
 use futures_core::Stream;
@@ -231,18 +231,25 @@ struct FailingCommitStore {
 }
 
 impl HistoryStore for FailingCommitStore {
-    type Turn = Token;
+    type Turn = InMemoryTurn;
 
-    async fn start_turn(&self, session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+    async fn start_turn(
+        &self,
+        session_id: &str,
+    ) -> HistoryResult<(InMemoryTurn, Vec<ConversationPart>)> {
         self.inner.start_turn(session_id).await
     }
 
-    async fn commit(&self, _token: Token, _new_parts: Vec<ConversationPart>) -> HistoryResult<()> {
+    async fn commit(
+        &self,
+        _turn: InMemoryTurn,
+        _new_parts: Vec<ConversationPart>,
+    ) -> HistoryResult<()> {
         Err(HistoryError::StoreUnavailable)
     }
 
-    async fn abort(&self, token: Token) -> HistoryResult<()> {
-        self.inner.abort(token).await
+    async fn abort(&self, turn: InMemoryTurn) -> HistoryResult<()> {
+        self.inner.abort(turn).await
     }
 }
 
@@ -253,18 +260,25 @@ struct FailingStartStore {
 }
 
 impl HistoryStore for FailingStartStore {
-    type Turn = Token;
+    type Turn = InMemoryTurn;
 
-    async fn start_turn(&self, _session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+    async fn start_turn(
+        &self,
+        _session_id: &str,
+    ) -> HistoryResult<(InMemoryTurn, Vec<ConversationPart>)> {
         Err(HistoryError::StoreUnavailable)
     }
 
-    async fn commit(&self, token: Token, new_parts: Vec<ConversationPart>) -> HistoryResult<()> {
-        self.inner.commit(token, new_parts).await
+    async fn commit(
+        &self,
+        turn: InMemoryTurn,
+        new_parts: Vec<ConversationPart>,
+    ) -> HistoryResult<()> {
+        self.inner.commit(turn, new_parts).await
     }
 
-    async fn abort(&self, token: Token) -> HistoryResult<()> {
-        self.inner.abort(token).await
+    async fn abort(&self, turn: InMemoryTurn) -> HistoryResult<()> {
+        self.inner.abort(turn).await
     }
 }
 
@@ -275,18 +289,25 @@ struct StalledCommitStore {
 }
 
 impl HistoryStore for StalledCommitStore {
-    type Turn = Token;
+    type Turn = InMemoryTurn;
 
-    async fn start_turn(&self, session_id: &str) -> HistoryResult<(Token, Vec<ConversationPart>)> {
+    async fn start_turn(
+        &self,
+        session_id: &str,
+    ) -> HistoryResult<(InMemoryTurn, Vec<ConversationPart>)> {
         self.inner.start_turn(session_id).await
     }
 
-    async fn commit(&self, _token: Token, _new_parts: Vec<ConversationPart>) -> HistoryResult<()> {
+    async fn commit(
+        &self,
+        _turn: InMemoryTurn,
+        _new_parts: Vec<ConversationPart>,
+    ) -> HistoryResult<()> {
         std::future::pending().await
     }
 
-    async fn abort(&self, token: Token) -> HistoryResult<()> {
-        self.inner.abort(token).await
+    async fn abort(&self, turn: InMemoryTurn) -> HistoryResult<()> {
+        self.inner.abort(turn).await
     }
 }
 
@@ -317,7 +338,7 @@ impl Backend for FailFirstCallBackend {
 
 /// The turn handle of `ManualReleaseStore`: dropping it frees nothing.
 struct ManualTurn {
-    inner: Token,
+    inner: InMemoryTurn,
     session_id: String,
 }
 
@@ -705,14 +726,14 @@ async fn backend_failure_emits_an_error_level_log_record_carrying_the_session_id
 // ---------------------------------------------------------------- store failure
 
 #[tokio::test]
-async fn failing_commit_delivers_chunks_then_unavailable_and_no_turn_complete() {
+async fn failing_commit_delivers_chunks_then_internal_and_no_turn_complete() {
     let backend = ScriptedBackend::new(vec![chunk("one "), chunk("two")]);
     let mut client = serve(backend, FailingCommitStore::default()).await;
 
     let outcome = decide(&mut client, "s1", "hello").await;
 
     assert_eq!(outcome.events, vec![delta("one "), delta("two")]);
-    assert_eq!(outcome.code(), Some(Code::Unavailable), "{outcome:?}");
+    assert_eq!(outcome.code(), Some(Code::Internal), "{outcome:?}");
 }
 
 // ---------------------------------------------------------------- span capture
