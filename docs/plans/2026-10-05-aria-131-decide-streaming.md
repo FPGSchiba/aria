@@ -311,3 +311,7 @@ a new architecture decision.
 - C4 (after milestone review): exported spans have their own filter (this crate at `debug`,
   dependencies at `warn`), separate from `RUST_LOG`. ANSI colour is on only when stdout is a
   terminal. A serve error still flushes the tracer provider.
+- C3 (after branch review): on a backend error the handler awaits `abort` before ending the stream,
+  so a store whose dropped turn releases only "eventually" still meets AC3. A cancelled stream still
+  relies on drop, because `Drop` cannot await, so it stays on the trait's eventual-release contract.
+  An abort failure is reported as `abort_failed`, but the client still gets the backend's `INTERNAL`.

@@ -12,7 +12,7 @@ use futures_core::Stream;
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::agent_core_server::{AgentCore, AgentCoreServer};
 use proto::agent_core::v1::{DecideRequest, decide_response};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io;
 use std::pin::Pin;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -287,6 +287,93 @@ impl HistoryStore for StalledCommitStore {
 
     async fn abort(&self, token: Token) -> HistoryResult<()> {
         self.inner.abort(token).await
+    }
+}
+
+/// First call: emits "a", then fails. Later calls: emit "ok" and end cleanly.
+/// Records the history each call received.
+#[derive(Clone, Default)]
+struct FailFirstCallBackend {
+    histories: Arc<Mutex<Vec<Vec<ConversationPart>>>>,
+}
+
+impl Backend for FailFirstCallBackend {
+    fn stream_conversation(
+        &self,
+        history: Vec<ConversationPart>,
+        _input: Vec<ConversationPart>,
+    ) -> BackendStream {
+        let mut histories = self.histories.lock().unwrap();
+        let first_call = histories.is_empty();
+        histories.push(history);
+        let a = tokio_stream::once::<Result<Chunk, BackendError>>(Ok(text("a")));
+        if first_call {
+            Box::pin(a.chain(tokio_stream::once(Err(BackendError::UnexpectedError))))
+        } else {
+            Box::pin(tokio_stream::once(Ok(text("ok"))))
+        }
+    }
+}
+
+/// The turn handle of `ManualReleaseStore`: dropping it frees nothing.
+struct ManualTurn {
+    inner: Token,
+    session_id: String,
+}
+
+/// A store whose busy marker is released only by an explicit `commit` or `abort`, never by
+/// dropping the turn. Storage is delegated to an in-memory store.
+#[derive(Clone, Default)]
+struct ManualReleaseStore {
+    inner: InMemoryHistory,
+    busy: Arc<Mutex<HashSet<String>>>,
+}
+
+impl ManualReleaseStore {
+    fn release(&self, session_id: &str) {
+        self.busy.lock().unwrap().remove(session_id);
+    }
+}
+
+impl HistoryStore for ManualReleaseStore {
+    type Turn = ManualTurn;
+
+    async fn start_turn(
+        &self,
+        session_id: &str,
+    ) -> HistoryResult<(ManualTurn, Vec<ConversationPart>)> {
+        if !self.busy.lock().unwrap().insert(session_id.to_string()) {
+            return Err(HistoryError::TurnInFlight);
+        }
+        match self.inner.start_turn(session_id).await {
+            Ok((inner, history)) => Ok((
+                ManualTurn {
+                    inner,
+                    session_id: session_id.to_string(),
+                },
+                history,
+            )),
+            Err(e) => {
+                self.release(session_id);
+                Err(e)
+            }
+        }
+    }
+
+    async fn commit(
+        &self,
+        turn: ManualTurn,
+        new_parts: Vec<ConversationPart>,
+    ) -> HistoryResult<()> {
+        let result = self.inner.commit(turn.inner, new_parts).await;
+        self.release(&turn.session_id);
+        result
+    }
+
+    async fn abort(&self, turn: ManualTurn) -> HistoryResult<()> {
+        let result = self.inner.abort(turn.inner).await;
+        self.release(&turn.session_id);
+        result
     }
 }
 
@@ -933,4 +1020,25 @@ async fn cancel_while_commit_is_in_flight_reports_commit_interrupted() {
             },
         )
         .await;
+}
+
+#[tokio::test]
+async fn backend_failure_aborts_the_turn_so_the_next_decide_proceeds() {
+    let backend = FailFirstCallBackend::default();
+    let histories = backend.histories.clone();
+    let mut client = serve(backend, ManualReleaseStore::default()).await;
+
+    let first = decide(&mut client, "s1", "hello").await;
+    assert!(
+        first.status.is_some(),
+        "the first turn must fail: {first:?}"
+    );
+
+    let second = decide(&mut client, "s1", "again").await;
+
+    assert!(second.status.is_none(), "{second:?}");
+    assert_eq!(second.completes(), 1);
+    let histories = histories.lock().unwrap();
+    assert_eq!(histories.len(), 2);
+    assert!(histories[1].is_empty(), "failed turn must leave no history");
 }

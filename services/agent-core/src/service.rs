@@ -142,6 +142,8 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
         let mut cancel_guard = CancelGuard::new(span.clone(), session_id.clone());
 
         let reply = try_stream! {
+            let mut backend_error = None;
+
             while let Some(chunk) = backend_stream.next().await {
                 match chunk {
                     Ok(chunk) => {
@@ -156,19 +158,31 @@ impl<B: Backend + 'static, H: HistoryStore + Clone + 'static> AgentCore for Serv
                         }
                     }
                     Err(e) => {
-                        cancel_guard.finish();
-                        report_failure(&stream_span, &session_id, "backend_error", &e);
-                        Err(ServiceError::StreamError(e))?;
+                        backend_error = Some(e);
+                        break;
                     }
                 }
             }
-            tracing::info!(stage = "committing", session_id = %session_id, "Committing conversation");
-            cancel_guard.committing();
-            if let Err(e) = history.commit(token, conversation).await {
+
+            if let Some(e) = backend_error {
+                // The guard stays armed while the abort is awaited, so a cancel here still reports.
+                if let Err(abort_error) = history.abort(token).await {
+                    // Logged only: the client still gets the backend error.
+                    report_failure(&stream_span, &session_id, "abort_failed", &abort_error);
+                }
                 cancel_guard.finish();
-                report_failure(&stream_span, &session_id, "commit_failed", &e);
-                Err(ServiceError::Store(e))?;
+                report_failure(&stream_span, &session_id, "backend_error", &e);
+                Err(ServiceError::StreamError(e))?;
+            } else {
+                tracing::info!(stage = "committing", session_id = %session_id, "Committing conversation");
+                cancel_guard.committing();
+                if let Err(e) = history.commit(token, conversation).await {
+                    cancel_guard.finish();
+                    report_failure(&stream_span, &session_id, "commit_failed", &e);
+                    Err(ServiceError::Store(e))?;
+                }
             }
+
             cancel_guard.finish();
             yield DecideResponse { payload: Some(proto::agent_core::v1::decide_response::Payload::TurnComplete(Default::default())) };
         };
