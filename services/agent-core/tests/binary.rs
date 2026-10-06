@@ -13,6 +13,10 @@ use tokio_stream::StreamExt;
 use tonic_health::pb::HealthCheckRequest;
 use tonic_health::pb::health_check_response::ServingStatus;
 use tonic_health::pb::health_client::HealthClient;
+use tonic_reflection::pb::v1::ServerReflectionRequest;
+use tonic_reflection::pb::v1::server_reflection_client::ServerReflectionClient;
+use tonic_reflection::pb::v1::server_reflection_request::MessageRequest;
+use tonic_reflection::pb::v1::server_reflection_response::MessageResponse;
 
 /// Upper bound for anything that could hang, so a failure reports instead of blocking.
 const LIMIT: Duration = Duration::from_secs(20);
@@ -35,8 +39,14 @@ impl Drop for Server {
 impl Server {
     /// Spawns the binary with only the listen address set, so there is no OTLP endpoint.
     fn spawn(listen_address: &str) -> Self {
+        Self::spawn_with(listen_address, &[])
+    }
+
+    /// Like `spawn`, with extra environment variables.
+    fn spawn_with(listen_address: &str, env: &[(&str, &str)]) -> Self {
         let mut child = Command::new(env!("CARGO_BIN_EXE_agent-core"))
             .env("ARIA_AGENT_CORE_LISTEN_ADDRESS", listen_address)
+            .envs(env.iter().copied())
             .env_remove("OTEL_EXPORTER_OTLP_ENDPOINT")
             .env_remove("RUST_LOG")
             .stdout(Stdio::piped())
@@ -296,4 +306,69 @@ async fn open_health_watch_does_not_hold_the_shutdown_drain() {
     );
     let stdout = server.drain_stdout();
     assert!(!stdout.contains("did not finish in time"), "{stdout}");
+}
+
+/// Asks the reflection service for its list of services.
+async fn list_services(address: &str) -> Result<Vec<String>, tonic::Status> {
+    let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut client = ServerReflectionClient::new(channel);
+    let request = ServerReflectionRequest {
+        host: String::new(),
+        message_request: Some(MessageRequest::ListServices(String::new())),
+    };
+    let mut stream = client
+        .server_reflection_info(tokio_stream::once(request))
+        .await?
+        .into_inner();
+    let response = tokio::time::timeout(LIMIT, stream.next())
+        .await
+        .expect("reflection reply timed out")
+        .expect("stream ended")?;
+    match response.message_response.expect("a response") {
+        MessageResponse::ListServicesResponse(list) => {
+            Ok(list.service.into_iter().map(|s| s.name).collect())
+        }
+        other => panic!("unexpected reflection response: {other:?}"),
+    }
+}
+
+#[tokio::test]
+async fn reflection_on_lists_the_agent_core_and_health_services() {
+    let mut server = Server::spawn_with("127.0.0.1:0", &[("ARIA_AGENT_CORE_REFLECTION", "true")]);
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+
+    let services = list_services(&address).await.expect("reflection is served");
+
+    assert!(
+        services.contains(&"aria.agent_core.v1.AgentCore".to_string()),
+        "{services:?}"
+    );
+    assert!(
+        services.contains(&"grpc.health.v1.Health".to_string()),
+        "{services:?}"
+    );
+    // Logged before the startup line, so it is among the lines already read.
+    assert!(
+        server.seen.iter().any(|l| l.contains("reflection is on")),
+        "{:#?}",
+        server.seen
+    );
+}
+
+#[tokio::test]
+async fn reflection_off_by_default_is_unimplemented() {
+    let mut server = Server::spawn("127.0.0.1:0");
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+
+    let status = list_services(&address)
+        .await
+        .expect_err("reflection must not be served");
+
+    assert_eq!(status.code(), tonic::Code::Unimplemented, "{status:?}");
 }

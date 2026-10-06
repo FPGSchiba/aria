@@ -85,6 +85,7 @@ skeleton does until the named story replaces it.
 | Listen address | `ARIA_AGENT_CORE_LISTEN_ADDRESS` | `0.0.0.0:6517`. Port `6517` is a skeleton default, not an allocation. |
 | Span export | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset, so export is off |
 | Stdout log level | `RUST_LOG` | `info` |
+| gRPC server reflection (v1 and v1alpha, for grpcurl/Postman) | `ARIA_AGENT_CORE_REFLECTION` | off. `true`/`1` turns it on; blank means off. |
 
 **Health (`grpc.health.v1`, same port):**
 

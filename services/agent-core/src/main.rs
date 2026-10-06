@@ -76,6 +76,29 @@ async fn main() -> ExitCode {
     }
 }
 
+/// The reflection services, v1 and v1alpha (grpcurl and Postman differ in which they ask for),
+/// describing the Agent Core and the standard health service.
+fn reflection_services() -> Result<
+    (
+        tonic_reflection::server::v1::ServerReflectionServer<
+            impl tonic_reflection::server::v1::ServerReflection,
+        >,
+        tonic_reflection::server::v1alpha::ServerReflectionServer<
+            impl tonic_reflection::server::v1alpha::ServerReflection,
+        >,
+    ),
+    tonic_reflection::server::Error,
+> {
+    let builder = || {
+        tonic_reflection::server::Builder::configure()
+            .register_encoded_file_descriptor_set(proto::FILE_DESCRIPTOR_SET)
+            .register_encoded_file_descriptor_set(tonic_health::pb::FILE_DESCRIPTOR_SET)
+            .with_service_name(proto::agent_core::v1::agent_core_server::SERVICE_NAME)
+            .with_service_name("grpc.health.v1.Health")
+    };
+    Ok((builder().build_v1()?, builder().build_v1alpha()?))
+}
+
 /// How long in-flight requests get to finish after the shutdown signal. Kept below Kubernetes'
 /// default 30 s termination grace period, so the process exits on its own before the SIGKILL.
 const DRAIN_BOUND: Duration = Duration::from_secs(20);
@@ -108,6 +131,11 @@ async fn run() -> Result<(), Box<dyn Error>> {
     let (health, health_server) =
         agent_core::health::start(backend.subscribe_health(), history.subscribe_health()).await;
     let service = Service::new(backend, history);
+    tracing::info!(
+        reflection = config.reflection(),
+        "gRPC server reflection is {}",
+        if config.reflection() { "on" } else { "off" }
+    );
 
     // Bound here, not by tonic, so the log names the real address (even for port 0).
     let listener = TcpListener::bind(config.listen_address()).await?;
@@ -117,16 +145,20 @@ async fn run() -> Result<(), Box<dyn Error>> {
     );
 
     let (signalled_tx, signalled_rx) = oneshot::channel();
-    let serve = tonic::transport::Server::builder()
+    let mut router = tonic::transport::Server::builder()
         .add_service(health_server)
-        .add_service(AgentCoreServer::new(service))
-        .serve_with_incoming_shutdown(TcpListenerStream::new(listener), async move {
-            shutdown_signal().await;
-            // Not-serving is reported before tonic starts draining, so new traffic stops first.
-            health.begin_shutdown().await;
-            // The receiver is gone only when serving already ended.
-            let _ = signalled_tx.send(());
-        });
+        .add_service(AgentCoreServer::new(service));
+    if config.reflection() {
+        let (v1, v1alpha) = reflection_services()?;
+        router = router.add_service(v1).add_service(v1alpha);
+    }
+    let serve = router.serve_with_incoming_shutdown(TcpListenerStream::new(listener), async move {
+        shutdown_signal().await;
+        // Not-serving is reported before tonic starts draining, so new traffic stops first.
+        health.begin_shutdown().await;
+        // The receiver is gone only when serving already ended.
+        let _ = signalled_tx.send(());
+    });
     let served = serve_with_bounded_drain(serve, signalled_rx, DRAIN_BOUND).await;
 
     if let Err(e) = telemetry.shutdown() {

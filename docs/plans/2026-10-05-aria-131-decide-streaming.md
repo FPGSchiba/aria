@@ -465,3 +465,7 @@ The milestone review and three fresh branch reviews added the failure handling r
   begins, because open Watch streams otherwise held the graceful drain for its full 20 s. `main` passes
   the export target explicitly as `agent_core::CRATE_NAME`, and a test ties it to the crate's span
   targets. Each backend's name has one source, used both for `name()` and for its health value.
+- Added after close-out, at Jann's request: gRPC server reflection, off by default and switched on
+  by `ARIA_AGENT_CORE_REFLECTION`, so the echo backend can be explored with Postman or grpcurl
+  without the `.proto` file. The `proto` crate exposes its descriptor set for this. It is off by
+  default so pods do not advertise their API surface unless someone opts in.
