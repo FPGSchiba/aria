@@ -131,6 +131,46 @@ ARIA-145 (streaming client), ARIA-147 (configuration), ARIA-149 (key-gated test)
 - **No Helm change in this PR.** The Definition of Done's Helm clause has nothing to update until
   ARIA-177 creates the chart; the settings table on the Agent Core page is its input.
 
+### Settled in Phase 1 (brainstorm, 2026-10-07)
+
+- **`BackendError` stays thin; the hosted backend owns its classification.** The `Decide` service
+  maps every backend failure to `INTERNAL`, so only availability (C5) and the span (C6) need the
+  cases, and both live inside the hosted backend. It classifies into its own error type, then boxes
+  that as the cause. Rejected: a variant per case on `BackendError` (HTTP status, key rejected and
+  tool-call delta are provider concepts in a backend-neutral trait, and every other backend inherits
+  them). Deferred: a provider-neutral error *kind* on `BackendError`, which is D35 failover's call
+  if it needs to branch without downcasting. Whether the hosted error type is public (tests downcast
+  the cause) or private (tests observe classification through availability and spans) is settled
+  in Phase 2.
+- **Availability update semantics.** The returned stream is `'static`, so it carries what it needs
+  to publish health. Only a real end (success, error, timeout) updates availability; a stream that
+  is dropped (client cancel) leaves it unchanged. Overlapping turns: last writer wins (accepted, the
+  next turn corrects it). A change of *kind* while unavailable (timeout → 503) counts as a transition
+  and is logged. A mid-stream failure after text has arrived counts as unavailable. Some outcomes
+  (other 4xx) mean "no update", and the classification must be able to say so. Availability is a
+  **new field** beside the configured flag in `BackendHealth`, not a replacement for it: readiness
+  and the diagnostic entry read two different facts. The scripted backend defaults it to unknown and
+  can set it for C5's tests.
+- **One idle window across both phases of a call.** Opening (send, retries, wait for a 2xx) counts as
+  waiting for the first event; every event after that restarts the window. A timeout while opening
+  must drop the in-flight retry future, so no request outlives the failed turn. Rejected: a separate
+  opening deadline (a second setting, and the rejected total deadline applied to a smaller slice).
+- **Investigate first in Phase 2 (code-agent):** does `async-openai`'s streaming call return only
+  once the response status is known, or does it return a stream immediately and deliver a 401/503
+  as the first item? That decides where classification reads the HTTP status. In the second case,
+  an error in the stream cannot be assumed to be a mid-stream failure. *(Answered; see Deviations.)*
+- **The idle timeout is a duration string** (`ARIA_LLM_IDLE_TIMEOUT=30s`, parsed with
+  `humantime`). A bare number has no unit and is a configuration error naming variable and value,
+  not a guess at seconds. Zero is rejected. Rejected: integer seconds with `_SECS` in the name.
+- **The key is a `secrecy` secret, and this is now a repo rule for every secret**
+  (`docs/05-conventions.md`, Jann's call). `async-openai` already depends on `secrecy`, so it costs
+  no new dependency. Rejected: a hand-written `Debug` that skips the field (the next derive on a
+  containing type leaks it). Existing code is brought into line as it is touched, not in this
+  story. The code-agent reports any secret it sees held unwrapped, so the gap is known.
+- **Tower layer order: tracing goes *inside* retry** (retry → tracing → reqwest), or C6 gets one
+  span for all attempts instead of one per attempt. Easy to invert unnoticed; C6's retry test is
+  what catches it.
+
 ## Open questions
 
 None block this plan. Carried, not decided here:
@@ -138,6 +178,11 @@ None block this plan. Carried, not decided here:
 - Whether `traceparent` rides the hosted call (interim: not sent; a test pins it).
 - Date, time and time zone injection, and whether stored system entries are ever replayed
   (ARIA-222).
+- **Recovery once something routes away on availability.** Here availability recovers passively,
+  because readiness ignores it and real turns keep arriving. Once D35's failover sends turns
+  elsewhere while the hosted backend is unavailable, no turn arrives to observe success, so recovery
+  needs an active check while unavailable (lazy while available, active while unavailable; Jann's
+  proposal, Phase 1). Belongs with D35's failover; C9 records it on the Agent Core page.
 
 ## Risks
 
@@ -352,7 +397,9 @@ The settings table gains the five `ARIA_LLM_*` settings with their defaults. The
 that readiness uses the configured state and that the backend entry reports availability, including
 the `UNKNOWN` state. That change to ARIA-131's table is called out as such. The key-gated test's run
 command is documented. The date question points at ARIA-222. Nothing in `docs/decisions/` is edited.
-The Confluence mirror is updated through the existing mirror process.
+The recovery open question (active checks once failover routes away) is listed in the page's open
+items. The Confluence mirror is updated through the existing mirror process, including the new
+secrets rule on the conventions page.
 
 **Tests.** Reviewed, not scaffolded: every setting and health state in the page matches what C1, C5
 and C7 implement.
@@ -360,3 +407,26 @@ and C7 implement.
 **Done when.** The page is merged with the code, and the mirror matches it.
 
 ## Deviations
+
+- Phase 2 investigation (`async-openai` 0.42.1 source): **the status is known before the stream
+  exists.** A non-2xx is an `Err` from awaiting the streaming call, never a first stream item, so
+  opening and streaming classify separately, as hoped.
+- **C4 gains a contract case: a stream that ends without a finish reason is an error (truncated).**
+  The crate treats a stream ending without `[DONE]` as a clean end, so without this a cut connection
+  would commit half a reply as complete. Test: a fake stream that sends text and then closes without
+  a finish reason ends with an error.
+- **Keep-alives do not reset the idle timeout**, contrary to the plan's "any SSE event, including
+  keep-alives". The crate swallows `keepalive` events, and the reasoning field is dropped from the
+  typed delta (visible only with `byot`). Reasoning chunks still arrive as stream items, so they
+  still reset the timer. Accepted: it only matters if the provider sends nothing but keep-alives for
+  longer than the timeout.
+- **A non-JSON error body loses the HTTP status** inside the crate (a deserialize error carries the
+  body only). Classification that needs the status must read it in our own tower layer, below the
+  crate's parsing.
+- **The base URL prints in full in `Debug` output** (accepted, Jann's call): it never carries
+  credentials, so it is not wrapped as a secret. If a URL ever needs userinfo, the secrets rule
+  applies to it.
+- **C1 field naming:** the key's field keeps `llm_api_key` while the others are `llm_*` (Jann's
+  call: it mirrors the variable `ARIA_LLM_API_KEY`).
+- Secrets rule gap found outside this story: `crates/identity` reads the private key file into a
+  plain `String`. Left for whoever next touches it (likely ARIA-181), per the rule.

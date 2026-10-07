@@ -77,6 +77,14 @@ Confluence page (children of "ARIA — Architecture & Hosting").
   commit by the pre-commit hook and per pushed head by CI's coverage job, so it's a hard floor, not
   an aspirational target.
 
+- **Secrets rule (Jann's call, 2026-10-07): every secret is held in a `secrecy` type.** An API key,
+  password, token, or private key material read by Rust code is wrapped in a `secrecy` secret type
+  at the point it is read (configuration parsing, a mounted file) and stays wrapped until the one
+  call site that hands it to the library that needs it. That keeps it redacted in `Debug` output and
+  zeroed on drop, and makes every exposure an explicit, greppable call. A hand-written `Debug` that
+  skips the field is not an equivalent: the next derive on a containing type leaks it. Adopted while
+  planning ARIA-143, for `ARIA_LLM_API_KEY`; existing code is brought into line as it is touched.
+
 ### Definition of done (D84, 2026-09-23)
 
 A service is **not done** without three things beyond its code, its tests and the 80% coverage
