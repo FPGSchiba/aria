@@ -89,13 +89,13 @@ impl ScriptedBackend {
     /// the health.
     pub fn set_healthy(&self, healthy: bool) {
         self.health
-            .send_replace(self.health.borrow().with_healthy(healthy));
+            .send_modify(|health| *health = health.with_healthy(healthy));
     }
 
     /// Reports the backend's host status, as a real backend would on its own. Clones share the health.
     pub fn set_host_status(&self, host_status: HostStatus) {
         self.health
-            .send_replace(self.health.borrow().with_host_status(host_status));
+            .send_modify(|health| *health = health.with_host_status(host_status));
     }
 
     /// The recorded calls in order; the call count is its length.

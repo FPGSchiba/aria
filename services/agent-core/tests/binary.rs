@@ -1,7 +1,8 @@
-//! The built binary, run as a process: startup log, one `Decide`, graceful SIGTERM exit, and a
-//! readable failure for bad configuration.
+//! The built binary, run as a process: startup log, one `Decide` streamed from a fake provider,
+//! graceful SIGTERM exit, and a readable failure for bad configuration.
 #![cfg(unix)]
 
+use agent_core::backend::openai::fake_provider::{FakeProvider, default_happy_path};
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::{DecideRequest, decide_response};
 use proto::grpc::health::v1::HealthCheckRequest;
@@ -21,6 +22,22 @@ use tonic_reflection::pb::v1::server_reflection_response::MessageResponse;
 /// Upper bound for anything that could hang, so a failure reports instead of blocking.
 const LIMIT: Duration = Duration::from_secs(20);
 
+/// The key the binary is started with; it must never appear in anything the binary prints.
+const TEST_KEY: &str = "sk-binary-test-key-9876543210";
+
+/// The model the binary is started with.
+const TEST_MODEL: &str = "binary-test-model";
+
+/// Every environment variable of the LLM settings, removed from the child before each start so
+/// the developer's own environment cannot leak into a test.
+const LLM_VARS: [&str; 5] = [
+    "ARIA_LLM_API_KEY",
+    "ARIA_LLM_BASE_URL",
+    "ARIA_LLM_MODEL",
+    "ARIA_LLM_IDLE_TIMEOUT",
+    "ARIA_LLM_MAX_RETRIES",
+];
+
 /// The spawned binary; killed on drop so a failing test leaves no process behind. Its stdout is
 /// read by a thread, so the test can wait for a line without blocking on the pipe.
 struct Server {
@@ -37,14 +54,40 @@ impl Drop for Server {
 }
 
 impl Server {
-    /// Spawns the binary with only the listen address set, so there is no OTLP endpoint.
+    /// Spawns the binary with only the listen address set: no OTLP endpoint and no LLM settings.
     fn spawn(listen_address: &str) -> Self {
         Self::spawn_with(listen_address, &[])
     }
 
+    /// Spawns the binary configured for `provider`: a key, its base URL and a model.
+    fn spawn_against(provider: &FakeProvider, listen_address: &str) -> Self {
+        Self::spawn_against_with(provider, listen_address, &[])
+    }
+
+    /// Like `spawn_against`, with extra environment variables.
+    fn spawn_against_with(
+        provider: &FakeProvider,
+        listen_address: &str,
+        env: &[(&str, &str)],
+    ) -> Self {
+        let base_url = provider.base_url();
+        let mut all = vec![
+            ("ARIA_LLM_API_KEY", TEST_KEY),
+            ("ARIA_LLM_BASE_URL", base_url.as_str()),
+            ("ARIA_LLM_MODEL", TEST_MODEL),
+            ("ARIA_LLM_MAX_RETRIES", "0"),
+        ];
+        all.extend_from_slice(env);
+        Self::spawn_with(listen_address, &all)
+    }
+
     /// Like `spawn`, with extra environment variables.
     fn spawn_with(listen_address: &str, env: &[(&str, &str)]) -> Self {
-        let mut child = Command::new(env!("CARGO_BIN_EXE_agent-core"))
+        let mut command = Command::new(env!("CARGO_BIN_EXE_agent-core"));
+        for variable in LLM_VARS {
+            command.env_remove(variable);
+        }
+        let mut child = command
             .env("ARIA_AGENT_CORE_LISTEN_ADDRESS", listen_address)
             .envs(env.iter().copied())
             .env_remove("OTEL_EXPORTER_OTLP_ENDPOINT")
@@ -148,9 +191,11 @@ fn address_in(line: &str) -> String {
 }
 
 #[tokio::test]
-async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
+async fn binary_serves_a_decide_turn_from_the_provider_and_exits_zero_on_sigterm() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(default_happy_path());
     // Port 0: the binary picks a free port itself and reports it, so there is no bind race.
-    let mut server = Server::spawn("127.0.0.1:0");
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
     let startup = server.wait_for_line("backend on");
     let address = address_in(&startup);
     // The listener is bound before that line is logged, so the connection is accepted at once.
@@ -177,7 +222,7 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
         .map(|v| v.to_str().expect("ascii").to_string());
     let mut stream = response.into_inner();
 
-    let mut echoed = String::new();
+    let mut streamed = String::new();
     let mut deltas = 0;
     let mut completes = 0;
     while let Some(item) = tokio::time::timeout(LIMIT, stream.next())
@@ -187,7 +232,7 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
         match item.expect("status").payload.expect("payload") {
             decide_response::Payload::TextDelta(text) => {
                 deltas += 1;
-                echoed.push_str(&text);
+                streamed.push_str(&text);
             }
             decide_response::Payload::TurnComplete(_) => completes += 1,
         }
@@ -199,8 +244,16 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
         "x-aria-version"
     );
     assert!(deltas >= 2, "expected at least two chunks, got {deltas}");
-    assert_eq!(echoed, "hello aria");
+    // The text comes from the fake provider's scripted deltas, not from the request.
+    assert_eq!(streamed, "Hello, world");
     assert_eq!(completes, 1);
+    let recorded = provider.requests();
+    assert_eq!(recorded.len(), 1);
+    assert_eq!(recorded[0].body["model"], TEST_MODEL);
+    assert_eq!(
+        recorded[0].header("authorization"),
+        Some(format!("Bearer {TEST_KEY}").as_str())
+    );
 
     let pid = server.child.id().to_string();
     let killed = Command::new("kill")
@@ -212,8 +265,15 @@ async fn binary_serves_echoed_decide_and_exits_zero_on_sigterm() {
     assert_eq!(status.code(), Some(0), "{status:?}");
 
     let stdout = server.drain_stdout();
-    assert!(stdout.contains("'echo' backend"), "{stdout}");
+    let stderr = server.stderr();
+    assert!(stdout.contains("'openai' backend"), "{stdout}");
+    assert!(
+        stdout.contains(TEST_MODEL),
+        "the startup log names the model: {stdout}"
+    );
     assert!(stdout.contains("OTLP tracing disabled"), "{stdout}");
+    assert!(!stdout.contains(TEST_KEY), "the key was logged: {stdout}");
+    assert!(!stderr.contains(TEST_KEY), "the key was printed: {stderr}");
 }
 
 #[tokio::test]
@@ -234,7 +294,8 @@ async fn invalid_listen_address_exits_non_zero_with_a_readable_message() {
 
 #[tokio::test]
 async fn binary_reports_serving_for_the_overall_server_and_agent_core_over_its_port() {
-    let mut server = Server::spawn("127.0.0.1:0");
+    let provider = FakeProvider::start().await.expect("provider");
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
     let startup = server.wait_for_line("backend on");
     let address = address_in(&startup);
     let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
@@ -264,7 +325,8 @@ async fn binary_reports_serving_for_the_overall_server_and_agent_core_over_its_p
 
 #[tokio::test]
 async fn open_health_watch_does_not_hold_the_shutdown_drain() {
-    let mut server = Server::spawn("127.0.0.1:0");
+    let provider = FakeProvider::start().await.expect("provider");
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
     let startup = server.wait_for_line("backend on");
     let address = address_in(&startup);
     let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
@@ -376,7 +438,12 @@ async fn describe_symbol(address: &str, symbol: &str) -> Vec<u8> {
 
 #[tokio::test]
 async fn reflection_on_lists_the_agent_core_and_health_services() {
-    let mut server = Server::spawn_with("127.0.0.1:0", &[("ARIA_AGENT_CORE_REFLECTION", "true")]);
+    let provider = FakeProvider::start().await.expect("provider");
+    let mut server = Server::spawn_against_with(
+        &provider,
+        "127.0.0.1:0",
+        &[("ARIA_AGENT_CORE_REFLECTION", "true")],
+    );
     let startup = server.wait_for_line("backend on");
     let address = address_in(&startup);
 
@@ -406,7 +473,8 @@ async fn reflection_on_lists_the_agent_core_and_health_services() {
 
 #[tokio::test]
 async fn reflection_off_by_default_is_unimplemented() {
-    let mut server = Server::spawn("127.0.0.1:0");
+    let provider = FakeProvider::start().await.expect("provider");
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
     let startup = server.wait_for_line("backend on");
     let address = address_in(&startup);
 
@@ -415,4 +483,130 @@ async fn reflection_off_by_default_is_unimplemented() {
         .expect_err("reflection must not be served");
 
     assert_eq!(status.code(), tonic::Code::Unimplemented, "{status:?}");
+}
+
+#[tokio::test]
+async fn without_an_api_key_the_binary_exits_non_zero_naming_the_setting_and_never_serves() {
+    let provider = FakeProvider::start().await.expect("provider");
+    let base_url = provider.base_url();
+    let mut server = Server::spawn_with(
+        "127.0.0.1:0",
+        &[
+            ("ARIA_LLM_BASE_URL", base_url.as_str()),
+            ("ARIA_LLM_MODEL", TEST_MODEL),
+        ],
+    );
+
+    let status = server.wait_for_exit().await;
+
+    assert_eq!(status.code(), Some(1), "{status:?}");
+    let stderr = server.stderr();
+    assert!(stderr.contains("ARIA_LLM_API_KEY"), "{stderr}");
+    let stdout = server.drain_stdout();
+    assert!(
+        !stdout.contains("backend on"),
+        "the binary reached its startup line without a key: {stdout}"
+    );
+}
+
+#[tokio::test]
+async fn a_blank_api_key_is_refused_like_a_missing_one() {
+    let mut server = Server::spawn_with("127.0.0.1:0", &[("ARIA_LLM_API_KEY", "   ")]);
+
+    let status = server.wait_for_exit().await;
+
+    assert_eq!(status.code(), Some(1), "{status:?}");
+    assert!(server.stderr().contains("ARIA_LLM_API_KEY"));
+}
+
+#[tokio::test]
+async fn an_invalid_llm_setting_exits_non_zero_naming_the_setting_and_its_value_but_not_the_key() {
+    let mut server = Server::spawn_with(
+        "127.0.0.1:0",
+        &[
+            ("ARIA_LLM_API_KEY", TEST_KEY),
+            ("ARIA_LLM_IDLE_TIMEOUT", "30"),
+        ],
+    );
+
+    let status = server.wait_for_exit().await;
+
+    assert_eq!(status.code(), Some(1), "{status:?}");
+    let stderr = server.stderr();
+    assert!(stderr.contains("ARIA_LLM_IDLE_TIMEOUT"), "{stderr}");
+    assert!(stderr.contains("30"), "{stderr}");
+    assert!(!stderr.contains(TEST_KEY), "{stderr}");
+}
+
+#[tokio::test]
+async fn the_binary_never_serves_the_echo_backend() {
+    let provider = FakeProvider::start().await.expect("provider");
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
+
+    let startup = server.wait_for_line("backend on");
+
+    assert!(!startup.contains("'echo'"), "{startup}");
+    assert!(startup.contains("'openai'"), "{startup}");
+}
+
+#[tokio::test]
+async fn the_backend_entry_is_unknown_until_a_turn_and_serving_after_a_successful_one() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(default_happy_path());
+    let mut server = Server::spawn_against(&provider, "127.0.0.1:0");
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+    let channel = tonic::transport::Channel::from_shared(format!("http://{address}"))
+        .expect("uri")
+        .connect()
+        .await
+        .expect("connect");
+    let mut health = HealthClient::new(channel.clone());
+    let backend_entry = "aria.agent_core.v1.AgentCore.backend";
+    let check = |mut health: HealthClient<tonic::transport::Channel>| async move {
+        health
+            .check(HealthCheckRequest {
+                service: backend_entry.to_string(),
+            })
+            .await
+            .expect("check")
+            .into_inner()
+            .status()
+    };
+
+    assert_eq!(check(health.clone()).await, ServingStatus::Unknown);
+    let mut client = AgentCoreClient::new(channel);
+    let mut stream = client
+        .decide(DecideRequest {
+            session_id: "binary-health".to_string(),
+            speaker_name: None,
+            text: "hello".to_string(),
+        })
+        .await
+        .expect("decide")
+        .into_inner();
+    while tokio::time::timeout(LIMIT, stream.next())
+        .await
+        .expect("stream timed out")
+        .is_some()
+    {}
+
+    let deadline = Instant::now() + LIMIT;
+    while check(health.clone()).await != ServingStatus::Serving {
+        assert!(
+            Instant::now() < deadline,
+            "the backend entry never became serving"
+        );
+        sleep(Duration::from_millis(20)).await;
+    }
+    // Readiness never depended on it.
+    let ready = health
+        .check(HealthCheckRequest {
+            service: "aria.agent_core.v1.AgentCore".to_string(),
+        })
+        .await
+        .expect("check")
+        .into_inner()
+        .status();
+    assert_eq!(ready, ServingStatus::Serving);
 }

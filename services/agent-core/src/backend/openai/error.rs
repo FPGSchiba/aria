@@ -153,3 +153,409 @@ pub fn map_completion_error_to_availability(
         Some(new_status)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use reqwest::StatusCode;
+    use std::error::Error;
+
+    fn http(status: u16, code: Option<&str>) -> CompletionError {
+        CompletionError::HttpError {
+            status: StatusCode::from_u16(status).expect("a valid status"),
+            message: "provider message".to_string(),
+            code: code.map(str::to_string),
+        }
+    }
+
+    fn stream_error(provider_code: Option<&str>) -> CompletionError {
+        CompletionError::StreamError {
+            description: "broke".to_string(),
+            cause: None,
+            provider_code: provider_code.map(str::to_string),
+        }
+    }
+
+    fn unavailable(reason: UnavailabilityReason) -> HostStatus {
+        HostStatus::Unavailable(reason)
+    }
+
+    /// Every starting status a classification can be asked about.
+    fn every_current() -> Vec<HostStatus> {
+        vec![
+            HostStatus::Unknown,
+            HostStatus::Available,
+            unavailable(UnavailabilityReason::TimedOut),
+            unavailable(UnavailabilityReason::Unreachable),
+            unavailable(UnavailabilityReason::KeyRejected { host_code: None }),
+        ]
+    }
+
+    #[test]
+    fn a_timeout_makes_the_provider_unavailable_as_timed_out() {
+        assert_eq!(
+            map_completion_error_to_availability(&CompletionError::Timeout, &HostStatus::Unknown),
+            Some(unavailable(UnavailabilityReason::TimedOut))
+        );
+    }
+
+    #[test]
+    fn a_connection_failure_makes_the_provider_unavailable_as_unreachable() {
+        let error = CompletionError::ConnectionError("refused".into());
+
+        assert_eq!(
+            map_completion_error_to_availability(&error, &HostStatus::Available),
+            Some(unavailable(UnavailabilityReason::Unreachable))
+        );
+    }
+
+    #[test]
+    fn a_401_and_a_403_are_a_rejected_key_carrying_the_provider_code() {
+        for status in [401, 403] {
+            assert_eq!(
+                map_completion_error_to_availability(
+                    &http(status, Some("wrong_api_key")),
+                    &HostStatus::Unknown
+                ),
+                Some(unavailable(UnavailabilityReason::KeyRejected {
+                    host_code: Some("wrong_api_key".to_string())
+                })),
+                "{status}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_rejected_key_without_a_provider_code_has_no_host_code() {
+        assert_eq!(
+            map_completion_error_to_availability(&http(401, None), &HostStatus::Available),
+            Some(unavailable(UnavailabilityReason::KeyRejected {
+                host_code: None
+            }))
+        );
+    }
+
+    #[test]
+    fn a_402_is_payment_required_not_a_rejected_key() {
+        assert_eq!(
+            map_completion_error_to_availability(
+                &http(402, Some("insufficient_credit")),
+                &HostStatus::Available
+            ),
+            Some(unavailable(UnavailabilityReason::PaymentRequired {
+                host_code: Some("insufficient_credit".to_string())
+            }))
+        );
+    }
+
+    #[test]
+    fn a_429_is_rate_limited_carrying_the_provider_code() {
+        assert_eq!(
+            map_completion_error_to_availability(
+                &http(429, Some("rate_limit_exceeded")),
+                &HostStatus::Available
+            ),
+            Some(unavailable(UnavailabilityReason::RateLimited {
+                host_code: Some("rate_limit_exceeded".to_string())
+            }))
+        );
+    }
+
+    #[test]
+    fn every_5xx_is_a_server_error_carrying_its_status_and_provider_code() {
+        for status in [500, 502, 503, 504, 599] {
+            assert_eq!(
+                map_completion_error_to_availability(
+                    &http(status, Some("boom")),
+                    &HostStatus::Available
+                ),
+                Some(unavailable(UnavailabilityReason::ServerError {
+                    http_code: status,
+                    host_code: Some("boom".to_string())
+                })),
+                "{status}"
+            );
+        }
+    }
+
+    #[test]
+    fn any_other_answer_from_the_provider_counts_as_available() {
+        for status in [400, 404, 405, 409, 413, 415, 418, 422] {
+            assert_eq!(
+                map_completion_error_to_availability(&http(status, None), &HostStatus::Unknown),
+                Some(HostStatus::Available),
+                "{status}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_409_while_available_is_no_update() {
+        assert_eq!(
+            map_completion_error_to_availability(&http(409, None), &HostStatus::Available),
+            None
+        );
+    }
+
+    #[test]
+    fn a_409_while_unavailable_restores_available() {
+        for reason in [
+            UnavailabilityReason::TimedOut,
+            UnavailabilityReason::KeyRejected { host_code: None },
+            UnavailabilityReason::ServerError {
+                http_code: 503,
+                host_code: None,
+            },
+        ] {
+            assert_eq!(
+                map_completion_error_to_availability(&http(409, None), &unavailable(reason)),
+                Some(HostStatus::Available)
+            );
+        }
+    }
+
+    #[test]
+    fn a_repeated_outcome_is_no_update() {
+        let cases = [
+            (CompletionError::Timeout, UnavailabilityReason::TimedOut),
+            (
+                http(429, Some("c")),
+                UnavailabilityReason::RateLimited {
+                    host_code: Some("c".to_string()),
+                },
+            ),
+            (
+                http(503, None),
+                UnavailabilityReason::ServerError {
+                    http_code: 503,
+                    host_code: None,
+                },
+            ),
+            (
+                http(401, Some("c")),
+                UnavailabilityReason::KeyRejected {
+                    host_code: Some("c".to_string()),
+                },
+            ),
+            (
+                stream_error(Some("c")),
+                UnavailabilityReason::StreamInterrupted {
+                    host_code: Some("c".to_string()),
+                },
+            ),
+        ];
+        for (error, reason) in cases {
+            assert_eq!(
+                map_completion_error_to_availability(&error, &unavailable(reason)),
+                None,
+                "{error:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_change_of_kind_while_unavailable_is_an_update() {
+        assert_eq!(
+            map_completion_error_to_availability(
+                &http(503, None),
+                &unavailable(UnavailabilityReason::TimedOut)
+            ),
+            Some(unavailable(UnavailabilityReason::ServerError {
+                http_code: 503,
+                host_code: None
+            }))
+        );
+    }
+
+    #[test]
+    fn a_different_status_or_provider_code_of_the_same_kind_is_an_update() {
+        let on_500 = unavailable(UnavailabilityReason::ServerError {
+            http_code: 500,
+            host_code: None,
+        });
+        assert!(map_completion_error_to_availability(&http(503, None), &on_500).is_some());
+
+        let rejected = unavailable(UnavailabilityReason::KeyRejected {
+            host_code: Some("a".to_string()),
+        });
+        assert_eq!(
+            map_completion_error_to_availability(&http(401, Some("b")), &rejected),
+            Some(unavailable(UnavailabilityReason::KeyRejected {
+                host_code: Some("b".to_string())
+            }))
+        );
+    }
+
+    #[test]
+    fn a_stream_error_carries_the_provider_code_into_stream_interrupted() {
+        assert_eq!(
+            map_completion_error_to_availability(
+                &stream_error(Some("queue_overflow")),
+                &HostStatus::Available
+            ),
+            Some(unavailable(UnavailabilityReason::StreamInterrupted {
+                host_code: Some("queue_overflow".to_string())
+            }))
+        );
+    }
+
+    #[test]
+    fn a_stream_error_without_a_provider_code_has_no_host_code() {
+        assert_eq!(
+            map_completion_error_to_availability(&stream_error(None), &HostStatus::Unknown),
+            Some(unavailable(UnavailabilityReason::StreamInterrupted {
+                host_code: None
+            }))
+        );
+    }
+
+    #[test]
+    fn a_stream_error_with_a_cause_is_classified_like_one_without() {
+        let with_cause = CompletionError::StreamError {
+            description: "reset".to_string(),
+            cause: Some("connection reset".into()),
+            provider_code: None,
+        };
+
+        assert_eq!(
+            map_completion_error_to_availability(&with_cause, &HostStatus::Available),
+            Some(unavailable(UnavailabilityReason::StreamInterrupted {
+                host_code: None
+            }))
+        );
+    }
+
+    #[test]
+    fn an_empty_generation_means_the_provider_answered_so_it_is_available() {
+        for failure in [
+            GenerationFailure::ContentFilter,
+            GenerationFailure::LengthLimit,
+        ] {
+            let error = CompletionError::GenerationFailed(failure);
+            assert_eq!(
+                map_completion_error_to_availability(&error, &HostStatus::Unknown),
+                Some(HostStatus::Available),
+                "{failure:?}"
+            );
+            assert_eq!(
+                map_completion_error_to_availability(&error, &HostStatus::Available),
+                None,
+                "{failure:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn an_unexpected_tool_call_means_the_provider_answered_so_it_is_available() {
+        assert_eq!(
+            map_completion_error_to_availability(
+                &CompletionError::UnexpectedToolCall,
+                &unavailable(UnavailabilityReason::TimedOut)
+            ),
+            Some(HostStatus::Available)
+        );
+        assert_eq!(
+            map_completion_error_to_availability(
+                &CompletionError::UnexpectedToolCall,
+                &HostStatus::Available
+            ),
+            None
+        );
+    }
+
+    #[test]
+    fn an_unexpected_error_is_no_update_whatever_the_current_status() {
+        for current in every_current() {
+            let error = CompletionError::UnexpectedError("local failure".into());
+
+            assert_eq!(
+                map_completion_error_to_availability(&error, &current),
+                None,
+                "{current:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn available_after_available_is_no_update_for_every_available_outcome() {
+        for error in [
+            http(400, None),
+            http(404, None),
+            http(409, None),
+            http(422, None),
+            CompletionError::GenerationFailed(GenerationFailure::LengthLimit),
+            CompletionError::UnexpectedToolCall,
+        ] {
+            assert_eq!(
+                map_completion_error_to_availability(&error, &HostStatus::Available),
+                None,
+                "{error:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn the_http_error_message_names_the_status_code_and_provider_message() {
+        let text = http(429, Some("rate_limit_exceeded")).to_string();
+
+        assert!(text.contains("429"), "{text}");
+        assert!(text.contains("rate_limit_exceeded"), "{text}");
+        assert!(text.contains("provider message"), "{text}");
+    }
+
+    #[test]
+    fn a_stream_error_displays_its_description_without_repeating_its_cause() {
+        let error = CompletionError::StreamError {
+            description: "the connection was cut".to_string(),
+            cause: Some("socket closed by peer".into()),
+            provider_code: None,
+        };
+
+        let text = error.to_string();
+
+        assert!(text.contains("the connection was cut"), "{text}");
+        assert!(!text.contains("socket closed by peer"), "{text}");
+        assert_eq!(
+            error.source().map(ToString::to_string).as_deref(),
+            Some("socket closed by peer")
+        );
+    }
+
+    #[test]
+    fn a_truncated_stream_error_has_no_source() {
+        let error = CompletionError::StreamError {
+            description: "ended without a finish reason".to_string(),
+            cause: None,
+            provider_code: None,
+        };
+
+        assert!(error.source().is_none());
+    }
+
+    #[test]
+    fn the_cause_of_a_connection_or_unexpected_error_is_its_source() {
+        let connection = CompletionError::ConnectionError("dns failure".into());
+        let unexpected = CompletionError::UnexpectedError("cannot build request".into());
+
+        assert_eq!(
+            connection.source().map(ToString::to_string).as_deref(),
+            Some("dns failure")
+        );
+        assert_eq!(
+            unexpected.source().map(ToString::to_string).as_deref(),
+            Some("cannot build request")
+        );
+    }
+
+    #[test]
+    fn generation_failures_name_their_reason() {
+        assert_eq!(
+            GenerationFailure::ContentFilter.to_string(),
+            "Content was filtered"
+        );
+        assert_eq!(
+            GenerationFailure::LengthLimit.to_string(),
+            "Length limit reached"
+        );
+    }
+}

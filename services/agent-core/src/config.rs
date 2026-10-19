@@ -254,6 +254,10 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use secrecy::ExposeSecret;
+
+    /// The key every test that is not about the LLM settings supplies, so the configuration builds.
+    const TEST_KEY: &str = "test-key";
 
     fn lookup_from(
         listen: Option<&'static str>,
@@ -263,6 +267,7 @@ mod tests {
             Ok(match name {
                 LISTEN_ADDRESS_VAR => listen.map(str::to_string),
                 OTLP_ENDPOINT_VAR => otlp.map(str::to_string),
+                ARIA_LLM_API_KEY_VAR => Some(TEST_KEY.to_string()),
                 _ => None,
             })
         }
@@ -345,6 +350,7 @@ mod tests {
         Config::from_lookup(move |name| {
             Ok(match name {
                 REFLECTION_VAR => value.map(str::to_string),
+                ARIA_LLM_API_KEY_VAR => Some(TEST_KEY.to_string()),
                 _ => None,
             })
         })
@@ -388,5 +394,272 @@ mod tests {
         let message = err.to_string();
         assert!(message.contains(REFLECTION_VAR), "{message}");
         assert!(message.contains("yes"), "{message}");
+    }
+
+    // ------------------------------------------------------------ LLM settings (C1)
+
+    /// A lookup over fixed `(variable, value)` pairs; anything not listed is unset.
+    fn lookup_pairs(
+        pairs: &'static [(&'static str, &'static str)],
+    ) -> impl Fn(&'static str) -> Result<Option<String>, ConfigError> {
+        move |name| {
+            Ok(pairs
+                .iter()
+                .find(|(variable, _)| *variable == name)
+                .map(|(_, value)| value.to_string()))
+        }
+    }
+
+    /// A key that no message or debug output may ever contain.
+    const SECRET: &str = "sk-very-secret-key-value";
+
+    #[test]
+    fn with_only_the_key_set_the_llm_settings_take_their_documented_defaults() {
+        let config =
+            Config::from_lookup(lookup_pairs(&[(ARIA_LLM_API_KEY_VAR, SECRET)])).expect("config");
+
+        assert_eq!(config.llm_api_key().expose_secret(), SECRET);
+        assert_eq!(config.llm_url().as_str(), "https://api.cerebras.ai/v1");
+        assert_eq!(config.llm_model(), "qwen-3.8-27b");
+        assert_eq!(config.llm_idle_timeout(), Duration::from_secs(30));
+        assert_eq!(config.llm_max_retries(), 3);
+    }
+
+    #[test]
+    fn the_default_constants_describe_the_defaults() {
+        assert_eq!(ARIA_LLM_BASE_URL_DEFAULT, "https://api.cerebras.ai/v1");
+        assert_eq!(ARIA_LLM_MODEL_DEFAULT, "qwen-3.8-27b");
+        assert_eq!(ARIA_LLM_IDLE_TIMEOUT_DEFAULT, "30s");
+        assert_eq!(ARIA_LLM_MAX_RETRIES_DEFAULT, 3);
+    }
+
+    #[test]
+    fn an_unset_key_is_a_missing_variable_error_naming_the_key_variable() {
+        let err = Config::from_lookup(lookup_pairs(&[])).expect_err("no key");
+
+        assert!(
+            matches!(err, ConfigError::MissingVariable { variable } if variable == "ARIA_LLM_API_KEY"),
+            "{err:?}"
+        );
+        assert!(err.to_string().contains("ARIA_LLM_API_KEY"), "{err}");
+    }
+
+    #[test]
+    fn a_blank_key_is_a_missing_variable_error_naming_the_key_variable() {
+        for blank in ["", "   ", "\t"] {
+            let lookup = move |name: &'static str| {
+                Ok((name == ARIA_LLM_API_KEY_VAR).then(|| blank.to_string()))
+            };
+
+            let err = Config::from_lookup(lookup).expect_err("blank key");
+
+            assert!(
+                matches!(err, ConfigError::MissingVariable { .. }),
+                "{blank:?}: {err:?}"
+            );
+            assert!(err.to_string().contains("ARIA_LLM_API_KEY"), "{err}");
+        }
+    }
+
+    #[test]
+    fn each_optional_llm_setting_is_used_when_set() {
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_BASE_URL_VAR, "https://llm.example.test/v2"),
+            (ARIA_LLM_MODEL_VAR, "other-model"),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "45s"),
+            (ARIA_LLM_MAX_RETRIES_VAR, "5"),
+        ]))
+        .expect("config");
+
+        assert_eq!(config.llm_url().as_str(), "https://llm.example.test/v2");
+        assert_eq!(config.llm_model(), "other-model");
+        assert_eq!(config.llm_idle_timeout(), Duration::from_secs(45));
+        assert_eq!(config.llm_max_retries(), 5);
+    }
+
+    #[test]
+    fn the_idle_timeout_accepts_humantime_units() {
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "1m 30s"),
+        ]))
+        .expect("config");
+
+        assert_eq!(config.llm_idle_timeout(), Duration::from_secs(90));
+    }
+
+    #[test]
+    fn blank_optional_llm_settings_fall_back_to_their_defaults() {
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_BASE_URL_VAR, "  "),
+            (ARIA_LLM_MODEL_VAR, ""),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, " "),
+            (ARIA_LLM_MAX_RETRIES_VAR, "   "),
+        ]))
+        .expect("config");
+
+        assert_eq!(config.llm_url().as_str(), "https://api.cerebras.ai/v1");
+        assert_eq!(config.llm_model(), "qwen-3.8-27b");
+        assert_eq!(config.llm_idle_timeout(), Duration::from_secs(30));
+        assert_eq!(config.llm_max_retries(), 3);
+    }
+
+    #[test]
+    fn an_unparsable_idle_timeout_is_an_error_naming_variable_and_value() {
+        let err = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "soon"),
+        ]))
+        .expect_err("bad timeout");
+
+        assert!(
+            matches!(err, ConfigError::InvalidDuration { .. }),
+            "{err:?}"
+        );
+        let message = err.to_string();
+        assert!(message.contains("ARIA_LLM_IDLE_TIMEOUT"), "{message}");
+        assert!(message.contains("soon"), "{message}");
+    }
+
+    #[test]
+    fn a_bare_number_idle_timeout_has_no_unit_and_is_rejected() {
+        let err = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "30"),
+        ]))
+        .expect_err("a bare number is not a duration");
+
+        assert!(
+            matches!(err, ConfigError::InvalidDuration { .. }),
+            "{err:?}"
+        );
+        let message = err.to_string();
+        assert!(message.contains("ARIA_LLM_IDLE_TIMEOUT"), "{message}");
+        assert!(message.contains("30"), "{message}");
+    }
+
+    #[test]
+    fn a_zero_idle_timeout_is_rejected_naming_the_variable() {
+        for zero in ["0s", "0ms"] {
+            let lookup = move |name: &'static str| {
+                Ok(match name {
+                    ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                    ARIA_LLM_IDLE_TIMEOUT_VAR => Some(zero.to_string()),
+                    _ => None,
+                })
+            };
+
+            let err = Config::from_lookup(lookup).expect_err("zero timeout");
+
+            assert!(
+                matches!(err, ConfigError::InvalidDuration { .. }),
+                "{zero}: {err:?}"
+            );
+            assert!(err.to_string().contains("ARIA_LLM_IDLE_TIMEOUT"), "{err}");
+        }
+    }
+
+    #[test]
+    fn a_negative_idle_timeout_is_rejected() {
+        let err = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "-5s"),
+        ]))
+        .expect_err("negative timeout");
+
+        assert!(
+            matches!(err, ConfigError::InvalidDuration { .. }),
+            "{err:?}"
+        );
+        assert!(err.to_string().contains("-5s"), "{err}");
+    }
+
+    #[test]
+    fn an_unparsable_retry_count_is_an_error_naming_variable_and_value() {
+        for bad in ["many", "-1", "70000", "1.5"] {
+            let lookup = move |name: &'static str| {
+                Ok(match name {
+                    ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                    ARIA_LLM_MAX_RETRIES_VAR => Some(bad.to_string()),
+                    _ => None,
+                })
+            };
+
+            let err = Config::from_lookup(lookup).expect_err("bad retry count");
+
+            assert!(
+                matches!(err, ConfigError::InvalidU16 { .. }),
+                "{bad}: {err:?}"
+            );
+            let message = err.to_string();
+            assert!(message.contains("ARIA_LLM_MAX_RETRIES"), "{message}");
+            assert!(message.contains(bad), "{message}");
+        }
+    }
+
+    #[test]
+    fn zero_retries_is_accepted() {
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_MAX_RETRIES_VAR, "0"),
+        ]))
+        .expect("zero retries means one attempt");
+
+        assert_eq!(config.llm_max_retries(), 0);
+    }
+
+    #[test]
+    fn an_invalid_base_url_is_an_error_naming_variable_and_value() {
+        let err = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_BASE_URL_VAR, "not a url"),
+        ]))
+        .expect_err("bad url");
+
+        assert!(matches!(err, ConfigError::InvalidUrl { .. }), "{err:?}");
+        let message = err.to_string();
+        assert!(message.contains("ARIA_LLM_BASE_URL"), "{message}");
+        assert!(message.contains("not a url"), "{message}");
+    }
+
+    #[test]
+    fn debug_formatting_a_configuration_never_contains_the_key() {
+        let config =
+            Config::from_lookup(lookup_pairs(&[(ARIA_LLM_API_KEY_VAR, SECRET)])).expect("config");
+
+        let compact = format!("{config:?}");
+        let pretty = format!("{config:#?}");
+
+        assert!(!compact.contains(SECRET), "{compact}");
+        assert!(!pretty.contains(SECRET), "{pretty}");
+    }
+
+    #[test]
+    fn no_error_message_echoes_the_key() {
+        // Every other setting is wrong in turn while a real key is present.
+        let bad_settings = [
+            (ARIA_LLM_BASE_URL_VAR, "not a url"),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "soon"),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "0s"),
+            (ARIA_LLM_MAX_RETRIES_VAR, "many"),
+        ];
+        for (variable, value) in bad_settings {
+            let lookup = move |name: &'static str| {
+                Ok(if name == ARIA_LLM_API_KEY_VAR {
+                    Some(SECRET.to_string())
+                } else if name == variable {
+                    Some(value.to_string())
+                } else {
+                    None
+                })
+            };
+
+            let err = Config::from_lookup(lookup).expect_err("bad setting");
+
+            assert!(!err.to_string().contains(SECRET), "{err}");
+            assert!(!format!("{err:?}").contains(SECRET), "{err:?}");
+        }
     }
 }

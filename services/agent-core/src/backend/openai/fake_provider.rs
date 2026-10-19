@@ -109,6 +109,8 @@ pub struct StreamScript {
     pub steps: Vec<Step>,
     /// What happens after the last step.
     pub ending: Ending,
+    /// How long to wait before sending the response headers at all.
+    pub header_delay: Duration,
 }
 
 impl StreamScript {
@@ -117,7 +119,15 @@ impl StreamScript {
         Self {
             steps,
             ending: Ending::Close,
+            header_delay: Duration::ZERO,
         }
+    }
+
+    /// The same stream, but the response headers are held back for `delay`, so the client is
+    /// still waiting for the response to open.
+    pub fn delay_headers(mut self, delay: Duration) -> Self {
+        self.header_delay = delay;
+        self
     }
 
     /// The same stream, but stalling forever after the last step instead of closing.
@@ -136,6 +146,8 @@ pub struct ErrorScript {
     pub retry_after: Option<String>,
     /// The response body, sent verbatim; see [`flat_error_body`].
     pub body: Option<String>,
+    /// How long to wait before sending the response at all.
+    pub header_delay: Duration,
 }
 
 impl ErrorScript {
@@ -145,7 +157,14 @@ impl ErrorScript {
             status,
             retry_after: None,
             body: None,
+            header_delay: Duration::ZERO,
         }
+    }
+
+    /// The same response, but held back for `delay` before the headers are sent.
+    pub fn delay_headers(mut self, delay: Duration) -> Self {
+        self.header_delay = delay;
+        self
     }
 
     /// The same response with a `Retry-After` header carrying `value` verbatim.
@@ -321,6 +340,14 @@ async fn chat_completions(
 ) -> Response {
     shared.record(&headers, &body);
     let script = shared.scripts.lock().expect(MUTEX_POISONED).pop_front();
+    let delay = match &script {
+        Some(Script::Error(error)) => error.header_delay,
+        Some(Script::Stream(stream)) => stream.header_delay,
+        None => Duration::ZERO,
+    };
+    if !delay.is_zero() {
+        tokio::time::sleep(delay).await;
+    }
     match script {
         None => plain_response(
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -581,5 +608,24 @@ mod tests {
         drop(response);
 
         assert!(provider.wait_for_disconnect(Duration::from_secs(2)).await);
+    }
+
+    #[tokio::test]
+    async fn delayed_headers_hold_the_response_back_for_streams_and_errors() {
+        let provider = FakeProvider::start().await.expect("start");
+        provider.enqueue(StreamScript::new(vec![Step::data("x")]).delay_headers(DELAY));
+        provider.enqueue(ErrorScript::new(StatusCode::SERVICE_UNAVAILABLE).delay_headers(DELAY));
+
+        for expected in [StatusCode::OK, StatusCode::SERVICE_UNAVAILABLE] {
+            let started = Instant::now();
+            let response = post(&provider, "{}").await;
+
+            assert!(
+                started.elapsed() >= DELAY / 2,
+                "headers came after {:?}",
+                started.elapsed()
+            );
+            assert_eq!(response.status(), expected);
+        }
     }
 }
