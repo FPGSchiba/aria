@@ -4,7 +4,7 @@
 
 use crate::backend::{Backend, BackendError, Chunk};
 use crate::conversation::ConversationPart;
-use crate::health::BackendHealth;
+use crate::health::{BackendHealth, HostStatus};
 use futures_core::Stream;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
@@ -89,7 +89,13 @@ impl ScriptedBackend {
     /// the health.
     pub fn set_healthy(&self, healthy: bool) {
         self.health
-            .send_replace(BackendHealth::new(Self::NAME, healthy, false));
+            .send_replace(self.health.borrow().with_healthy(healthy));
+    }
+
+    /// Reports the backend's host status, as a real backend would on its own. Clones share the health.
+    pub fn set_host_status(&self, host_status: HostStatus) {
+        self.health
+            .send_replace(self.health.borrow().with_host_status(host_status));
     }
 
     /// The recorded calls in order; the call count is its length.

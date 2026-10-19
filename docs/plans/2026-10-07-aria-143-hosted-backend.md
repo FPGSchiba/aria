@@ -501,6 +501,17 @@ and C7 implement.
   infrastructure, not by Jann in Phases 2 and 4. Its default stream is modelled on the
   OpenAI-compatible format, not a captured Cerebras stream; the Risk about drift stays open until
   a capture replaces it.
+- **API-review follow-ups (2026-10-19).** The code-agent fixed the Smells and the `Backend` trait's
+  "do not retry" doc. Jann fixed the classification's catch-all arm (Bug 2). At Jann's request the
+  code-agent also applied the remaining Improvements (too provider-specific to be worth hand-shaping):
+  `StreamError` carries an optional cause, an optional provider code and a description, so it covers
+  cut streams, provider error events and truncation; tests get a test-only constructor with an
+  explicit backoff base; `request`, `retry` and `spans` became crate-private, so only the constructor
+  assembles the stack; the idle-timeout getter returns `std::time::Duration`.
+- **API gate passed (2026-10-19)** on the second review: 0 Bugs, 0 Improvements. The last Smells
+  were fixed before the API commit, including the `stream_conversation` doc, which had contradicted
+  C4 on reasoning deltas resetting the idle timeout. Config getters follow one rule: `llm_url`,
+  `llm_model`, `llm_idle_timeout`, `llm_max_retries`, with `llm_api_key` as the recorded exception.
 - **C1 field naming:** the key's field keeps `llm_api_key` while the others are `llm_*` (Jann's
   call: it mirrors the variable `ARIA_LLM_API_KEY`).
 - Secrets rule gap found outside this story: `crates/identity` reads the private key file into a
