@@ -1,7 +1,7 @@
 //! Maps ARIA's conversation onto the provider's streaming request: roles, the current input's
 //! system part, no replayed system entries, no tools, and a usage summary.
 
-use crate::conversation::ConversationPart;
+use crate::conversation::{Actor, ConversationPart};
 use async_openai::types::chat::{
     ChatCompletionRequestAssistantMessage, ChatCompletionRequestAssistantMessageContent,
     ChatCompletionRequestMessage, ChatCompletionRequestSystemMessage,
@@ -17,8 +17,12 @@ fn map_conversation_to_request(
     input: &[ConversationPart],
     model_name: &str,
 ) -> CreateChatCompletionRequest {
-    let mut messages: Vec<ChatCompletionRequestMessage> = input.iter().map(|p| p.into()).collect();
-    messages.extend(history.iter().map(|p| p.into()));
+    let mut messages: Vec<ChatCompletionRequestMessage> = history
+        .iter()
+        .filter(|p| p.actor != Actor::System)
+        .map(|p| p.into())
+        .collect();
+    messages.extend(input.iter().map(|p| p.into()));
 
     CreateChatCompletionRequest {
         model: model_name.to_string(),
