@@ -1,10 +1,10 @@
 ---
-title: Add the hosted LLM backend to the Agent Core (ARIA-143)
-slug: aria-143-hosted-backend
+title: Add the openai LLM backend to the Agent Core (ARIA-143)
+slug: aria-143-openai-backend
 tier: technical
 status: active
 created: 2026-10-07
-branch: aria-143-hosted-backend
+branch: aria-143-openai-backend
 owns_branch: true
 ---
 
@@ -131,6 +131,18 @@ ARIA-145 (streaming client), ARIA-147 (configuration), ARIA-149 (key-gated test)
 - **No Helm change in this PR.** The Definition of Done's Helm clause has nothing to update until
   ARIA-177 creates the chart; the settings table on the Agent Core page is its input.
 
+### Amendment 2026-10-19: the span's `error.type` comes from the error, not from availability
+
+The Spans decision above said the call span's `error.type` uses the availability classification.
+That did not survive two later choices: "any answer from the provider counts as available"
+(GenerationFailed, UnexpectedToolCall, ordinary 4xx classify as available, so they have no kind to
+record) and the classification's built-in deduplication (a repeated outcome returns "no update", so a
+second consecutive timeout gives the span nothing). The API review found this as a Bug. Availability
+answers "is the provider up?"; the span needs "what went wrong in this call?". **Chosen (Jann):** the
+span's `error.type` names the `CompletionError` case itself. Rejected: making the classification also
+return an error kind (it would answer two questions in one function and tie the span to the
+dedup rule).
+
 ### Settled in Phase 1 (brainstorm, 2026-10-07)
 
 - **`BackendError` stays thin; the hosted backend owns its classification.** The `Decide` service
@@ -198,6 +210,10 @@ None block this plan. Carried, not decided here:
 - **A key that's wrong (rather than missing) leaves pods ready but failing every turn.** Accepted:
   readiness deliberately ignores availability. Mitigated by the key-rejected state on the diagnostic
   entry and in the span.
+- **Rate limits reported as timeouts.** With a 10 s `Retry-After` cap and 3 retries, honoured waits
+  can fill the 30 s idle window. Early signal: spans or availability show `TimedOut` while the
+  attempt spans show 429s. Remedy: lower the cap, or keep cap × max retries well under the idle
+  timeout.
 - **Coverage.** The retry and timeout paths are where untested lines would hide. Early signal: the
   coverage job drops below 80 % on this branch.
 
@@ -331,14 +347,17 @@ span per call, an event on the first text chunk, and a child span per HTTP attem
 
 **Contracts.** The call span carries operation, provider, server address, requested and response
 model, finish reasons, and input and output token counts when the provider reports them. On failure it
-carries `error.type` matching the availability classification. The first-text event occurs exactly
+carries `error.type` naming the failure's own case (the `CompletionError` case), independent of the
+availability classification and of deduplication (amended 2026-10-19). The first-text event occurs exactly
 once per call, and only when text arrived. Each retry adds a child attempt span. No span or event
 contains prompt text, reply text or the key.
 
 **Tests.** Using the existing tracing-capture helper: a successful call produces one call span with
 model, finish reason and token counts, and one first-text event. A call that retried once has two
-attempt spans. A timed-out call carries the timeout error type. No captured field contains the
-prompt's or the reply's text, or the key.
+attempt spans. A timed-out call carries the timeout error type, and so does a second consecutive
+timed-out call (availability unchanged). A `content_filter` failure carries its own error type
+although availability stays available. No captured field contains the prompt's or the reply's text,
+or the key.
 
 **Done when.** Those tests pass reliably under parallel test execution, and lint is clean.
 
@@ -423,9 +442,65 @@ and C7 implement.
 - **A non-JSON error body loses the HTTP status** inside the crate (a deserialize error carries the
   body only). Classification that needs the status must read it in our own tower layer, below the
   crate's parsing.
+- **Every Cerebras 4xx loses its status and code inside the crate (measured 2026-10-07).** Cerebras
+  returns a *flat* error body, e.g. a 401 is
+  `{"message":"Wrong API Key","type":"invalid_request_error","param":"api_key","code":"wrong_api_key"}`,
+  while `async-openai` only parses OpenAI's wrapped `{"error": {…}}` form. So 401, 402, 429 and other
+  4xx reach us as a deserialize error with no status. 5xx keep their status (the crate does not parse
+  them). Reading the status in our own tower layer is therefore the main path, not an edge case.
+  Provider error codes are stable **strings**, not numbers. Cerebras also documents **402 Payment
+  Required** (out of credit), which the classification must place: it is neither our bug nor their
+  outage.
 - **The base URL prints in full in `Debug` output** (accepted, Jann's call): it never carries
   credentials, so it is not wrapped as a secret. If a URL ever needs userinfo, the secrets rule
   applies to it.
+- **C5 availability carries the provider's error code** (`host_code`, a string; Jann's call). It
+  is safe for the transition rule because provider codes are stable identifiers, but the value is
+  no longer `Copy`, and because of the flat error body the code must be parsed in our own tower
+  layer. Changing availability returns a new `BackendHealth` with the status replaced (Jann chose
+  the immutable form over in-place mutation), and the backend publishes it on its watch channel. "Starts at unknown" is enforced by construction (the constructor takes no
+  status). The catch-all reason is `Other`, and 402 gets its own reason.
+- **The backend's module and types are named for the protocol, not the role** (Jann's call): the
+  code says *OpenAI-compatible*, not *hosted*. "Hosted" is where the provider runs, which is a
+  deployment fact; an Anthropic-compatible client would be hosted too and would collide, while
+  Groq or OpenRouter would use this same adapter. "The hosted backend" stays the name of the
+  *role* in docs and Jira (D85, ARIA-143). The startup log prints host and model next to
+  `Backend::name()`, so the protocol name does not hide which provider is serving.
+- **Any answer from the provider counts as evidence it is available** (Jann's call, replacing the
+  plan's "other 4xx → no change"): 400/404/413/422, any other non-5xx/429/401/402/403 status, and a
+  `GenerationFailed` all classify as available, because the provider answered. "No update" is left
+  for outcomes where the provider was never reached. The classification takes the current status
+  and also deduplicates (Jann's call): it returns "no update" both when an outcome does not affect
+  availability and when the new status equals the current one. Tests therefore supply a current
+  status per case. With no path left to it, the `Other` reason was removed.
+- **C3 is a tower retry `Policy`** (Jann's call), not a hand-written layer: tower owns the loop,
+  readiness and re-sending, and clones the policy per request, so the attempt count is per request.
+- **C3 details:** a `Retry-After` given as an HTTP date counts as above the cap (give up, pass the
+  429 through), since a date nearly always means "much later". The backoff gets a small random
+  jitter so retries across pods don't run in lockstep after a provider blip.
+- **The `Retry-After` cap is 10 s, not the planned 5 s** (Jann's call). Consequence, also under
+  Risks: 3 retries × 10 s equals the 30 s idle window, so a provider asking for long waits can end
+  the turn as a timeout rather than a rate limit.
+- **Tower stack order, outside in: status capture → retry → per-attempt tracing → reqwest.** Because
+  Cerebras's flat error body makes the crate lose the status, a layer must turn a non-2xx raw
+  response into the HTTP error (status, message, provider code) before the crate parses it. It must
+  sit **outside** retry: inside, retry would see an error instead of a 429/5xx response, and
+  `should_retry` would not retry it, so retries would silently stop working.
+- **C6 adds two contracts (Phase 2):** the call span must be a **child of the `Decide` span** and
+  stay attached while the `'static` stream is polled (create it inside the call, instrument the
+  stream with it). Its duration must cover the stream from open to end, because tower layers end at
+  the response headers and cannot measure stream lifetime. Tests: parent is the `Decide` span; the
+  span closes only after the last chunk. Per-attempt spans live in `spans.rs`; the call span lives
+  with the stream in the backend module. Status capture and per-attempt tracing are hand-written
+  `Layer` + `Service` pairs (Jann's call): tower's sync helpers can't read a body, and `tower-http`'s
+  `TraceLayer` does not speak the crate's request factory.
+- **Metrics stay out of this story:** cross-turn questions (in-flight streams, p95 time to first
+  token) need an OTel metrics pipeline in `crates/telemetry`, which touches every service. Candidate
+  follow-up under `theme-observability`.
+- **C2 (the fake provider) was written in full by the code-agent** at Jann's request, as test
+  infrastructure, not by Jann in Phases 2 and 4. Its default stream is modelled on the
+  OpenAI-compatible format, not a captured Cerebras stream; the Risk about drift stays open until
+  a capture replaces it.
 - **C1 field naming:** the key's field keeps `llm_api_key` while the others are `llm_*` (Jann's
   call: it mirrors the variable `ARIA_LLM_API_KEY`).
 - Secrets rule gap found outside this story: `crates/identity` reads the private key file into a
