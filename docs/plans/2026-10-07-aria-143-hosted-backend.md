@@ -384,7 +384,7 @@ reply (story criterion 1).
 
 ### C8 — Key-gated integration test
 
-status: pending
+status: done
 kind: chore
 depends-on: 7
 
@@ -551,3 +551,9 @@ and C7 implement.
   only `include_usage`. The run also confirmed, against the real provider, that the flat 4xx body
   survives status capture with its status and code, that a 400 is not retried, and that it counts as
   the provider being available.
+- **C8 result (2026-10-22):** the key-gated test passed against Cerebras (`qwen-3.8-27b`) in 17.2 s:
+  the first chunk arrived strictly before the end of a long reply, with more than one chunk. Without
+  a key it failed, naming `ARIA_LLM_API_KEY`, rather than skipping. The key was read from the macOS
+  Keychain, never typed on a command line. A manual `Decide` through the binary also streamed a
+  multi-turn reply, with about 2.3 s to the first text (the reasoning phase, D85) and the usage
+  event parsing without error.
