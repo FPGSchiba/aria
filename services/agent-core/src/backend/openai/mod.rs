@@ -5,12 +5,17 @@ use crate::backend::{Backend, BackendError, Chunk};
 use crate::config::Config;
 use crate::conversation::ConversationPart;
 use crate::health::BackendHealth;
-use async_openai::config::OpenAIConfig;
+use async_openai::config::{OpenAIConfig};
 use futures_core::Stream;
 use std::pin::Pin;
 use std::time::Duration;
+use async_openai::Client;
+use async_openai::middleware::ReqwestService;
+use secrecy::ExposeSecret;
 use tokio::sync::watch;
 use tokio::sync::watch::Sender;
+use tower::retry::RetryLayer;
+use crate::backend::openai::retry::RetryPolicy;
 
 pub mod error;
 #[cfg(feature = "test-util")]
@@ -38,6 +43,8 @@ pub enum OpenAIBackendError {
 }
 
 impl OpenAIBackend {
+    const NAME: &'static str = "openai";
+
     /// Creates a new OpenAIBackend from the given configuration.
     /// Fails with [`OpenAIBackendError::ClientCreationFailed`] if the HTTP client cannot be built.
     pub fn new(config: &Config) -> Result<Self, OpenAIBackendError> {
@@ -56,13 +63,35 @@ impl OpenAIBackend {
 
     /// The one build path: assembles the HTTP client and tower stack with the given backoff base.
     fn build(config: &Config, backoff_base: Duration) -> Result<Self, OpenAIBackendError> {
-        todo!()
+        let openai_config = OpenAIConfig::new()
+            .with_api_base(config.llm_url().as_str())
+            .with_api_key(config.llm_api_key().expose_secret());
+
+        let http_client = reqwest::Client::builder().build()?;
+
+        let health = BackendHealth::new(Self::NAME, true, false);
+        let health_sender = watch::channel(health).0;
+
+        let stack = tower::ServiceBuilder::new()
+            .layer(spans::StatusCaptureLayer)                       // outermost
+            .layer(RetryLayer::new(RetryPolicy::new(config.llm_max_retries(), backoff_base)))
+            .layer(spans::AttemptTracingLayer)
+            .service(ReqwestService::new(http_client));             // innermost
+
+        let client = Client::with_config(openai_config).with_http_service(stack);
+
+        Ok(Self {
+            client,
+            model: config.llm_model().to_owned(),
+            idle_timeout: config.llm_idle_timeout(),
+            health_sender,
+        })
     }
 }
 
 impl Backend for OpenAIBackend {
     fn name(&self) -> &'static str {
-        "openai"
+        Self::NAME
     }
 
     fn subscribe_health(&self) -> watch::Receiver<BackendHealth> {
