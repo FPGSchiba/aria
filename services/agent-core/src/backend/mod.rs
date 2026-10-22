@@ -9,7 +9,6 @@ use futures_core::Stream;
 use std::pin::Pin;
 use tokio::sync::watch;
 
-pub mod echo;
 pub mod openai;
 #[cfg(feature = "test-util")]
 pub mod scripted;

@@ -1,5 +1,5 @@
 use agent_core::backend::Backend;
-use agent_core::backend::echo::EchoBackend;
+use agent_core::backend::openai::OpenAIBackend;
 use agent_core::config::Config;
 use agent_core::history::{HistoryStore, InMemoryHistory};
 use agent_core::service::Service;
@@ -124,7 +124,8 @@ async fn run() -> Result<(), Box<dyn Error>> {
         target = agent_core::CRATE_NAME
     )?;
 
-    let backend = EchoBackend::new();
+    // Built before anything listens, so a backend that cannot be set up stops the start.
+    let backend = OpenAIBackend::new(&config)?;
     let history = InMemoryHistory::default();
     let backend_name = backend.name();
     let (health, health_server) =
@@ -141,6 +142,8 @@ async fn run() -> Result<(), Box<dyn Error>> {
     tracing::info!(
         version = agent_core::version::VERSION,
         git_sha = agent_core::version::GIT_SHA.unwrap_or("unknown"),
+        model = config.llm_model(),
+        llm_host = config.llm_url().host_str().unwrap_or("unknown"),
         "Starting agent-core service with '{backend_name}' backend on '{}'",
         listener.local_addr()?
     );
