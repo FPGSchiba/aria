@@ -6,10 +6,12 @@ use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
+use crate::backend::openai::error::CompletionError;
 use async_openai::error::OpenAIError;
 use async_openai::middleware::HttpRequestFactory;
-use reqwest::Response;
+use reqwest::{Response, StatusCode};
 use tower::{Layer, Service};
+use tracing::Instrument;
 
 /// Layer for the status-capture service. Sits outside the retry layer, so it only sees the final
 /// response of a call.
@@ -50,8 +52,50 @@ where
     /// reads the body, parses the flat provider error `{message, type, param, code}` and returns
     /// `OpenAIError::Boxed(CompletionError::HttpError { .. })`. Uses the `std::mem::replace` swap so
     /// the ready inner service is the one called.
-    fn call(&mut self, _req: HttpRequestFactory) -> Self::Future {
-        todo!()
+    fn call(&mut self, req: HttpRequestFactory) -> Self::Future {
+        // `poll_ready` readied `self.inner`, so that one makes the call; the clone left behind is
+        // readied again by the next `poll_ready`.
+        let clone = self.inner.clone();
+        let mut inner = std::mem::replace(&mut self.inner, clone);
+        Box::pin(async move {
+            let response = inner.call(req).await?;
+            let status = response.status();
+            if status.is_success() {
+                return Ok(response);
+            }
+            // A body that cannot be read leaves an empty one: the status is what matters.
+            let body = response.text().await.unwrap_or_default();
+            Err(OpenAIError::Boxed(Box::new(http_error(status, &body))))
+        })
+    }
+}
+
+/// Builds the HTTP error for a non-2xx answer from its body: Cerebras's flat
+/// `{"message","type","param","code"}`, OpenAI's wrapped `{"error": {..}}`, or anything else (then
+/// the message is the status text and there is no code).
+fn http_error(status: StatusCode, body: &str) -> CompletionError {
+    let json: Option<serde_json::Value> = serde_json::from_str(body).ok();
+    let fields = json.as_ref().map(|value| {
+        value
+            .get("error")
+            .filter(|e| e.is_object())
+            .unwrap_or(value)
+    });
+    let text = |name: &str| {
+        fields
+            .and_then(|f| f.get(name))
+            .and_then(serde_json::Value::as_str)
+            .map(str::to_string)
+    };
+    CompletionError::HttpError {
+        status,
+        message: text("message").unwrap_or_else(|| {
+            status
+                .canonical_reason()
+                .unwrap_or("unknown status")
+                .to_string()
+        }),
+        code: text("code"),
     }
 }
 
@@ -93,8 +137,35 @@ where
     /// Creates one span per attempt, runs the inner call instrumented with it, and records the
     /// status or the connection error. Never records the body or key-bearing headers. Uses the
     /// `std::mem::replace` swap so the ready inner service is the one called.
-    fn call(&mut self, _req: HttpRequestFactory) -> Self::Future {
-        todo!()
+    fn call(&mut self, req: HttpRequestFactory) -> Self::Future {
+        // Created here, so it is a child of whatever span is current: the call span.
+        let span = tracing::info_span!(
+            "http_attempt",
+            "http.response.status_code" = tracing::field::Empty,
+            "error.type" = tracing::field::Empty,
+        );
+        let clone = self.inner.clone();
+        let mut inner = std::mem::replace(&mut self.inner, clone);
+        let recorder = span.clone();
+        Box::pin(
+            async move {
+                let result = inner.call(req).await;
+                // Only the status or the kind of failure: never the body or any header.
+                match &result {
+                    Ok(response) => {
+                        recorder.record("http.response.status_code", response.status().as_u16());
+                    }
+                    Err(OpenAIError::Reqwest(error)) if error.is_connect() => {
+                        recorder.record("error.type", "connect_error");
+                    }
+                    Err(_) => {
+                        recorder.record("error.type", "request_error");
+                    }
+                }
+                result
+            }
+            .instrument(span),
+        )
     }
 }
 

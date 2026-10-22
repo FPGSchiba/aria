@@ -6,8 +6,7 @@ edition = "2024"
 [features]
 # Exposes the scripted backend to integration tests under tests/.
 test-util = [
-    "dep:axum",
-    "dep:serde_json"
+    "dep:axum"
 ]
 
 [dependencies]
@@ -28,7 +27,7 @@ reqwest               = { workspace = true }
 secrecy              = { workspace = true }
 humantime            = { workspace = true }
 axum = { workspace = true, optional = true }
-serde_json = { workspace = true, optional = true }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 agent-core = { path = ".", features = ["test-util"] }
