@@ -12,7 +12,7 @@ use async_openai::types::chat::{
 
 /// Maps ARIA's conversation onto the provider's streaming request: roles, the current input's
 /// system part, no replayed system entries, no tools, and a usage summary.
-fn map_conversation_to_request(
+pub(crate) fn map_conversation_to_request(
     history: &[ConversationPart],
     input: &[ConversationPart],
     model_name: &str,

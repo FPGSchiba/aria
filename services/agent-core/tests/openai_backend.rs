@@ -608,6 +608,31 @@ async fn a_content_filter_finish_with_no_text_errors_carrying_the_reason() {
 }
 
 #[tokio::test]
+async fn a_content_filter_finish_after_text_is_still_an_error_carrying_the_reason() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(script(vec![
+        Step::data(role_chunk()),
+        Step::data(text_delta_chunk("started")),
+        Step::data(finish_chunk("content_filter")),
+        Step::data(usage_chunk(2, 1)),
+        Step::done(),
+    ]));
+    let backend = backend_for(&provider, "5s", 0);
+
+    let run = run(&backend).await;
+
+    assert_eq!(run.texts(), vec!["started"]);
+    assert!(
+        matches!(
+            run.cause(),
+            CompletionError::GenerationFailed(GenerationFailure::ContentFilter)
+        ),
+        "{:?}",
+        run.cause()
+    );
+}
+
+#[tokio::test]
 async fn a_length_finish_with_no_text_errors_carrying_the_reason() {
     let provider = FakeProvider::start().await.expect("provider");
     provider.enqueue(script(vec![
