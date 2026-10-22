@@ -3,6 +3,7 @@
 
 use async_openai::error::OpenAIError;
 use async_openai::middleware::HttpRequestFactory;
+use async_openai::middleware::retry::should_retry;
 use reqwest::Response;
 use std::time::Duration;
 use tokio::time::Sleep;
@@ -14,6 +15,10 @@ pub(crate) const BACKOFF_BASE: Duration = Duration::from_millis(100);
 /// The longest `Retry-After` the policy will wait out. Honouring a longer wait would let the idle
 /// timeout end the turn first, which would then be reported as a timeout instead of a rate limit.
 const RETRY_AFTER_CAP: Duration = Duration::from_secs(10);
+
+/// The ceiling of the computed backoff. It bounds the exponential growth, so a high attempt count
+/// cannot produce an unbounded wait.
+const MAX_BACKOFF: Duration = Duration::from_secs(30);
 
 /// The C3 retry policy: retries 429, 5xx and connect errors (async-openai's `should_retry`
 /// classification) up to the configured max with jittered exponential backoff. Honours a
@@ -38,21 +43,76 @@ impl RetryPolicy {
     }
 }
 
+/// What the provider's `Retry-After` asks of the policy.
+enum Wait {
+    /// No header: use the computed backoff.
+    Backoff,
+    /// A number of seconds within the cap: wait exactly that long.
+    Exactly(Duration),
+    /// A header that is not a number of seconds (such as an HTTP date) or asks for more than the
+    /// cap: stop retrying.
+    GiveUp,
+}
+
+fn retry_after(response: &Response) -> Wait {
+    match response.headers().get(reqwest::header::RETRY_AFTER) {
+        None => Wait::Backoff,
+        Some(value) => match value
+            .to_str()
+            .ok()
+            .and_then(|s| s.parse::<u64>().ok())
+            .map(Duration::from_secs)
+        {
+            Some(wait) if wait <= RETRY_AFTER_CAP => Wait::Exactly(wait),
+            _ => Wait::GiveUp,
+        },
+    }
+}
+
+impl RetryPolicy {
+    /// The wait before the next retry: `backoff_base * 2^attempts`, capped at `MAX_BACKOFF`, with
+    /// "equal jitter" (a random value between half of it and all of it), so retries across pods
+    /// do not run in lockstep. Saturating, so no attempt count can overflow.
+    fn backoff(&self) -> Duration {
+        let factor = 1u32
+            .checked_shl(u32::from(self.attempts))
+            .unwrap_or(u32::MAX);
+        let nominal = self.backoff_base.saturating_mul(factor).min(MAX_BACKOFF);
+        if nominal.is_zero() {
+            return nominal;
+        }
+        rand::random_range(nominal / 2..=nominal)
+    }
+}
+
 impl Policy<HttpRequestFactory, Response, OpenAIError> for RetryPolicy {
     type Future = Sleep;
 
     /// `Some(sleep)` retries the request after the sleep; `None` stops and returns `result` as is.
     fn retry(
         &mut self,
-        req: &mut HttpRequestFactory,
+        _req: &mut HttpRequestFactory,
         result: &mut Result<Response, OpenAIError>,
     ) -> Option<Self::Future> {
-        todo!()
+        if !should_retry(result) || self.attempts >= self.max_retries {
+            return None;
+        }
+        let wait = match result {
+            Ok(response) => match retry_after(response) {
+                Wait::GiveUp => return None,
+                Wait::Exactly(wait) => wait,
+                Wait::Backoff => self.backoff(),
+            },
+            // `should_retry` lets only connect errors through, so this is one.
+            Err(_) => self.backoff(),
+        };
+        self.attempts += 1;
+        Some(tokio::time::sleep(wait))
     }
 
     /// Clones the request for a possible retry; `None` means it cannot be replayed, so no retry.
     fn clone_request(&mut self, req: &HttpRequestFactory) -> Option<HttpRequestFactory> {
-        todo!()
+        Some(req.clone())
     }
 }
 
