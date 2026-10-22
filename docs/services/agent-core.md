@@ -70,13 +70,47 @@ skeleton does until the named story replaces it.
   the commit but before turn-complete has its exchange stored without having seen turn-complete.
   A failed commit ends the stream with `INTERNAL` in place of turn-complete. *Revisit with:* D61's
   turn log, which is where a turn status such as "interrupted" belongs.
-- **The binary serves an `echo` backend.** It streams the user's text back and is not a product
-  backend; startup logs which backend is serving. *Replaced by:* ARIA-143 (hosted backend, D85).
+- ~~**The binary serves an `echo` backend.**~~ Replaced by ARIA-143: the binary now serves the hosted
+  backend (below), and `echo` is gone.
 - **Spans are exported only when an OTLP endpoint is configured** (`OTEL_EXPORTER_OTLP_ENDPOINT`).
   Without one, no exporter is created and logs still go to stdout. `RUST_LOG` filters stdout only, so
   a quiet log level never thins exported spans. Export has its own fixed filter: this service at
   `debug`, dependencies at `warn`. *Replaced by:* the in-cluster collector (D82), at which point the
   endpoint is always set.
+
+## Interim behaviour from ARIA-143 (2026-10-22)
+
+The binary serves the **hosted backend** ([D85](../decisions/0018-hosted-llm-backend.md)): an
+OpenAI-compatible Chat Completions client (`openai` in logs and code, named for the protocol, not the
+provider) pointed at Cerebras by default. Startup logs the backend, model and host, never the key. A
+missing key or an invalid setting stops the binary at startup with the variable named. None of the
+following is an architecture decision.
+
+- **Retries.** A 429, a 5xx or a connection failure is retried on the same provider, up to
+  `ARIA_LLM_MAX_RETRIES` times, with exponential backoff and jitter. A provider `Retry-After` of up to
+  10 s is honoured exactly; a longer one, or one given as a date, ends retrying at once and the 429 is
+  reported as is. Nothing is retried once a reply has started streaming. This is not D35's failover,
+  which will sit above it.
+- **Idle timeout.** A turn fails as a timeout when the provider sends nothing for
+  `ARIA_LLM_IDLE_TIMEOUT`, counted from the request (opening and its retries share the first window)
+  and restarted by every event, reasoning included. A long reply that keeps streaming never trips it.
+- **How a reply can end.** A normal finish commits the turn. A reply cut short by the length limit
+  after some text ends cleanly; with no text it is an error. A content-filter finish is **always** an
+  error, because part of the answer was withheld. A tool call is an error until tool calling lands
+  (ARIA-61). A stream that ends without a finish reason is treated as cut off, an error, never a
+  complete reply.
+- **Conversation mapping.** History goes first, then the new input. Stored system entries are not
+  replayed; whether they ever are is open (below). The current date and time are not injected yet
+  (ARIA-222).
+- **Availability is observed, not probed.** The backend records whether the provider was reachable
+  from real turns, once per turn after retries: any answer from the provider, even a 400, means
+  available; a rejected key, a rate limit, payment required, a 5xx, a timeout, an unreachable host or
+  a broken stream means unavailable, with that reason. A cancelled turn changes nothing. Each change
+  is logged once. It starts as unknown until the first turn.
+- **Spans.** Each provider call has a `chat {model}` span under the `Decide` span, covering the whole
+  stream, with a first-text event and an `error.type` on failure; each HTTP attempt, retries included,
+  is a child span. No message content and no key is recorded. Whether `traceparent` is sent to the
+  provider is still open; it is not sent.
 
 **Running it (interim values, not settled):**
 
@@ -86,6 +120,11 @@ skeleton does until the named story replaces it.
 | Span export | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset, so export is off |
 | Stdout log level | `RUST_LOG` | `info` |
 | gRPC server reflection (v1 and v1alpha, for grpcurl/Postman) | `ARIA_AGENT_CORE_REFLECTION` | off. `true`/`1` turns it on; blank means off. |
+| Hosted backend API key | `ARIA_LLM_API_KEY` | **required**; no default. Held as a secret and never logged. |
+| Hosted backend base URL (including `/v1`) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
+| Hosted model | `ARIA_LLM_MODEL` | `qwen-3.8-27b` |
+| Idle timeout (a duration such as `30s`; zero is rejected) | `ARIA_LLM_IDLE_TIMEOUT` | `30s` |
+| Retries per request (`0` turns retrying off) | `ARIA_LLM_MAX_RETRIES` | `3` |
 
 **Health (`grpc.health.v1`, same port):**
 
@@ -94,7 +133,12 @@ skeleton does until the named story replaces it.
 | `""` (the server overall) | the process is up and shutdown has not begun | **liveness** |
 | `aria.agent_core.v1.AgentCore` | the history store **and** the backend both report healthy, and shutdown has not begun | **readiness** |
 | `aria.agent_core.v1.AgentCore.history` | the history store reports healthy, and shutdown has not begun | none; for diagnosis |
-| `aria.agent_core.v1.AgentCore.backend` | the backend reports healthy, and shutdown has not begun | none; for diagnosis |
+| `aria.agent_core.v1.AgentCore.backend` | the provider was last observed **available**; `NOT_SERVING` once observed unavailable (the log names the reason) or once shutdown begins; `UNKNOWN` until the first turn | none; for diagnosis |
+
+**Changed by ARIA-143:** the backend entry used to follow the backend's configured health, like
+readiness. It now reports the provider's **observed availability**, including the `UNKNOWN` state.
+Readiness still uses the configured state only, so a provider outage or a wrong key does **not** make
+pods unready: turns fail with `INTERNAL`, and the backend entry and the span say why.
 
 `List` (from the current upstream `health.proto`, vendored in the `proto` crate) returns all four
 statuses in one call. The store and the backend each publish their own health. The health service only listens, and never
@@ -106,6 +150,15 @@ backup (for later failover, D35) still counts as healthy; the flag is only logge
 a backend outage makes every pod unready at once, so callers see "no endpoints" rather than a
 `Decide` error naming the backend. *Revisit if* that proves worse in practice than serving and
 failing turns.
+
+**Calling the real provider (manual, key-gated):** one test calls Cerebras for real, to show the
+first chunk arrives before the reply ends. It is ignored by the CI gate and fails, rather than
+skipping, when the key is missing:
+
+```
+ARIA_LLM_API_KEY=<key> cargo test -p agent-core --features test-util \
+    --test openai_live -- --ignored --nocapture
+```
 
 **Version:** every response carries an `x-aria-version` header with the build version. The
 startup log and the OTel `service.version` attribute carry it too. CI images carry the git SHA, passed as the
@@ -166,6 +219,13 @@ See [the Decision Log](../decisions/README.md) for the full reasoning and reject
 - Who cancels an in-flight `Decide` on barge-in ([needs-decision](../open-questions/needs-decision.md#surfaced-by-aria-131-2026-10-06))
 - Where D49's conversation type lives once it crosses a service boundary (same section)
 - Whether stored system entries are replayed to the backend; a direction is agreed but not decided (same section)
+- Date, time and time zone injection into every request (ARIA-222)
+- **Recovery once failover routes away on availability.** Today availability recovers passively,
+  because readiness ignores it and real turns keep arriving. Once D35's failover sends turns
+  elsewhere while the hosted backend is unavailable, no turn arrives to observe recovery, so an
+  active check is needed while unavailable (lazy while available, active while unavailable). Belongs
+  with D35's failover.
+- Whether `traceparent` rides the hosted call (not sent today)
 
 ## Jira stories
 
@@ -173,4 +233,4 @@ ARIA-40, 48, 50, 53, 54, 56, 58, 61, 63, 109, 131, 143
 
 ---
 
-*Derived from `03-architecture.md` and the Decision Log. Last updated 2026-10-06.*
+*Derived from `03-architecture.md` and the Decision Log. Last updated 2026-10-22.*

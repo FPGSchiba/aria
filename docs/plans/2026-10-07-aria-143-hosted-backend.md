@@ -221,7 +221,7 @@ None block this plan. Carried, not decided here:
 
 ### C1 — Hosted backend configuration
 
-status: pending
+status: done
 
 **Responsibility.** Read and validate the hosted backend's settings from the environment, following
 the existing configuration module's lookup pattern, so the binary either has a complete, valid
@@ -242,7 +242,7 @@ timeout is rejected. Debug-formatting a configuration does not contain the key's
 
 ### C2 — Controllable fake provider
 
-status: pending
+status: done
 
 **Responsibility.** A test fixture, behind `test-util`, that speaks enough of the Chat Completions
 streaming endpoint for the backend to be exercised without a network: scripted SSE events with
@@ -262,7 +262,7 @@ two-event stream is received by a plain HTTP client in order, with the delay obs
 
 ### C3 — Retry policy
 
-status: pending
+status: done
 depends-on: 1
 
 **Responsibility.** Decide, for each failed attempt, whether the client tries again and after how
@@ -283,7 +283,7 @@ are not retried. A retry count of zero makes exactly one request.
 
 ### C4 — Hosted backend streaming
 
-status: pending
+status: done
 depends-on: 1, 2, 3
 
 **Responsibility.** The backend itself (ARIA-145): turn history and input into a streaming Chat
@@ -314,7 +314,7 @@ connection.
 
 ### C5 — Provider availability in backend health
 
-status: pending
+status: done
 depends-on: 4
 
 **Responsibility.** Extend the backend's health with observed provider availability, and change the
@@ -339,7 +339,7 @@ Shutdown makes the backend entry not serving, whatever availability was.
 
 ### C6 — Spans around the provider call
 
-status: pending
+status: done
 depends-on: 4
 
 **Responsibility.** Instrument the backend call (ARIA-150) per the GenAI semantic conventions: one
@@ -363,7 +363,7 @@ or the key.
 
 ### C7 — Serve the hosted backend from the binary
 
-status: pending
+status: done
 depends-on: 1, 4, 5, 6
 
 **Responsibility.** Wire the configuration and the hosted backend into the binary in place of `echo`,
@@ -403,7 +403,7 @@ recorded in the PR.
 
 ### C9 — Agent Core page and surfaces
 
-status: pending
+status: done
 kind: chore
 depends-on: 5, 7
 
@@ -516,3 +516,32 @@ and C7 implement.
   call: it mirrors the variable `ARIA_LLM_API_KEY`).
 - Secrets rule gap found outside this story: `crates/identity` reads the private key file into a
   plain `String`. Left for whoever next touches it (likely ARIA-181), per the rule.
+- **Phase 4 delegation (2026-10-22).** Jann wrote C1, request mapping, the C3 structure and `build()`.
+  At Jann's request the code-agent finished the C3 details (three-way `Retry-After`, overflow-safe
+  jittered backoff), wrote both layer `call` bodies, completed `stream_conversation`'s error
+  mapping, availability and spans on top of Jann's loop, and wrote C5 and C7.
+- **C3 backoff:** the first retry waits the base, doubling after; equal jitter (half to full
+  nominal); bounded by `MAX_BACKOFF` (30 s), which only matters at a high `max_retries`. A
+  `Retry-After` that is present but unparsable gives up, like one above the cap; only a missing
+  header falls back to backoff. Whether a timeout while *opening* is retried is not pinned: the
+  idle window covers opening and its retries together, so it ends as a timeout either way.
+- **Status capture keeps no raw body.** A non-2xx body is parsed (wrapped or flat form) for message
+  and string code only; a non-JSON body falls back to the status text, so a provider's HTML error
+  page never reaches a log. Attempt spans are `http_attempt` with `http.response.status_code` or
+  `error.type` (`connect_error` / `request_error`).
+- **C4 ending rules (Jann's call on content filter):** `stop` is a clean end; `length` after text is
+  a clean (shortened) end, `length` with no text is `GenerationFailed(LengthLimit)`; a
+  `content_filter` finish is **always** `GenerationFailed(ContentFilter)`, even after text, because
+  part of the answer was withheld. Tool-call deltas or a tool-call finish are `UnexpectedToolCall`.
+  A timeout after `stop` counts as complete. Empty text deltas are skipped.
+- **Availability is published once per turn**, at its real end (completed reply → available; error
+  → the classification), not on the first event, so a turn the client cancels leaves it unchanged.
+- **The call span opens on the stream's first poll**, not in `stream_conversation`, because the
+  service calls `stream_conversation` outside the `Decide` span but polls inside it. Span name
+  `chat` with `otel.name` = `chat {model}`; `gen_ai.provider.name` = `openai` (the protocol) and
+  `server.address` = the configured host; `gen_ai.response.finish_reasons` is a lowercase string,
+  since `tracing` cannot record arrays.
+- **A mid-stream provider error is recognised by its error-object shape** (wrapped or flat); the
+  real Cerebras shape is unverified until the C8 live run. A non-error unreadable event stays
+  attached as the `StreamError` cause, so a full error chain can contain reply text (accepted,
+  Jann's call: log handling stays controllable for data regulation).
