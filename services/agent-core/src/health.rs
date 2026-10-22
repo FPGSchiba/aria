@@ -289,10 +289,22 @@ impl MonitorState {
         let backend = self.backend.borrow_and_update().clone();
         let history = self.history.borrow_and_update().clone();
 
-        if self.last_backend.as_ref() != Some(&backend) {
+        // The configured part and the observed host status are logged on their own, so a change
+        // of one does not repeat a line about the other.
+        let observed_only = |health: &BackendHealth| health.with_host_status(HostStatus::Unknown);
+        if self
+            .last_backend
+            .as_ref()
+            .is_none_or(|last| observed_only(last) != observed_only(&backend))
+        {
             log_backend(&backend);
-            self.last_backend = Some(backend.clone());
         }
+        if let Some(last) = &self.last_backend
+            && last.host_status() != backend.host_status()
+        {
+            log_host_status(&backend);
+        }
+        self.last_backend = Some(backend.clone());
         if self.last_history.as_ref() != Some(&history) {
             log_history(&history);
             self.last_history = Some(history.clone());
@@ -303,13 +315,17 @@ impl MonitorState {
             tracing::info!(serving, shutting_down, "agent core health status changed");
             self.last_serving = Some(serving);
         }
-        // Each dependency's own status reflects only its `healthy`; every status is not-serving
-        // at shutdown.
+        // The history entry reflects its `healthy`; the backend entry reflects what was observed of
+        // the provider. Every status is not-serving at shutdown.
         self.published.send_replace(Statuses {
             overall: status(!shutting_down),
             agent_core: status(serving),
             history: status(history.is_healthy() && !shutting_down),
-            backend: status(backend.is_healthy() && !shutting_down),
+            backend: if shutting_down {
+                ServingStatus::NotServing
+            } else {
+                host_serving_status(backend.host_status())
+            },
         });
         shutting_down
     }
@@ -349,6 +365,16 @@ fn status(serving: bool) -> ServingStatus {
     }
 }
 
+/// The backend entry's status for the observed provider: available serves, unavailable does not,
+/// and a provider not yet observed is unknown.
+fn host_serving_status(host_status: &HostStatus) -> ServingStatus {
+    match host_status {
+        HostStatus::Available => ServingStatus::Serving,
+        HostStatus::Unavailable(_) => ServingStatus::NotServing,
+        HostStatus::Unknown => ServingStatus::Unknown,
+    }
+}
+
 fn response(status: ServingStatus) -> HealthCheckResponse {
     HealthCheckResponse {
         status: status.into(),
@@ -368,6 +394,24 @@ fn log_backend(health: &BackendHealth) {
             is_backup = health.is_backup(),
             "backend is unhealthy"
         );
+    }
+}
+
+/// Logs a change of the observed provider availability, naming its kind when unavailable.
+fn log_host_status(health: &BackendHealth) {
+    match health.host_status() {
+        HostStatus::Unavailable(reason) => tracing::warn!(
+            service = health.service(),
+            reason = ?reason,
+            "provider is unavailable"
+        ),
+        HostStatus::Available => {
+            tracing::info!(service = health.service(), "provider is available")
+        }
+        HostStatus::Unknown => tracing::info!(
+            service = health.service(),
+            "provider availability is unknown"
+        ),
     }
 }
 

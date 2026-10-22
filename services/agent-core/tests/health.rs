@@ -803,16 +803,35 @@ async fn readiness_follows_the_configured_flag_whatever_availability_says() {
 #[tokio::test]
 async fn shutdown_makes_the_backend_entry_not_serving_whatever_availability_was() {
     for status in [HostStatus::Unknown, HostStatus::Available, timed_out()] {
+        // The server is not told to stop here, so the entry can be read once shutdown is reported;
+        // a status that is already not-serving gets no further watch item.
         let backend = ScriptedBackend::new(vec![]);
-        let harness = serve(backend.clone(), ToggleStore::new()).await;
-        let mut health = HealthClient::new(harness.channel.clone());
+        let store = ToggleStore::new();
+        let (monitor, health_server) =
+            health::start(backend.subscribe_health(), store.subscribe_health()).await;
+        let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+        let addr = listener.local_addr().expect("local addr");
+        tokio::spawn(async move {
+            Server::builder()
+                .add_service(health_server)
+                .serve_with_incoming(TcpListenerStream::new(listener))
+                .await
+                .expect("server");
+        });
+        let channel = Channel::from_shared(format!("http://{addr}"))
+            .expect("uri")
+            .connect()
+            .await
+            .expect("connect");
+        let mut health = HealthClient::new(channel);
         backend.set_host_status(status.clone());
-        let (mut backend_status, _) = watch_status(&mut health, BACKEND_SERVICE_NAME).await;
 
-        harness.shutdown.send(()).expect("server is running");
+        timeout(LIMIT, monitor.begin_shutdown())
+            .await
+            .expect("begin_shutdown timed out");
 
         assert_eq!(
-            next_status(&mut backend_status).await,
+            check(&mut health, BACKEND_SERVICE_NAME).await,
             ServingStatus::NotServing,
             "{status:?}"
         );
