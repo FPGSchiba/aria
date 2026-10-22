@@ -853,6 +853,20 @@ async fn the_request_streams_and_asks_for_a_usage_summary() {
 }
 
 #[tokio::test]
+async fn stream_options_carry_only_the_usage_flag_because_cerebras_rejects_obfuscation() {
+    let request = recorded_after_one_reply(Vec::new(), user("hi")).await;
+
+    let options = request.body["stream_options"]
+        .as_object()
+        .expect("stream_options is an object");
+    assert_eq!(options.get("include_usage"), Some(&true.into()));
+    assert!(
+        !options.contains_key("include_obfuscation"),
+        "include_obfuscation must be omitted, not sent as null or false: {options:?}"
+    );
+}
+
+#[tokio::test]
 async fn the_request_sends_no_tools() {
     let request = recorded_after_one_reply(Vec::new(), user("hi")).await;
 

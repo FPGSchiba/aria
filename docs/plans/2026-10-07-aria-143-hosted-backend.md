@@ -545,3 +545,9 @@ and C7 implement.
   real Cerebras shape is unverified until the C8 live run. A non-error unreadable event stays
   attached as the `StreamError` cause, so a full error chain can contain reply text (accepted,
   Jann's call: log handling stays controllable for data regulation).
+- **First live run (2026-10-22) found a fake-versus-real gap: Cerebras rejects
+  `stream_options.include_obfuscation`** with `400 wrong_api_format` ("property is unsupported"). The
+  request now leaves it unset, so it is omitted from the JSON; a test pins that the request carries
+  only `include_usage`. The run also confirmed, against the real provider, that the flat 4xx body
+  survives status capture with its status and code, that a 400 is not retried, and that it counts as
+  the provider being available.

@@ -30,7 +30,8 @@ pub(crate) fn map_conversation_to_request(
         stream: Some(true),
         stream_options: Some(ChatCompletionStreamOptions {
             include_usage: Some(true),
-            include_obfuscation: Some(false),
+            // Left unset so it is omitted: Cerebras rejects the property with 400 wrong_api_format.
+            include_obfuscation: None,
         }),
         ..Default::default()
     }
@@ -211,6 +212,8 @@ mod tests {
         assert_eq!(request.stream, Some(true));
         let options = request.stream_options.expect("stream options are set");
         assert_eq!(options.include_usage, Some(true));
+        // Cerebras rejects the property, so it is left unset and never serialized.
+        assert_eq!(options.include_obfuscation, None);
     }
 
     #[test]
