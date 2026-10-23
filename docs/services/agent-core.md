@@ -104,12 +104,16 @@ following is an architecture decision.
   complete reply. Once a normal finish has arrived, anything that goes wrong afterwards (a stall, a
   dropped connection, an unreadable usage event) still commits the turn: the whole answer was
   already delivered.
-- **Base URL.** A trailing slash on `ARIA_LLM_BASE_URL` is removed, so `…/v1/` and `…/v1` are the
-  same.
+- **Base URL.** All trailing slashes on `ARIA_LLM_BASE_URL` are removed, so `…/v1/` and `…/v1` are
+  the same. A URL carrying a username or password is refused at startup, and no error message ever
+  prints URL credentials back.
 - **Provider error messages stay local.** A failed turn's log line and span carry the HTTP status,
   the provider's error code and the kind of failure, never the provider's message text, which some
   servers fill with the request's input. The message is logged once, cut to 200 characters, at
-  `debug` under its own target: visible on stdout when `RUST_LOG` enables debug, never exported.
+  `debug` under its own target, which the OTLP export drops. **This is a deliberate, narrow exception
+  to "conversation content never lands in a log line":** stdout is the cluster's log surface (D82), so
+  enabling `debug` for this service on a pod (`RUST_LOG=agent_core=debug`) puts up to 200 characters
+  of provider text into that pod's logs. It stays off by default (`RUST_LOG` defaults to `info`).
 - **Conversation mapping.** History goes first, then the new input. Stored system entries are not
   replayed; whether they ever are is open (below). The current date and time are not injected yet
   (ARIA-222).
@@ -133,7 +137,7 @@ following is an architecture decision.
 | Stdout log level | `RUST_LOG` | `info` |
 | gRPC server reflection (v1 and v1alpha, for grpcurl/Postman) | `ARIA_AGENT_CORE_REFLECTION` | off. `true`/`1` turns it on; blank means off. |
 | Hosted backend API key | `ARIA_LLM_API_KEY` | **required**; no default. Held as a secret and never logged. Surrounding whitespace, such as the trailing newline of a secret made from a file, is trimmed; a key that still cannot be sent as a header stops startup. |
-| Hosted backend base URL (including `/v1`; `http` or `https` with a host, no query or fragment; trailing slashes are dropped) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
+| Hosted backend base URL (including `/v1`; `http` or `https` with a host, no credentials, query or fragment; trailing slashes are dropped) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
 | Hosted model (surrounding whitespace is trimmed) | `ARIA_LLM_MODEL` | `qwen-3.8-27b` |
 | Idle timeout (a duration such as `30s`; zero and anything above `1h` are rejected) | `ARIA_LLM_IDLE_TIMEOUT` | `30s` |
 | Retries per request (`0` turns retrying off) | `ARIA_LLM_MAX_RETRIES` | `3` |

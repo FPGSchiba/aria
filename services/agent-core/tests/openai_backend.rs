@@ -446,13 +446,8 @@ async fn a_401_surfaces_as_a_rejected_key_with_the_provider_code() {
     let run = run(&backend).await;
 
     match run.cause() {
-        CompletionError::HttpError {
-            status,
-            message,
-            code,
-        } => {
+        CompletionError::HttpError { status, code } => {
             assert_eq!(*status, reqwest::StatusCode::UNAUTHORIZED);
-            assert_eq!(message, "Wrong API Key");
             assert_eq!(code.as_deref(), Some("wrong_api_key"));
         }
         other => panic!("expected an HTTP error, got {other:?}"),

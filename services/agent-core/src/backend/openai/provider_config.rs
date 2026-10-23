@@ -1,8 +1,8 @@
 //! The client configuration for the provider: exactly what `ARIA_LLM_*` says and nothing from the
 //! environment. async-openai's own `OpenAIConfig` reads `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`,
 //! `OPENAI_BASE_URL`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID`, which would send organisation and
-//! project headers to the provider. This one implements the crate's `Config` trait instead, and
-//! holds the `Authorization` header already built and checked by the configuration.
+//! project headers to the provider. This one implements async-openai's `Config` trait instead, and
+//! holds the `Authorization` header already built and checked by `crate::config::Config`.
 
 use async_openai::config::Config;
 use reqwest::header::{AUTHORIZATION, HeaderMap, HeaderValue};
@@ -18,7 +18,8 @@ pub(crate) struct ProviderConfig {
 
 impl ProviderConfig {
     /// A configuration for `api_base` (no trailing slash). `authorization` is the header
-    /// `Config` built from the key and already checked, so nothing here can fail or panic.
+    /// `crate::config::Config` built from the key and already checked, so nothing here can fail
+    /// or panic.
     pub(crate) fn new(
         api_base: impl Into<String>,
         api_key: SecretString,
@@ -33,7 +34,7 @@ impl ProviderConfig {
 }
 
 impl Config for ProviderConfig {
-    /// Only the `Authorization` header, the sensitive value `Config` built.
+    /// Only the `Authorization` header, the sensitive value `crate::config::Config` built.
     fn headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(AUTHORIZATION, self.authorization.clone());

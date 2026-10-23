@@ -71,7 +71,8 @@ where
 
 /// Builds the HTTP error for a non-2xx answer from its body: Cerebras's flat
 /// `{"message","type","param","code"}`, OpenAI's wrapped `{"error": {..}}`, or anything else (then
-/// the message is the status text and there is no code).
+/// there is no code). The error carries status and code only: the provider's message is logged
+/// once, here, at debug level, and goes no further.
 fn http_error(status: StatusCode, body: &str) -> CompletionError {
     let parsed = parse_error_object(body);
     if let Some(message) = parsed.as_ref().and_then(|object| object.message.as_deref()) {
@@ -83,15 +84,6 @@ fn http_error(status: StatusCode, body: &str) -> CompletionError {
     }
     CompletionError::HttpError {
         status,
-        message: parsed
-            .as_ref()
-            .and_then(|object| object.message.clone())
-            .unwrap_or_else(|| {
-                status
-                    .canonical_reason()
-                    .unwrap_or("unknown status")
-                    .to_string()
-            }),
         code: parsed.and_then(|object| object.code),
     }
 }
@@ -145,13 +137,8 @@ mod tests {
         let error = service.oneshot(factory()).await.expect_err("a non-2xx");
 
         match completion_error(error) {
-            CompletionError::HttpError {
-                status,
-                message,
-                code,
-            } => {
+            CompletionError::HttpError { status, code } => {
                 assert_eq!(status, reqwest::StatusCode::UNAUTHORIZED);
-                assert_eq!(message, "Wrong API Key");
                 assert_eq!(code.as_deref(), Some("wrong_api_key"));
             }
             other => panic!("expected an HTTP error, got {other:?}"),
@@ -206,5 +193,97 @@ mod tests {
                 other => panic!("expected an HTTP error for {body:?}, got {other:?}"),
             }
         }
+    }
+
+    /// What `http_error` logs for `body`, at debug level, and the error it returns.
+    fn logged_http_error(status: StatusCode, body: &str) -> (String, CompletionError) {
+        use std::sync::{Arc, Mutex};
+        #[derive(Clone, Default)]
+        struct Buffer(Arc<Mutex<Vec<u8>>>);
+        impl std::io::Write for Buffer {
+            fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+                self.0.lock().expect("buffer").extend_from_slice(bytes);
+                Ok(bytes.len())
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        impl<'a> tracing_subscriber::fmt::MakeWriter<'a> for Buffer {
+            type Writer = Buffer;
+            fn make_writer(&'a self) -> Buffer {
+                self.clone()
+            }
+        }
+        let buffer = Buffer::default();
+        let subscriber = tracing_subscriber::fmt()
+            .with_writer(buffer.clone())
+            .with_ansi(false)
+            .with_max_level(tracing::Level::DEBUG)
+            .finish();
+        let error = tracing::subscriber::with_default(subscriber, || http_error(status, body));
+        let output = String::from_utf8_lossy(&buffer.0.lock().expect("buffer")).into_owned();
+        (output, error)
+    }
+
+    #[test]
+    fn the_parsed_message_is_logged_once_at_debug_and_the_error_has_only_status_and_code() {
+        let body = flat_error_body(
+            "Wrong API Key",
+            "invalid_request_error",
+            None,
+            "wrong_api_key",
+        );
+
+        let (log, error) = logged_http_error(reqwest::StatusCode::UNAUTHORIZED, &body);
+
+        assert_eq!(log.lines().count(), 1, "{log}");
+        assert!(log.contains("DEBUG"), "{log}");
+        assert!(log.contains("agent_core::provider_message"), "{log}");
+        assert!(log.contains("Wrong API Key"), "{log}");
+        assert!(log.contains("wrong_api_key"), "{log}");
+        assert!(log.contains("401"), "{log}");
+        assert!(!error.to_string().contains("Wrong API Key"), "{error}");
+        assert!(!format!("{error:?}").contains("Wrong API Key"), "{error:?}");
+    }
+
+    #[test]
+    fn the_wrapped_form_is_parsed_and_logged_too() {
+        let body = r#"{"error":{"message":"wrapped message","code":"wrapped_code"}}"#;
+
+        let (log, error) = logged_http_error(reqwest::StatusCode::BAD_REQUEST, body);
+
+        assert!(log.contains("wrapped message"), "{log}");
+        assert!(matches!(
+            error,
+            CompletionError::HttpError { code: Some(ref code), .. } if code == "wrapped_code"
+        ));
+    }
+
+    #[test]
+    fn a_body_without_a_message_logs_nothing_and_keeps_status_and_any_code() {
+        let (log, error) = logged_http_error(
+            reqwest::StatusCode::BAD_GATEWAY,
+            r#"{"code":"only_a_code"}"#,
+        );
+
+        assert_eq!(log, "");
+        assert!(matches!(
+            error,
+            CompletionError::HttpError { status, code: Some(ref code) }
+                if status == reqwest::StatusCode::BAD_GATEWAY && code == "only_a_code"
+        ));
+    }
+
+    #[test]
+    fn a_body_that_is_not_json_logs_nothing_and_has_no_code() {
+        let (log, error) =
+            logged_http_error(reqwest::StatusCode::BAD_GATEWAY, "<html>bad gateway</html>");
+
+        assert_eq!(log, "");
+        assert!(matches!(
+            error,
+            CompletionError::HttpError { code: None, .. }
+        ));
     }
 }

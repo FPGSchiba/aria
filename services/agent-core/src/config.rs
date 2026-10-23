@@ -110,9 +110,17 @@ fn trimmed_key(key: SecretString) -> SecretString {
 }
 
 /// The `Authorization` header for `key`, marked sensitive, or the error naming the variable if the
-/// key cannot form one (the value is not part of the error).
+/// key cannot form one (the value is not part of the error). The text `Bearer <key>` is built in
+/// a buffer of exactly the needed size, so it never reallocates and leaves no unzeroed copy
+/// behind, and the buffer is zeroed when it drops. The copy inside the returned header is the
+/// header itself.
 fn authorization_header(key: &SecretString) -> Result<HeaderValue, ConfigError> {
-    let bearer = Zeroizing::new(format!("Bearer {}", key.expose_secret()));
+    const SCHEME: &str = "Bearer ";
+    let mut bearer = Zeroizing::new(String::with_capacity(
+        SCHEME.len() + key.expose_secret().len(),
+    ));
+    bearer.push_str(SCHEME);
+    bearer.push_str(key.expose_secret());
     let mut value = HeaderValue::from_str(&bearer).map_err(|_| ConfigError::InvalidSecret {
         variable: ARIA_LLM_API_KEY_VAR,
     })?;
@@ -120,13 +128,14 @@ fn authorization_header(key: &SecretString) -> Result<HeaderValue, ConfigError> 
     Ok(value)
 }
 
-/// Parses the base URL: http or https, with a host, and without a query or a fragment (the
-/// backend appends its route to it). `localhost:11434/v1` parses with "localhost" as its scheme,
-/// which the scheme check catches.
+/// Parses the base URL: http or https, with a host, without credentials, and without a query or
+/// a fragment (the backend appends its route to it). `localhost:11434/v1` parses with "localhost"
+/// as its scheme, which the scheme check catches. The value an error prints back never carries
+/// credentials: see [`redacted`].
 fn parse_base_url(value: &str) -> Result<Url, ConfigError> {
     let invalid = |reason: String| ConfigError::InvalidUrl {
         variable: ARIA_LLM_BASE_URL_VAR,
-        value: value.to_string(),
+        value: redacted(value),
         reason,
     };
     let url = Url::parse(value).map_err(|e| invalid(e.to_string()))?;
@@ -139,12 +148,32 @@ fn parse_base_url(value: &str) -> Result<Url, ConfigError> {
     if url.host_str().is_none() {
         return Err(invalid("it needs a host".to_string()));
     }
+    if !url.username().is_empty() || url.password().is_some() {
+        return Err(invalid("it must not contain credentials".to_string()));
+    }
     if url.query().is_some() || url.fragment().is_some() {
         return Err(invalid(
             "it must not have a query or a fragment".to_string(),
         ));
     }
     Ok(url)
+}
+
+/// `value` as an error may print it back: a URL that parses has its credentials replaced by
+/// `***`, and one that does not parse is printed only if it has no `@` (where credentials would
+/// be), else not at all.
+fn redacted(value: &str) -> String {
+    match Url::parse(value) {
+        Ok(mut url) => {
+            if !url.username().is_empty() || url.password().is_some() {
+                let _ = url.set_username("***");
+                let _ = url.set_password(None);
+            }
+            url.to_string()
+        }
+        Err(_) if value.contains('@') => "[redacted: may contain credentials]".to_string(),
+        Err(_) => value.to_string(),
+    }
 }
 
 /// Whether an environment value is empty or only whitespace.
@@ -307,16 +336,9 @@ impl Config {
         &self.llm_api_key
     }
 
-    /// The base URL for the OpenAI-compatible LLM backend, validated (http or https, with a host,
-    /// no query or fragment) and with trailing slashes dropped from its path. A bare host still
-    /// prints its root slash here; use [`Config::llm_base_url`] for the exact API base.
-    pub fn llm_url(&self) -> &Url {
-        &self.llm_url
-    }
-
-    /// The base URL as the client is given it: `llm_url` with the trailing slashes of its path
-    /// dropped, and the root slash of a bare host too (`http://localhost:11434`). A `Url` cannot
-    /// print an empty path, so this is the string to use as the API base.
+    /// The base URL for the OpenAI-compatible LLM backend as the client is given it: validated
+    /// (http or https, with a host, no credentials, query or fragment), with the trailing slashes
+    /// of its path dropped, and the root slash of a bare host too (`http://localhost:11434`).
     pub fn llm_base_url(&self) -> &str {
         &self.llm_base_url
     }
@@ -327,9 +349,13 @@ impl Config {
         &self.llm_authorization
     }
 
-    /// The host of the base URL, for logs and traces; "unknown" for a URL without one.
+    /// The host of the base URL, for logs and traces. An IPv6 address comes without its brackets
+    /// (`::1`), as OpenTelemetry's `server.address` wants it.
     pub fn llm_host(&self) -> &str {
-        self.llm_url.host_str().unwrap_or("unknown")
+        self.llm_url
+            .host_str()
+            .map(|host| host.trim_start_matches('[').trim_end_matches(']'))
+            .unwrap_or("unknown")
     }
 
     /// The port of the base URL, or the scheme's default (443 for https, 80 for http).
@@ -521,7 +547,7 @@ mod tests {
             Config::from_lookup(lookup_pairs(&[(ARIA_LLM_API_KEY_VAR, SECRET)])).expect("config");
 
         assert_eq!(config.llm_api_key().expose_secret(), SECRET);
-        assert_eq!(config.llm_url().as_str(), "https://api.cerebras.ai/v1");
+        assert_eq!(config.llm_base_url(), "https://api.cerebras.ai/v1");
         assert_eq!(config.llm_model(), "qwen-3.8-27b");
         assert_eq!(config.llm_idle_timeout(), Duration::from_secs(30));
         assert_eq!(config.llm_max_retries(), 3);
@@ -683,7 +709,7 @@ mod tests {
         ]))
         .expect("config");
 
-        assert_eq!(config.llm_url().as_str(), "https://llm.example.test/v2");
+        assert_eq!(config.llm_base_url(), "https://llm.example.test/v2");
         assert_eq!(config.llm_model(), "other-model");
         assert_eq!(config.llm_idle_timeout(), Duration::from_secs(45));
         assert_eq!(config.llm_max_retries(), 5);
@@ -711,7 +737,7 @@ mod tests {
         ]))
         .expect("config");
 
-        assert_eq!(config.llm_url().as_str(), "https://api.cerebras.ai/v1");
+        assert_eq!(config.llm_base_url(), "https://api.cerebras.ai/v1");
         assert_eq!(config.llm_model(), "qwen-3.8-27b");
         assert_eq!(config.llm_idle_timeout(), Duration::from_secs(30));
         assert_eq!(config.llm_max_retries(), 3);
@@ -837,10 +863,7 @@ mod tests {
                 _ => None,
             })
         };
-        Config::from_lookup(lookup)
-            .expect("config")
-            .llm_url()
-            .clone()
+        Config::from_lookup(lookup).expect("config").llm_url
     }
 
     #[test]
@@ -941,6 +964,110 @@ mod tests {
             assert!(message.contains("ARIA_LLM_BASE_URL"), "{message}");
             assert!(message.contains(bad), "{message}");
         }
+    }
+
+    /// The error for a raw base URL.
+    fn base_url_error(value: &'static str) -> ConfigError {
+        let lookup = move |name: &'static str| {
+            Ok(match name {
+                ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                ARIA_LLM_BASE_URL_VAR => Some(value.to_string()),
+                _ => None,
+            })
+        };
+        Config::from_lookup(lookup).expect_err(value)
+    }
+
+    #[test]
+    fn a_base_url_with_credentials_is_rejected() {
+        for bad in [
+            "https://user:pa55@llm.example.test/v1",
+            "https://user@llm.example.test/v1",
+            "https://:pa55@llm.example.test/v1",
+        ] {
+            let err = base_url_error(bad);
+
+            assert!(
+                matches!(err, ConfigError::InvalidUrl { .. }),
+                "{bad}: {err:?}"
+            );
+            assert!(err.to_string().contains("ARIA_LLM_BASE_URL"), "{err}");
+        }
+    }
+
+    #[test]
+    fn no_error_for_a_base_url_echoes_its_credentials() {
+        for bad in [
+            "https://user:pa55@llm.example.test/v1?x=1",
+            "https://user:pa55@llm.example.test/v1#frag",
+            "ftp://user:pa55@llm.example.test/v1",
+            "https://user:pa55@llm.example.test/v1",
+            // Not parseable at all: printed back as nothing rather than risk the credentials.
+            "https://user:pa55@[not-an-address/v1",
+        ] {
+            let err = base_url_error(bad);
+
+            let message = format!("{err} {err:?}");
+            assert!(message.contains("ARIA_LLM_BASE_URL"), "{bad}: {message}");
+            assert!(!message.contains("pa55"), "{bad}: {message}");
+            assert!(!message.contains("user"), "{bad}: {message}");
+        }
+    }
+
+    #[test]
+    fn a_url_with_credentials_is_printed_back_with_them_replaced() {
+        let message = base_url_error("https://user:pa55@llm.example.test/v1?x=1").to_string();
+
+        assert!(
+            message.contains("https://***@llm.example.test/v1?x=1"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn an_unparseable_value_without_an_at_sign_is_printed_back_as_given() {
+        let message = base_url_error("not a url").to_string();
+
+        assert!(message.contains("'not a url'"), "{message}");
+    }
+
+    #[test]
+    fn the_debug_output_of_a_configuration_holds_no_url_credentials() {
+        // Credentials in the URL are rejected, so a configuration that exists has none to print.
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_BASE_URL_VAR, "https://llm.example.test/v1"),
+        ]))
+        .expect("config");
+
+        let debug = format!("{config:?}");
+
+        assert!(!debug.contains('@'), "{debug}");
+    }
+
+    #[test]
+    fn an_ipv6_host_comes_without_brackets_for_logs_and_traces() {
+        let lookup = |name: &'static str| {
+            Ok(match name {
+                ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                ARIA_LLM_BASE_URL_VAR => Some("http://[::1]:8080/v1".to_string()),
+                _ => None,
+            })
+        };
+
+        let config = Config::from_lookup(lookup).expect("config");
+
+        assert_eq!(config.llm_host(), "::1");
+        assert_eq!(config.llm_port(), Some(8080));
+        assert_eq!(config.llm_base_url(), "http://[::1]:8080/v1");
+    }
+
+    #[test]
+    fn a_named_host_is_unchanged() {
+        let config =
+            Config::from_lookup(lookup_pairs(&[(ARIA_LLM_API_KEY_VAR, SECRET)])).expect("config");
+
+        assert_eq!(config.llm_host(), "api.cerebras.ai");
     }
 
     #[test]

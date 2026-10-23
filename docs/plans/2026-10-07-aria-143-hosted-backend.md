@@ -599,8 +599,10 @@ and C7 implement.
     fill with the offending input. Keeping it would breach the architecture rule that conversation
     content never lands in a span or log line (the rule D41 relied on and D82 kept). So it is no
     longer part of any error's display, span or exported log. It is logged once, truncated, at
-    `debug` under its own target, which the export filter drops: visible on a local stdout when
-    debugging, never exported.
+    `debug` under its own target, which the export filter drops. **This is a narrow exception to that
+    rule, made knowingly:** stdout is the cluster's log surface (D82), so enabling `debug` for the
+    service on a pod puts up to 200 characters of provider text into pod logs. It is off by default
+    (`info`), never exported, and bounded.
     - *Rejected:* dropping it entirely (loses what diagnosed the `include_obfuscation` failure);
       keeping it (would need a decision entry carving an exception into that rule).
   - **Configuration hardening:**
@@ -628,4 +630,11 @@ and C7 implement.
     - A Display test was inverted on purpose (the message must now be absent).
     - `ProviderConfig`'s "a bad key sends no header" test was removed, because the type now makes
       that case impossible: the header arrives already validated.
+- **Focused review of 5040c30 (2026-10-23): no bugs.** The last cleanup round:
+  - A base URL with userinfo is refused, and URL credentials are never echoed in config errors
+    (the secrets rule applied to URLs, as the Phase 2 Deviation anticipated).
+  - `HttpError` no longer carries the provider message.
+  - The provider-event Display test now runs the real path.
+  - The `Bearer` temporary is sized once, so only one buffer holds the key.
+  - `server.address` is a bare IP for IPv6.
 

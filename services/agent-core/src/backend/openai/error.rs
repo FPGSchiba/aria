@@ -31,15 +31,13 @@ pub enum CompletionError {
     /// Nothing arrived within the idle timeout, while opening (including retries) or mid-stream.
     #[error("request timed out")]
     Timeout,
-    /// The provider answered with a non-2xx status after retries. The display shows the status
-    /// and the provider's code but not its message, which is provider text and only goes to the
-    /// debug log (see [`log_provider_message`]).
+    /// The provider answered with a non-2xx status after retries. The provider's message is
+    /// provider text, so it is not part of this error: it goes to the debug log once, where the
+    /// answer is parsed (see [`log_provider_message`]).
     #[error("HTTP error: [http_code: {status}, code: {code:?}]")]
     HttpError {
         /// The HTTP status of the answer.
         status: reqwest::StatusCode,
-        /// The provider's error message. Not part of the display.
-        message: String,
         /// The provider's own error code (a stable string), if it sent one.
         code: Option<String>,
     },
@@ -224,7 +222,6 @@ mod tests {
     fn http(status: u16, code: Option<&str>) -> CompletionError {
         CompletionError::HttpError {
             status: StatusCode::from_u16(status).expect("a valid status"),
-            message: "provider message".to_string(),
             code: code.map(str::to_string),
         }
     }
@@ -565,19 +562,6 @@ mod tests {
     }
 
     #[test]
-    fn a_stream_error_from_a_provider_event_displays_no_provider_text() {
-        let error = CompletionError::StreamError {
-            description: "provider sent an error event".to_string(),
-            cause: None,
-            provider_code: Some("queue_overflow".to_string()),
-        };
-
-        let text = error.to_string();
-
-        assert!(text.contains("provider sent an error event"), "{text}");
-    }
-
-    #[test]
     fn a_short_message_is_logged_whole() {
         assert_eq!(truncated("short", 200), "short");
         assert_eq!(truncated("", 200), "");
@@ -663,5 +647,46 @@ mod tests {
             GenerationFailure::LengthLimit.to_string(),
             "Length limit reached"
         );
+    }
+
+    #[test]
+    fn a_flat_error_object_gives_its_message_and_code() {
+        let object = parse_error_object(
+            r#"{"message":"Wrong API Key","type":"invalid_request_error","param":"api_key","code":"wrong_api_key"}"#,
+        )
+        .expect("an object");
+
+        assert_eq!(object.message.as_deref(), Some("Wrong API Key"));
+        assert_eq!(object.code.as_deref(), Some("wrong_api_key"));
+    }
+
+    #[test]
+    fn a_wrapped_error_object_gives_its_message_and_code() {
+        let object =
+            parse_error_object(r#"{"error":{"message":"m","code":"c"}}"#).expect("an object");
+
+        assert_eq!(object.message.as_deref(), Some("m"));
+        assert_eq!(object.code.as_deref(), Some("c"));
+    }
+
+    #[test]
+    fn json_without_a_message_or_code_gives_an_object_with_neither() {
+        let object = parse_error_object(r#"{"id":"x"}"#).expect("json");
+
+        assert!(object.message.is_none() && object.code.is_none());
+    }
+
+    #[test]
+    fn a_numeric_code_is_not_a_code() {
+        let object = parse_error_object(r#"{"message":"m","code":429}"#).expect("json");
+
+        assert_eq!(object.message.as_deref(), Some("m"));
+        assert!(object.code.is_none());
+    }
+
+    #[test]
+    fn data_that_is_not_json_is_not_an_error_object() {
+        assert!(parse_error_object("<html>").is_none());
+        assert!(parse_error_object("").is_none());
     }
 }

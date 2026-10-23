@@ -409,6 +409,63 @@ mod tests {
         assert!(deadline > now + Duration::from_secs(365 * 24 * 60 * 60));
     }
 
+    /// The display of an error and of everything in its source chain.
+    fn rendered_chain(error: &(dyn std::error::Error + 'static)) -> String {
+        let mut text = error.to_string();
+        let mut source = error.source();
+        while let Some(cause) = source {
+            text.push_str(" <- ");
+            text.push_str(&cause.to_string());
+            source = cause.source();
+        }
+        text
+    }
+
+    #[test]
+    fn a_provider_error_event_becomes_a_stream_error_whose_text_has_no_provider_message() {
+        const SENTINEL: &str = "SENTINEL-EVENT-MESSAGE-6602";
+        let data = format!(r#"{{"error":{{"message":"{SENTINEL}","code":"queue_overflow"}}}}"#);
+        // The crate reports an error event as an event it could not read, with the raw data.
+        let unreadable = serde_json::from_str::<u8>(&data).expect_err("not a chunk");
+
+        let error = classify(OpenAIError::JSONDeserialize(unreadable, data), true);
+
+        match &error {
+            CompletionError::StreamError {
+                cause,
+                provider_code,
+                ..
+            } => {
+                assert!(
+                    cause.is_none(),
+                    "the raw event must not be kept as the cause"
+                );
+                assert_eq!(provider_code.as_deref(), Some("queue_overflow"));
+            }
+            other => panic!("expected a stream error, got {other:?}"),
+        }
+        let text = rendered_chain(&error);
+        assert!(!text.contains(SENTINEL), "{text}");
+        assert!(!text.contains("queue overflow"), "{text}");
+    }
+
+    #[test]
+    fn an_unreadable_event_that_is_not_an_error_object_keeps_no_provider_message() {
+        let data = r#"{"choices":"plain unreadable"}"#.to_string();
+        let unreadable = serde_json::from_str::<u8>(&data).expect_err("not a chunk");
+
+        let error = classify(OpenAIError::JSONDeserialize(unreadable, data), true);
+
+        assert!(matches!(
+            error,
+            CompletionError::StreamError {
+                cause: Some(_),
+                provider_code: None,
+                ..
+            }
+        ));
+    }
+
     #[test]
     fn a_normal_window_is_added_to_now() {
         let before = tokio::time::Instant::now();
