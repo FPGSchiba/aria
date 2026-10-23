@@ -106,12 +106,17 @@ following is an architecture decision.
   already delivered.
 - **Base URL.** A trailing slash on `ARIA_LLM_BASE_URL` is removed, so `…/v1/` and `…/v1` are the
   same.
+- **Provider error messages stay local.** A failed turn's log line and span carry the HTTP status,
+  the provider's error code and the kind of failure, never the provider's message text, which some
+  servers fill with the request's input. The message is logged once, cut to 200 characters, at
+  `debug` under its own target: visible on stdout when `RUST_LOG` enables debug, never exported.
 - **Conversation mapping.** History goes first, then the new input. Stored system entries are not
   replayed; whether they ever are is open (below). The current date and time are not injected yet
   (ARIA-222).
 - **Availability is observed, not probed.** The backend records whether the provider was reachable
   from real turns, once per turn after retries: any answer from the provider, even a 400, means
-  available; a rejected key, a rate limit, payment required, a 5xx, a timeout, an unreachable host or
+  available (the one exception is an answer that says nothing about serving, such as a redirect loop,
+  which changes nothing); a rejected key, a rate limit, payment required, a 5xx, a timeout, an unreachable host or
   a broken stream means unavailable, with that reason. A cancelled turn changes nothing. Each change
   is logged once. It starts as unknown until the first turn.
 - **Spans.** Each provider call has a `chat {model}` span under the `Decide` span, covering the whole
@@ -128,14 +133,15 @@ following is an architecture decision.
 | Stdout log level | `RUST_LOG` | `info` |
 | gRPC server reflection (v1 and v1alpha, for grpcurl/Postman) | `ARIA_AGENT_CORE_REFLECTION` | off. `true`/`1` turns it on; blank means off. |
 | Hosted backend API key | `ARIA_LLM_API_KEY` | **required**; no default. Held as a secret and never logged. Surrounding whitespace, such as the trailing newline of a secret made from a file, is trimmed; a key that still cannot be sent as a header stops startup. |
-| Hosted backend base URL (including `/v1`) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
-| Hosted model | `ARIA_LLM_MODEL` | `qwen-3.8-27b` |
-| Idle timeout (a duration such as `30s`; zero is rejected) | `ARIA_LLM_IDLE_TIMEOUT` | `30s` |
+| Hosted backend base URL (including `/v1`; `http` or `https` with a host, no query or fragment; trailing slashes are dropped) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
+| Hosted model (surrounding whitespace is trimmed) | `ARIA_LLM_MODEL` | `qwen-3.8-27b` |
+| Idle timeout (a duration such as `30s`; zero and anything above `1h` are rejected) | `ARIA_LLM_IDLE_TIMEOUT` | `30s` |
 | Retries per request (`0` turns retrying off) | `ARIA_LLM_MAX_RETRIES` | `3` |
 
-The five `ARIA_LLM_*` settings are the hosted client's only configuration: `OPENAI_*` variables in
+The five `ARIA_LLM_*` settings are the hosted client's only ARIA configuration: `OPENAI_*` variables in
 the environment (`OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, …) are
-ignored and never sent to the provider.
+ignored and never sent to the provider. The standard proxy variables (`HTTPS_PROXY`, `ALL_PROXY`,
+`NO_PROXY`) and the host's system proxy settings still apply to the provider call.
 
 **Health (`grpc.health.v1`, same port):**
 
@@ -153,7 +159,7 @@ pods unready: turns fail with `INTERNAL`, and the backend entry and the span say
 
 `List` (from the current upstream `health.proto`, vendored in the `proto` crate) returns all four
 statuses in one call. The store and the backend each publish their own health. The health service only listens, and never
-calls a dependency to check it. On SIGTERM both statuses become not-serving **before** the drain
+calls a dependency to check it. On SIGTERM all four statuses become not-serving **before** the drain
 starts. Watchers of the health status see the change, and then their streams end, so they do not
 hold up the drain. New connections stop because the listener closes; in-flight turns get up to 20 s
 to finish. A dependency that reports itself as a

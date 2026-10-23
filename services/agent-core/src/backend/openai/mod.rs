@@ -2,7 +2,7 @@
 //! provider (D85) and turns its events into ARIA chunks, enforcing the idle timeout.
 
 use crate::backend::openai::error::{
-    CompletionError, ErrorObject, GenerationFailure, connection_failed,
+    CompletionError, ErrorObject, GenerationFailure, connection_failed, log_provider_message,
     map_completion_error_to_availability, parse_error_object,
 };
 use crate::backend::openai::provider_config::ProviderConfig;
@@ -79,12 +79,11 @@ impl OpenAIBackend {
 
     /// The one build path: assembles the HTTP client and tower stack with the given backoff base.
     fn build(config: &Config, backoff_base: Duration) -> Result<Self, OpenAIBackendError> {
-        // Built from the ARIA_LLM_* settings alone, never from the OPENAI_* environment. The root
-        // slash of the base URL is dropped too (a bare host is `http://host/`), or the route
-        // would be requested as `//chat/completions`.
+        // Built from the ARIA_LLM_* settings alone, never from the OPENAI_* environment.
         let provider_config = ProviderConfig::new(
-            config.llm_url().as_str().trim_end_matches('/'),
+            config.llm_base_url(),
             config.llm_api_key().clone(),
+            config.llm_authorization().clone(),
         );
 
         let http_client = reqwest::Client::builder().build()?;
@@ -200,7 +199,7 @@ impl Backend for OpenAIBackend {
                 };
                 match next {
                     Some(Some(Ok(event))) => {
-                        idle_timeout.as_mut().reset(tokio::time::Instant::now() + idle_timeout_dur);
+                        idle_timeout.as_mut().reset(deadline_after(idle_timeout_dur));
                         record_event(&call_span, &event, first_event);
                         first_event = false;
                         for choice in event.choices {
@@ -336,8 +335,9 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
             code,
         }) = parse_error_object(content)
     {
+        log_provider_message(&message, None, code.as_deref());
         return CompletionError::StreamError {
-            description: format!("provider sent an error event: {message}"),
+            description: "provider sent an error event".to_string(),
             cause: None,
             provider_code: code,
         };
@@ -383,5 +383,39 @@ fn record_event(span: &Span, event: &CreateChatCompletionStreamResponse, first_e
             "gen_ai.usage.output_tokens",
             u64::from(usage.completion_tokens),
         );
+    }
+}
+
+/// How far away the deadline is when `window` is too large to add to the current instant. The
+/// configuration caps the idle timeout far below this; it is only here so the loop cannot panic.
+const FAR_FUTURE: Duration = Duration::from_secs(30 * 365 * 24 * 60 * 60);
+
+/// `window` from now, or `FAR_FUTURE` if adding it would overflow the clock.
+fn deadline_after(window: Duration) -> tokio::time::Instant {
+    let now = tokio::time::Instant::now();
+    now.checked_add(window).unwrap_or_else(|| now + FAR_FUTURE)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_window_too_large_for_the_clock_gives_a_far_deadline_instead_of_panicking() {
+        let now = tokio::time::Instant::now();
+
+        let deadline = deadline_after(Duration::MAX);
+
+        assert!(deadline > now + Duration::from_secs(365 * 24 * 60 * 60));
+    }
+
+    #[test]
+    fn a_normal_window_is_added_to_now() {
+        let before = tokio::time::Instant::now();
+
+        let deadline = deadline_after(Duration::from_secs(30));
+
+        assert!(deadline >= before + Duration::from_secs(30));
+        assert!(deadline < before + Duration::from_secs(31));
     }
 }

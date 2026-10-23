@@ -1,10 +1,10 @@
 ---
-title: Add the openai LLM backend to the Agent Core (ARIA-143)
-slug: aria-143-openai-backend
+title: Add the hosted LLM backend to the Agent Core (ARIA-143)
+slug: aria-143-hosted-backend
 tier: technical
 status: active
 created: 2026-10-07
-branch: aria-143-openai-backend
+branch: aria-143-hosted-backend
 owns_branch: true
 ---
 
@@ -590,4 +590,42 @@ and C7 implement.
     but with nothing that says whether it can serve (code-agent's choice, accepted).
   - **Spans:** the call span gets `otel.status_code = ERROR` on failure and a `server.port`, which
     falls back to the scheme's default port.
+- **Plan frontmatter restored** (2026-10-23): title, slug and branch had picked up "openai" in
+  65ca4c8, apparently from the IDE rename, while the branch, the file and the Jira story say
+  "hosted".
+- **Third milestone review (2026-10-23):**
+  - **Provider error messages stay out of telemetry** (Jann's call, option b of three). The parsed
+    `message` of a provider error is provider-controlled text that some OpenAI-compatible servers
+    fill with the offending input. Keeping it would breach the architecture rule that conversation
+    content never lands in a span or log line (the rule D41 relied on and D82 kept). So it is no
+    longer part of any error's display, span or exported log. It is logged once, truncated, at
+    `debug` under its own target, which the export filter drops: visible on a local stdout when
+    debugging, never exported.
+    - *Rejected:* dropping it entirely (loses what diagnosed the `include_obfuscation` failure);
+      keeping it (would need a decision entry carving an exception into that rule).
+  - **Configuration hardening:**
+    - The base URL must be `http`/`https` with a host and no query or fragment, and config owns all
+      of its normalisation.
+    - The model is trimmed like the key.
+    - The idle timeout has a maximum, so the timer cannot overflow.
+    - The key's header check exists once, in config.
+  - **Accepted: the availability log can miss a change.** The watch channel keeps only the latest
+    value, so two turns ending close together (available → unavailable → available) may log no
+    transition. The plan already accepted last-writer-wins for the state; the log inherits it. The
+    span of each failed turn still records its error.
+  - **Code-agent choices, accepted:**
+    - The idle-timeout maximum is 1 hour.
+    - Provider messages are cut at 200 characters.
+    - The `agent_core::provider_message` target is named in the shared telemetry crate's export-mute
+      list.
+    - `HttpError` keeps its `message` field for the debug log. Its derived `Debug` still prints it,
+      and nothing logs that error with `Debug`.
+    - The environment lookup hands the key over as one plain `String` before it is wrapped; that
+      buffer is not zeroed.
+    - The `Authorization` header is built once in config, marked sensitive, and passed to
+      `ProviderConfig`.
+  - **Test changes at this review:**
+    - A Display test was inverted on purpose (the message must now be absent).
+    - `ProviderConfig`'s "a bad key sends no header" test was removed, because the type now makes
+      that case impossible: the header arrives already validated.
 

@@ -13,6 +13,7 @@ use agent_core::backend::openai::fake_provider::{
     usage_chunk,
 };
 use agent_core::backend::{Backend, BackendError, Chunk};
+use agent_core::config::{ARIA_LLM_API_KEY_VAR, ARIA_LLM_BASE_URL_VAR, ARIA_LLM_MODEL_VAR, Config};
 use agent_core::conversation::{Actor, Content, ConversationPart};
 use agent_core::health::{HostStatus, UnavailabilityReason};
 use axum::http::StatusCode;
@@ -664,6 +665,27 @@ async fn a_host_that_closes_without_answering_is_not_retried() {
 
     assert!(matches!(run.cause(), CompletionError::ConnectionError(_)));
     assert_eq!(accepted.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn a_model_with_a_trailing_newline_is_trimmed_and_the_request_carries_the_clean_name() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(replying(&["ok"]));
+    let base_url = provider.base_url();
+    let config = Config::from_lookup(move |name| {
+        Ok(match name {
+            ARIA_LLM_API_KEY_VAR => Some(TEST_KEY.to_string()),
+            ARIA_LLM_BASE_URL_VAR => Some(base_url.clone()),
+            ARIA_LLM_MODEL_VAR => Some("clean-model\n".to_string()),
+            _ => None,
+        })
+    })
+    .expect("config");
+    let backend = OpenAIBackend::with_backoff_base(&config, TEST_BACKOFF).expect("backend");
+
+    run(&backend).await.assert_clean();
+
+    assert_eq!(provider.requests()[0].body["model"], "clean-model");
 }
 
 #[tokio::test]

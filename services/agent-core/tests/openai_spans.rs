@@ -759,6 +759,60 @@ async fn the_attempt_span_and_the_call_span_name_a_connection_failure_the_same()
     assert_eq!(calls[0].field("error.type"), Some("connection_error"));
 }
 
+#[tokio::test]
+async fn the_provider_message_is_in_no_span_field_and_only_in_its_own_log_target() {
+    const SENTINEL: &str = "SENTINEL-PROVIDER-MESSAGE-9915";
+    let (capture, _guard) = Capture::install();
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(
+        ErrorScript::new(StatusCode::BAD_REQUEST).body(flat_error_body(
+            SENTINEL,
+            "invalid_request_error",
+            None,
+            "bad_request",
+        )),
+    );
+    provider.enqueue(StreamScript::new(vec![
+        Step::data(role_chunk()),
+        Step::data(format!(
+            r#"{{"error":{{"message":"{SENTINEL}","code":"late"}}}}"#
+        )),
+    ]));
+    let mut client = serve(backend_for(&provider, "5s", 0)).await;
+
+    decide(&mut client, "http-error", "hello").await;
+    decide(&mut client, "error-event", "hello").await;
+
+    capture.wait_for_closed_calls(2).await;
+    for span in capture.spans() {
+        for (name, value) in &span.fields {
+            assert!(
+                !value.contains(SENTINEL),
+                "span {:?} field {name:?}: {value:?}",
+                span.name
+            );
+        }
+    }
+    let mut on_its_own_target = 0;
+    for event in capture.events() {
+        // The crate's own log of an unreadable event is switched off by the telemetry crate (and
+        // checked from the binary); this capture has no filter, so it is skipped here.
+        if event.target == "async_openai::error" {
+            continue;
+        }
+        let carries = event.fields.values().any(|v| v.contains(SENTINEL));
+        if carries {
+            // The only place provider text is rendered; the telemetry crate keeps it off export.
+            assert_eq!(event.target, "agent_core::provider_message", "{event:?}");
+            on_its_own_target += 1;
+        }
+    }
+    assert_eq!(
+        on_its_own_target, 2,
+        "one provider message per failing call"
+    );
+}
+
 // ---------------------------------------------------------------- no secrets
 
 #[tokio::test]

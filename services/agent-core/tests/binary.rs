@@ -3,7 +3,8 @@
 #![cfg(unix)]
 
 use agent_core::backend::openai::fake_provider::{
-    FakeProvider, Step, StreamScript, default_happy_path, role_chunk, text_delta_chunk,
+    ErrorScript, FakeProvider, Step, StreamScript, default_happy_path, flat_error_body, role_chunk,
+    text_delta_chunk,
 };
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::{DecideRequest, decide_response};
@@ -751,4 +752,48 @@ async fn the_openai_environment_never_reaches_the_provider() {
             "{leaked} reached the provider: {headers}"
         );
     }
+}
+
+#[tokio::test]
+async fn the_provider_message_is_logged_truncated_on_its_own_and_not_in_the_decide_error_line() {
+    const SENTINEL: &str = "SENTINEL-PROVIDER-MESSAGE-3308";
+    let provider = FakeProvider::start().await.expect("provider");
+    let long_message = format!("{SENTINEL} {}", "y".repeat(400));
+    provider.enqueue(
+        ErrorScript::new(axum::http::StatusCode::BAD_REQUEST).body(flat_error_body(
+            &long_message,
+            "invalid_request_error",
+            None,
+            "bad_request",
+        )),
+    );
+    let mut server = Server::spawn_against_with(&provider, "127.0.0.1:0", &[("RUST_LOG", "debug")]);
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+
+    decide_once(&address).await;
+
+    let pid = server.child.id().to_string();
+    let killed = Command::new("kill")
+        .args(["-TERM", &pid])
+        .status()
+        .expect("run kill");
+    assert!(killed.success());
+    server.wait_for_exit().await;
+    let stdout = server.drain_stdout();
+    let carrying: Vec<&str> = stdout.lines().filter(|l| l.contains(SENTINEL)).collect();
+    // Once, on its own line, at debug, and cut.
+    assert_eq!(carrying.len(), 1, "{stdout}");
+    assert!(carrying[0].contains("provider message"), "{}", carrying[0]);
+    assert!(carrying[0].contains('…'), "not truncated: {}", carrying[0]);
+    assert!(!carrying[0].contains(&"y".repeat(300)), "{}", carrying[0]);
+    // The error line says what happened without the provider's text.
+    let failure: Vec<&str> = stdout
+        .lines()
+        .filter(|l| l.contains("Decide turn failed"))
+        .collect();
+    assert_eq!(failure.len(), 1, "{stdout}");
+    assert!(failure[0].contains("400"), "{}", failure[0]);
+    assert!(failure[0].contains("bad_request"), "{}", failure[0]);
+    assert!(!failure[0].contains(SENTINEL), "{}", failure[0]);
 }

@@ -1,42 +1,42 @@
 //! The client configuration for the provider: exactly what `ARIA_LLM_*` says and nothing from the
 //! environment. async-openai's own `OpenAIConfig` reads `OPENAI_API_KEY`, `OPENAI_ADMIN_KEY`,
 //! `OPENAI_BASE_URL`, `OPENAI_ORG_ID` and `OPENAI_PROJECT_ID`, which would send organisation and
-//! project headers to the provider. This one implements the crate's `Config` trait instead.
+//! project headers to the provider. This one implements the crate's `Config` trait instead, and
+//! holds the `Authorization` header already built and checked by the configuration.
 
 use async_openai::config::Config;
 use reqwest::header::{AUTHORIZATION, HeaderMap, HeaderValue};
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::SecretString;
 
-/// The provider's base URL and the key to authenticate with.
+/// The provider's base URL, the key and the `Authorization` header built from it.
 #[derive(Debug, Clone)]
 pub(crate) struct ProviderConfig {
     api_base: String,
     api_key: SecretString,
+    authorization: HeaderValue,
 }
 
 impl ProviderConfig {
-    /// A configuration for `api_base` (no trailing slash) authenticating with `api_key`.
-    pub(crate) fn new(api_base: impl Into<String>, api_key: SecretString) -> Self {
+    /// A configuration for `api_base` (no trailing slash). `authorization` is the header
+    /// `Config` built from the key and already checked, so nothing here can fail or panic.
+    pub(crate) fn new(
+        api_base: impl Into<String>,
+        api_key: SecretString,
+        authorization: HeaderValue,
+    ) -> Self {
         Self {
             api_base: api_base.into(),
             api_key,
+            authorization,
         }
     }
 }
 
 impl Config for ProviderConfig {
-    /// Only the `Authorization` header, marked sensitive so it is kept out of debug output and
-    /// header compression. The configuration has already checked that the key forms a valid
-    /// header value; if it did not, no header is sent and the provider answers 401, instead of a
-    /// panic on every turn.
+    /// Only the `Authorization` header, the sensitive value `Config` built.
     fn headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
-        if let Ok(mut value) =
-            HeaderValue::from_str(&format!("Bearer {}", self.api_key.expose_secret()))
-        {
-            value.set_sensitive(true);
-            headers.insert(AUTHORIZATION, value);
-        }
+        headers.insert(AUTHORIZATION, self.authorization.clone());
         headers
     }
 
@@ -64,7 +64,13 @@ mod tests {
     const KEY: &str = "sk-provider-config-key";
 
     fn config(key: &str) -> ProviderConfig {
-        ProviderConfig::new("https://llm.example.test/v1", SecretString::from(key))
+        let mut authorization = HeaderValue::from_str(&format!("Bearer {key}")).expect("valid");
+        authorization.set_sensitive(true);
+        ProviderConfig::new(
+            "https://llm.example.test/v1",
+            SecretString::from(key),
+            authorization,
+        )
     }
 
     #[test]
@@ -83,11 +89,6 @@ mod tests {
 
         assert!(headers.get("openai-organization").is_none());
         assert!(headers.get("openai-project").is_none());
-    }
-
-    #[test]
-    fn a_key_that_cannot_form_a_header_sends_none_instead_of_panicking() {
-        assert!(config("bad\nkey").headers().is_empty());
     }
 
     #[test]

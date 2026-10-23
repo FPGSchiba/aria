@@ -31,12 +31,14 @@ pub enum CompletionError {
     /// Nothing arrived within the idle timeout, while opening (including retries) or mid-stream.
     #[error("request timed out")]
     Timeout,
-    /// The provider answered with a non-2xx status after retries.
-    #[error("HTTP error: [http_code: {status}, code: {code:?}] {message}")]
+    /// The provider answered with a non-2xx status after retries. The display shows the status
+    /// and the provider's code but not its message, which is provider text and only goes to the
+    /// debug log (see [`log_provider_message`]).
+    #[error("HTTP error: [http_code: {status}, code: {code:?}]")]
     HttpError {
         /// The HTTP status of the answer.
         status: reqwest::StatusCode,
-        /// The provider's error message.
+        /// The provider's error message. Not part of the display.
         message: String,
         /// The provider's own error code (a stable string), if it sent one.
         code: Option<String>,
@@ -48,8 +50,8 @@ pub enum CompletionError {
     ConnectionError(#[source] BoxError),
     /// The stream started and then failed to complete. Three situations:
     /// - the connection was cut or the data was unreadable: `cause` holds the underlying error;
-    /// - the provider sent an error event mid-stream: `provider_code` holds its code and
-    ///   `description` its message;
+    /// - the provider sent an error event mid-stream: `provider_code` holds its code (its message
+    ///   goes to the debug log, not into this error);
     /// - the stream ended without a finish reason (truncated): no cause and no code.
     #[error("Stream failed: {description}")]
     StreamError {
@@ -68,8 +70,9 @@ pub enum CompletionError {
     /// becomes a call to a tool that was not in the request.
     #[error("Unexpected tool call")]
     UnexpectedToolCall,
-    /// Anything else, mostly local (e.g. a request the client could not build). A transport error
-    /// after the request was sent is a `ConnectionError`, not this.
+    /// A local failure (e.g. a request the client could not build), or an answer that says nothing
+    /// about whether the provider can serve (e.g. a redirect loop). Either way availability is
+    /// unchanged. A transport error after the request was sent is a `ConnectionError`, not this.
     #[error("Unexpected error: {0}")]
     UnexpectedError(#[source] BoxError),
 }
@@ -79,6 +82,34 @@ pub enum CompletionError {
 /// are not this: the provider answered, or the request was never sent.
 pub(crate) fn connection_failed(error: &reqwest::Error) -> bool {
     error.is_connect() || error.is_request()
+}
+
+/// The log target of the provider's own error messages. They are provider text, so they are kept
+/// out of errors and spans: this target is only for stdout at debug level, and the telemetry
+/// crate keeps it out of the span export.
+pub(crate) const PROVIDER_MESSAGE_TARGET: &str = "agent_core::provider_message";
+
+/// How many characters of a provider message are logged.
+const PROVIDER_MESSAGE_MAX_CHARS: usize = 200;
+
+/// Logs a provider's error message once, truncated, at debug level on [`PROVIDER_MESSAGE_TARGET`].
+/// This is the only place provider text is rendered; errors carry status, code and kind only.
+pub(crate) fn log_provider_message(message: &str, status: Option<u16>, code: Option<&str>) {
+    tracing::debug!(
+        target: PROVIDER_MESSAGE_TARGET,
+        status,
+        code,
+        "provider message: {}",
+        truncated(message, PROVIDER_MESSAGE_MAX_CHARS)
+    );
+}
+
+/// `text` cut to `max_chars` characters, on a character boundary, with an ellipsis if it was cut.
+fn truncated(text: &str, max_chars: usize) -> String {
+    match text.char_indices().nth(max_chars) {
+        Some((end, _)) => format!("{}…", &text[..end]),
+        None => text.to_string(),
+    }
 }
 
 /// The `error.type` of a failed call, as the name of the `CompletionError` case. One vocabulary
@@ -137,8 +168,8 @@ pub(crate) fn parse_error_object(data: &str) -> Option<ErrorObject> {
 /// Any answer from the provider means it is available, including ordinary 4xx statuses and
 /// `GenerationFailed`. 401 and 403 mean the key was rejected, 402 payment is required, 429 the
 /// provider rate-limited us and 5xx a server error. Timeout, connection and stream failures map to
-/// their own reasons. There is no update when the provider was never reached (`UnexpectedError`)
-/// and when the result equals `current`.
+/// their own reasons. There is no update for an `UnexpectedError` (a local failure, or an answer
+/// that says nothing about the provider) and when the result equals `current`.
 pub fn map_completion_error_to_availability(
     error: &CompletionError,
     current: &HostStatus,
@@ -173,7 +204,7 @@ pub fn map_completion_error_to_availability(
         CompletionError::GenerationFailed(_) | CompletionError::UnexpectedToolCall => {
             HostStatus::Available
         }
-        // The provider was not reached, so nothing is learned about it.
+        // A local failure, or an answer that says nothing about the provider.
         CompletionError::UnexpectedError(_) => return None,
     };
 
@@ -525,12 +556,57 @@ mod tests {
     }
 
     #[test]
-    fn the_http_error_message_names_the_status_code_and_provider_message() {
+    fn the_http_error_display_names_the_status_and_code_but_not_the_provider_message() {
         let text = http(429, Some("rate_limit_exceeded")).to_string();
 
         assert!(text.contains("429"), "{text}");
         assert!(text.contains("rate_limit_exceeded"), "{text}");
-        assert!(text.contains("provider message"), "{text}");
+        assert!(!text.contains("provider message"), "{text}");
+    }
+
+    #[test]
+    fn a_stream_error_from_a_provider_event_displays_no_provider_text() {
+        let error = CompletionError::StreamError {
+            description: "provider sent an error event".to_string(),
+            cause: None,
+            provider_code: Some("queue_overflow".to_string()),
+        };
+
+        let text = error.to_string();
+
+        assert!(text.contains("provider sent an error event"), "{text}");
+    }
+
+    #[test]
+    fn a_short_message_is_logged_whole() {
+        assert_eq!(truncated("short", 200), "short");
+        assert_eq!(truncated("", 200), "");
+    }
+
+    #[test]
+    fn a_message_of_exactly_the_limit_is_not_cut() {
+        let message = "x".repeat(200);
+
+        assert_eq!(truncated(&message, 200), message);
+    }
+
+    #[test]
+    fn a_longer_message_is_cut_at_the_limit_with_an_ellipsis() {
+        let message = "x".repeat(201);
+
+        let cut = truncated(&message, 200);
+
+        assert_eq!(cut, format!("{}…", "x".repeat(200)));
+    }
+
+    #[test]
+    fn truncation_never_splits_a_multibyte_character() {
+        // Each "é" is two bytes, so a cut by bytes would land inside one.
+        let message = "é".repeat(150);
+
+        let cut = truncated(&message, 100);
+
+        assert_eq!(cut, format!("{}…", "é".repeat(100)));
     }
 
     #[test]

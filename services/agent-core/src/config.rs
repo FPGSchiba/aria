@@ -10,6 +10,7 @@ use std::env;
 use std::net::{Ipv4Addr, SocketAddr};
 use std::str::FromStr;
 use std::time::Duration;
+use zeroize::Zeroizing;
 
 /// The port the service listens on when no listen address is configured.
 pub const ARIA_AGENT_CORE_DEFAULT_PORT: u16 = 6517;
@@ -36,6 +37,9 @@ pub const ARIA_LLM_BASE_URL_DEFAULT: &str = "https://api.cerebras.ai/v1";
 pub const ARIA_LLM_MODEL_DEFAULT: &str = "qwen-3.8-27b";
 /// The default idle timeout for the OpenAI-compatible LLM backend.
 pub const ARIA_LLM_IDLE_TIMEOUT_DEFAULT: &str = "30s";
+/// The longest idle timeout accepted. A larger one is a mistake, and an absurd one would overflow
+/// the deadline arithmetic of the stream.
+pub const ARIA_LLM_IDLE_TIMEOUT_MAX: Duration = Duration::from_secs(3600);
 /// The default maximum number of retries for the OpenAI-compatible LLM backend.
 pub const ARIA_LLM_MAX_RETRIES_DEFAULT: u16 = 3;
 
@@ -105,6 +109,44 @@ fn trimmed_key(key: SecretString) -> SecretString {
     SecretString::from(key.expose_secret().trim())
 }
 
+/// The `Authorization` header for `key`, marked sensitive, or the error naming the variable if the
+/// key cannot form one (the value is not part of the error).
+fn authorization_header(key: &SecretString) -> Result<HeaderValue, ConfigError> {
+    let bearer = Zeroizing::new(format!("Bearer {}", key.expose_secret()));
+    let mut value = HeaderValue::from_str(&bearer).map_err(|_| ConfigError::InvalidSecret {
+        variable: ARIA_LLM_API_KEY_VAR,
+    })?;
+    value.set_sensitive(true);
+    Ok(value)
+}
+
+/// Parses the base URL: http or https, with a host, and without a query or a fragment (the
+/// backend appends its route to it). `localhost:11434/v1` parses with "localhost" as its scheme,
+/// which the scheme check catches.
+fn parse_base_url(value: &str) -> Result<Url, ConfigError> {
+    let invalid = |reason: String| ConfigError::InvalidUrl {
+        variable: ARIA_LLM_BASE_URL_VAR,
+        value: value.to_string(),
+        reason,
+    };
+    let url = Url::parse(value).map_err(|e| invalid(e.to_string()))?;
+    if !matches!(url.scheme(), "http" | "https") {
+        return Err(invalid(format!(
+            "the scheme must be http or https, not '{}'",
+            url.scheme()
+        )));
+    }
+    if url.host_str().is_none() {
+        return Err(invalid("it needs a host".to_string()));
+    }
+    if url.query().is_some() || url.fragment().is_some() {
+        return Err(invalid(
+            "it must not have a query or a fragment".to_string(),
+        ));
+    }
+    Ok(url)
+}
+
 /// Whether an environment value is empty or only whitespace.
 fn is_blank(value: &str) -> bool {
     value.trim().is_empty()
@@ -118,6 +160,8 @@ pub struct Config {
     reflection: bool,
     llm_api_key: SecretString,
     llm_url: Url,
+    llm_base_url: String,
+    llm_authorization: HeaderValue,
     llm_model: String,
     llm_idle_timeout: Duration,
     llm_max_retries: u16,
@@ -172,21 +216,13 @@ impl Config {
             .ok_or(ConfigError::MissingVariable {
                 variable: ARIA_LLM_API_KEY_VAR,
             })?;
-        // Checked once here, so the client never fails building its header on every turn.
-        if HeaderValue::from_str(&format!("Bearer {}", llm_api_key.expose_secret())).is_err() {
-            return Err(ConfigError::InvalidSecret {
-                variable: ARIA_LLM_API_KEY_VAR,
-            });
-        }
+        // The one check that the key forms an `Authorization` header, made here so startup refuses
+        // a key the client could not send. The header is built once and handed on; the temporary
+        // holding the key is zeroed when it drops.
+        let llm_authorization = authorization_header(&llm_api_key)?;
         let mut llm_api_url = lookup(ARIA_LLM_BASE_URL_VAR)?
             .filter(|v| !is_blank(v))
-            .map(|v| {
-                Url::parse(&v).map_err(|e| ConfigError::InvalidUrl {
-                    variable: ARIA_LLM_BASE_URL_VAR,
-                    value: v,
-                    reason: e.to_string(),
-                })
-            })
+            .map(|v| parse_base_url(&v))
             .transpose()?
             .unwrap_or_else(|| {
                 Url::parse(ARIA_LLM_BASE_URL_DEFAULT).expect("default base URL is valid")
@@ -195,8 +231,11 @@ impl Config {
         // otherwise make the route `.../v1//chat/completions`.
         let trimmed_path = llm_api_url.path().trim_end_matches('/').to_string();
         llm_api_url.set_path(&trimmed_path);
+        // What the client is given: the URL without the root slash a bare host would keep.
+        let llm_base_url = llm_api_url.as_str().trim_end_matches('/').to_string();
         let llm_api_model = lookup(ARIA_LLM_MODEL_VAR)?
             .filter(|v| !is_blank(v))
+            .map(|v| v.trim().to_string())
             .unwrap_or_else(|| ARIA_LLM_MODEL_DEFAULT.to_string());
         let llm_api_idle_timeout = match lookup(ARIA_LLM_IDLE_TIMEOUT_VAR)?.filter(|v| !is_blank(v))
         {
@@ -210,6 +249,12 @@ impl Config {
                     humantime::parse_duration(&raw).map_err(|e| invalid(e.to_string()))?;
                 if timeout == Duration::ZERO {
                     return Err(invalid("must be greater than 0s".to_string()));
+                }
+                if timeout > ARIA_LLM_IDLE_TIMEOUT_MAX {
+                    return Err(invalid(format!(
+                        "must be at most {}",
+                        humantime::format_duration(ARIA_LLM_IDLE_TIMEOUT_MAX)
+                    )));
                 }
                 timeout
             }
@@ -234,6 +279,8 @@ impl Config {
             reflection,
             llm_api_key,
             llm_url: llm_api_url,
+            llm_base_url,
+            llm_authorization,
             llm_model: llm_api_model,
             llm_idle_timeout: llm_api_idle_timeout,
             llm_max_retries: llm_api_max_retries,
@@ -260,9 +307,24 @@ impl Config {
         &self.llm_api_key
     }
 
-    /// The base URL for the OpenAI-compatible LLM backend.
+    /// The base URL for the OpenAI-compatible LLM backend, validated (http or https, with a host,
+    /// no query or fragment) and with trailing slashes dropped from its path. A bare host still
+    /// prints its root slash here; use [`Config::llm_base_url`] for the exact API base.
     pub fn llm_url(&self) -> &Url {
         &self.llm_url
+    }
+
+    /// The base URL as the client is given it: `llm_url` with the trailing slashes of its path
+    /// dropped, and the root slash of a bare host too (`http://localhost:11434`). A `Url` cannot
+    /// print an empty path, so this is the string to use as the API base.
+    pub fn llm_base_url(&self) -> &str {
+        &self.llm_base_url
+    }
+
+    /// The `Authorization` header for the provider, built once from the key and marked
+    /// sensitive.
+    pub fn llm_authorization(&self) -> &HeaderValue {
+        &self.llm_authorization
     }
 
     /// The host of the base URL, for logs and traces; "unknown" for a URL without one.
@@ -548,6 +610,69 @@ mod tests {
     }
 
     #[test]
+    fn the_authorization_header_is_built_once_sensitive_from_the_trimmed_key() {
+        let config = key_from("sk-abc\n").expect("config");
+
+        let header = config.llm_authorization();
+
+        assert_eq!(header, "Bearer sk-abc");
+        assert!(header.is_sensitive());
+        assert!(!format!("{config:?}").contains("sk-abc"));
+    }
+
+    #[test]
+    fn whitespace_around_the_model_is_trimmed() {
+        for raw in ["qwen-3\n", "  qwen-3", "\tqwen-3 \r\n"] {
+            let lookup = move |name: &'static str| {
+                Ok(match name {
+                    ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                    ARIA_LLM_MODEL_VAR => Some(raw.to_string()),
+                    _ => None,
+                })
+            };
+
+            let config = Config::from_lookup(lookup).expect("config");
+
+            assert_eq!(config.llm_model(), "qwen-3", "{raw:?}");
+        }
+    }
+
+    #[test]
+    fn an_idle_timeout_above_the_maximum_is_rejected_naming_variable_and_value() {
+        for value in ["3601s", "2h", "100000000000y"] {
+            let lookup = move |name: &'static str| {
+                Ok(match name {
+                    ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                    ARIA_LLM_IDLE_TIMEOUT_VAR => Some(value.to_string()),
+                    _ => None,
+                })
+            };
+
+            let err = Config::from_lookup(lookup).expect_err(value);
+
+            assert!(
+                matches!(err, ConfigError::InvalidDuration { .. }),
+                "{value}: {err:?}"
+            );
+            let message = err.to_string();
+            assert!(message.contains("ARIA_LLM_IDLE_TIMEOUT"), "{message}");
+            assert!(message.contains(value), "{message}");
+            assert!(message.contains("1h"), "{message}");
+        }
+    }
+
+    #[test]
+    fn an_idle_timeout_of_exactly_the_maximum_is_accepted() {
+        let config = Config::from_lookup(lookup_pairs(&[
+            (ARIA_LLM_API_KEY_VAR, SECRET),
+            (ARIA_LLM_IDLE_TIMEOUT_VAR, "1h"),
+        ]))
+        .expect("config");
+
+        assert_eq!(config.llm_idle_timeout(), ARIA_LLM_IDLE_TIMEOUT_MAX);
+    }
+
+    #[test]
     fn each_optional_llm_setting_is_used_when_set() {
         let config = Config::from_lookup(lookup_pairs(&[
             (ARIA_LLM_API_KEY_VAR, SECRET),
@@ -739,13 +864,83 @@ mod tests {
         }
     }
 
+    /// The exact API base the client is given for a configured value.
+    fn api_base_from(value: &'static str) -> String {
+        let lookup = move |name: &'static str| {
+            Ok(match name {
+                ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                ARIA_LLM_BASE_URL_VAR => Some(value.to_string()),
+                _ => None,
+            })
+        };
+        Config::from_lookup(lookup)
+            .expect("config")
+            .llm_base_url()
+            .to_string()
+    }
+
     #[test]
-    fn a_bare_host_base_url_has_an_empty_path_so_the_backend_can_drop_the_root_slash() {
+    fn the_api_base_has_no_trailing_slash_of_any_kind() {
+        for (given, expected) in [
+            ("http://localhost:11434/", "http://localhost:11434"),
+            ("http://localhost:11434", "http://localhost:11434"),
+            (
+                "https://llm.example.test/v1/",
+                "https://llm.example.test/v1",
+            ),
+            (
+                "https://llm.example.test/v1///",
+                "https://llm.example.test/v1",
+            ),
+            (
+                "https://llm.example.test/a/b/",
+                "https://llm.example.test/a/b",
+            ),
+        ] {
+            assert_eq!(api_base_from(given), expected, "{given}");
+        }
+    }
+
+    #[test]
+    fn a_bare_host_url_still_prints_its_root_slash_but_the_api_base_does_not() {
         let url = base_url_from("http://localhost:11434/");
 
         assert_eq!(url.path(), "/");
-        // A URL cannot render an empty path, so the consumer trims the root slash it prints.
-        assert_eq!(url.as_str().trim_end_matches('/'), "http://localhost:11434");
+        assert_eq!(
+            api_base_from("http://localhost:11434/"),
+            "http://localhost:11434"
+        );
+    }
+
+    #[test]
+    fn a_base_url_that_is_not_http_or_https_with_a_host_and_nothing_after_the_path_is_rejected() {
+        for bad in [
+            "localhost:11434/v1",
+            "ftp://llm.example.test/v1",
+            "file:///tmp/llm",
+            "https://llm.example.test/v1?x=1",
+            "https://llm.example.test/v1#frag",
+            "https://llm.example.test/v1?",
+            "mailto:someone@example.test",
+        ] {
+            let lookup = move |name: &'static str| {
+                Ok(match name {
+                    ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                    ARIA_LLM_BASE_URL_VAR => Some(bad.to_string()),
+                    _ => None,
+                })
+            };
+
+            let err = Config::from_lookup(lookup).expect_err(bad);
+
+            assert!(
+                matches!(err, ConfigError::InvalidUrl { .. }),
+                "{bad}: {err:?}"
+            );
+            let message = err.to_string();
+            assert!(message.contains("ARIA_LLM_BASE_URL"), "{message}");
+            assert!(message.contains(bad), "{message}");
+        }
     }
 
     #[test]

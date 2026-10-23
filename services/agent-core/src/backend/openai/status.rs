@@ -6,7 +6,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-use crate::backend::openai::error::{CompletionError, parse_error_object};
+use crate::backend::openai::error::{CompletionError, log_provider_message, parse_error_object};
 use async_openai::error::OpenAIError;
 use async_openai::middleware::HttpRequestFactory;
 use reqwest::{Response, StatusCode};
@@ -74,6 +74,13 @@ where
 /// the message is the status text and there is no code).
 fn http_error(status: StatusCode, body: &str) -> CompletionError {
     let parsed = parse_error_object(body);
+    if let Some(message) = parsed.as_ref().and_then(|object| object.message.as_deref()) {
+        log_provider_message(
+            message,
+            Some(status.as_u16()),
+            parsed.as_ref().and_then(|object| object.code.as_deref()),
+        );
+    }
     CompletionError::HttpError {
         status,
         message: parsed
