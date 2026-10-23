@@ -2,7 +2,9 @@
 //! graceful SIGTERM exit, and a readable failure for bad configuration.
 #![cfg(unix)]
 
-use agent_core::backend::openai::fake_provider::{FakeProvider, default_happy_path};
+use agent_core::backend::openai::fake_provider::{
+    FakeProvider, Step, StreamScript, default_happy_path, role_chunk, text_delta_chunk,
+};
 use proto::agent_core::v1::agent_core_client::AgentCoreClient;
 use proto::agent_core::v1::{DecideRequest, decide_response};
 use proto::grpc::health::v1::HealthCheckRequest;
@@ -87,11 +89,13 @@ impl Server {
         for variable in LLM_VARS {
             command.env_remove(variable);
         }
+        // Removed before the test's own variables, so a test can set `RUST_LOG` itself.
+        command
+            .env_remove("OTEL_EXPORTER_OTLP_ENDPOINT")
+            .env_remove("RUST_LOG");
         let mut child = command
             .env("ARIA_AGENT_CORE_LISTEN_ADDRESS", listen_address)
             .envs(env.iter().copied())
-            .env_remove("OTEL_EXPORTER_OTLP_ENDPOINT")
-            .env_remove("RUST_LOG")
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
@@ -609,4 +613,59 @@ async fn the_backend_entry_is_unknown_until_a_turn_and_serving_after_a_successfu
         .into_inner()
         .status();
     assert_eq!(ready, ServingStatus::Serving);
+}
+
+#[tokio::test]
+async fn an_unreadable_event_never_puts_the_reply_text_in_the_logs_whatever_rust_log_says() {
+    const SENTINEL: &str = "SENTINEL-REPLY-TEXT-4471";
+    let provider = FakeProvider::start().await.expect("provider");
+    // Valid JSON of the wrong shape: the crate cannot read it and logs the raw event.
+    provider.enqueue(StreamScript::new(vec![
+        Step::data(role_chunk()),
+        Step::data(text_delta_chunk("fine")),
+        Step::data(format!(r#"{{"choices":"{SENTINEL}"}}"#)),
+    ]));
+    let mut server = Server::spawn_against_with(&provider, "127.0.0.1:0", &[("RUST_LOG", "trace")]);
+    let startup = server.wait_for_line("backend on");
+    let address = address_in(&startup);
+    let mut client =
+        tokio::time::timeout(LIMIT, AgentCoreClient::connect(format!("http://{address}")))
+            .await
+            .expect("connect timed out")
+            .expect("connect");
+
+    let response = client
+        .decide(DecideRequest {
+            session_id: "binary-sentinel".to_string(),
+            speaker_name: None,
+            text: "hello".to_string(),
+        })
+        .await
+        .expect("decide");
+    let mut stream = response.into_inner();
+    while tokio::time::timeout(LIMIT, stream.next())
+        .await
+        .expect("stream timed out")
+        .is_some()
+    {}
+
+    let pid = server.child.id().to_string();
+    let killed = Command::new("kill")
+        .args(["-TERM", &pid])
+        .status()
+        .expect("run kill");
+    assert!(killed.success());
+    server.wait_for_exit().await;
+    let stdout = server.drain_stdout();
+    let stderr = server.stderr();
+    assert!(
+        !stdout.contains(SENTINEL),
+        "the reply text was logged: {stdout}"
+    );
+    assert!(
+        !stderr.contains(SENTINEL),
+        "the reply text was printed: {stderr}"
+    );
+    // The turn did happen, and logging is on at the level asked for.
+    assert!(stdout.contains("binary-sentinel"), "{stdout}");
 }

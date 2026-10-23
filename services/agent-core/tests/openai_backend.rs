@@ -16,9 +16,13 @@ use agent_core::backend::{Backend, BackendError, Chunk};
 use agent_core::conversation::{Actor, Content, ConversationPart};
 use agent_core::health::{HostStatus, UnavailabilityReason};
 use axum::http::StatusCode;
-use common::{TEST_KEY, TEST_MODEL, backend_for};
+use common::{TEST_BACKOFF, TEST_KEY, TEST_MODEL, backend_for, llm_config};
 use std::error::Error;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
+use tokio::io::AsyncReadExt;
+use tokio::net::TcpListener;
 use tokio::time::timeout;
 use tokio_stream::StreamExt;
 
@@ -581,6 +585,69 @@ async fn a_connection_failure_is_a_connection_error_with_its_cause() {
     assert!(run.cause().source().is_some(), "the cause is attached");
 }
 
+/// A server that accepts a connection, reads the start of the request and closes the socket
+/// without answering. Returns its base URL and how many connections it accepted.
+async fn closing_server() -> (String, Arc<AtomicUsize>) {
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let addr = listener.local_addr().expect("addr");
+    let accepted = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&accepted);
+    tokio::spawn(async move {
+        while let Ok((mut socket, _)) = listener.accept().await {
+            counter.fetch_add(1, Ordering::SeqCst);
+            let mut buffer = [0u8; 1024];
+            let _ = socket.read(&mut buffer).await;
+            drop(socket);
+        }
+    });
+    (format!("http://{addr}/v1"), accepted)
+}
+
+#[tokio::test]
+async fn a_host_that_closes_without_answering_is_a_connection_error_and_unreachable() {
+    let (base_url, _) = closing_server().await;
+    let config = llm_config(&base_url, "5s", 0);
+    let backend = OpenAIBackend::with_backoff_base(&config, TEST_BACKOFF).expect("backend");
+
+    let run = run(&backend).await;
+
+    match run.cause() {
+        CompletionError::ConnectionError(_) => {}
+        other => panic!("expected a connection error, got {other:?}"),
+    }
+    assert_eq!(
+        *backend.subscribe_health().borrow().host_status(),
+        HostStatus::Unavailable(UnavailabilityReason::Unreachable)
+    );
+}
+
+#[tokio::test]
+async fn a_host_that_closes_without_answering_is_not_retried() {
+    // Only connect errors are retried; a host that was reached and then hung up is not.
+    let (base_url, accepted) = closing_server().await;
+    let config = llm_config(&base_url, "5s", 2);
+    let backend = OpenAIBackend::with_backoff_base(&config, TEST_BACKOFF).expect("backend");
+
+    let run = run(&backend).await;
+
+    assert!(matches!(run.cause(), CompletionError::ConnectionError(_)));
+    assert_eq!(accepted.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn a_base_url_with_a_trailing_slash_still_reaches_the_route() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(replying(&["found"]));
+    let config = llm_config(&format!("{}/", provider.base_url()), "5s", 0);
+    let backend = OpenAIBackend::with_backoff_base(&config, TEST_BACKOFF).expect("backend");
+
+    let run = run(&backend).await;
+
+    run.assert_clean();
+    assert_eq!(run.texts(), vec!["found"]);
+    assert_eq!(provider.request_count(), 1);
+}
+
 // ---------------------------------------------------------------- finish reasons
 
 #[tokio::test]
@@ -691,6 +758,48 @@ async fn a_tool_call_after_text_still_ends_the_stream_with_the_error() {
 
     assert_eq!(run.texts(), vec!["let me check"]);
     assert!(matches!(run.cause(), CompletionError::UnexpectedToolCall));
+}
+
+#[tokio::test]
+async fn an_unreadable_chunk_after_the_stop_finish_does_not_undo_the_reply() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(script(vec![
+        Step::data(role_chunk()),
+        Step::data(text_delta_chunk("complete")),
+        Step::data(finish_chunk("stop")),
+        Step::data("this usage chunk is not json"),
+    ]));
+    let backend = backend_for(&provider, "5s", 0);
+
+    let run = run(&backend).await;
+
+    run.assert_clean();
+    assert_eq!(run.texts(), vec!["complete"]);
+    assert_eq!(
+        *backend.subscribe_health().borrow().host_status(),
+        HostStatus::Available
+    );
+}
+
+#[tokio::test]
+async fn a_provider_error_event_after_the_stop_finish_does_not_undo_the_reply() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(script(vec![
+        Step::data(role_chunk()),
+        Step::data(text_delta_chunk("complete")),
+        Step::data(finish_chunk("stop")),
+        Step::data(r#"{"error":{"message":"late failure","type":"server_error","code":"late"}}"#),
+    ]));
+    let backend = backend_for(&provider, "5s", 0);
+
+    let run = run(&backend).await;
+
+    run.assert_clean();
+    assert_eq!(run.texts(), vec!["complete"]);
+    assert_eq!(
+        *backend.subscribe_health().borrow().host_status(),
+        HostStatus::Available
+    );
 }
 
 // ---------------------------------------------------------------- broken streams

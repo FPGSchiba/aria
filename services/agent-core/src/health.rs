@@ -291,11 +291,12 @@ impl MonitorState {
 
         // The configured part and the observed host status are logged on their own, so a change
         // of one does not repeat a line about the other.
-        let observed_only = |health: &BackendHealth| health.with_host_status(HostStatus::Unknown);
+        let without_host_status =
+            |health: &BackendHealth| health.with_host_status(HostStatus::Unknown);
         if self
             .last_backend
             .as_ref()
-            .is_none_or(|last| observed_only(last) != observed_only(&backend))
+            .is_none_or(|last| without_host_status(last) != without_host_status(&backend))
         {
             log_backend(&backend);
         }

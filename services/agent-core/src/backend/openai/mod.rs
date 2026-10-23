@@ -2,7 +2,8 @@
 //! provider (D85) and turns its events into ARIA chunks, enforcing the idle timeout.
 
 use crate::backend::openai::error::{
-    CompletionError, GenerationFailure, map_completion_error_to_availability,
+    CompletionError, GenerationFailure, host_not_reached, map_completion_error_to_availability,
+    parse_error_object,
 };
 use crate::backend::openai::request::map_conversation_to_request;
 use crate::backend::openai::retry::RetryPolicy;
@@ -11,7 +12,6 @@ use crate::config::Config;
 use crate::conversation::ConversationPart;
 use crate::health::{BackendHealth, HostStatus};
 use async_openai::Client;
-use async_openai::config::Config as _;
 use async_openai::config::OpenAIConfig;
 use async_openai::error::OpenAIError;
 use async_openai::middleware::ReqwestService;
@@ -32,6 +32,7 @@ pub mod fake_provider;
 pub(crate) mod request;
 pub(crate) mod retry;
 pub(crate) mod spans;
+pub(crate) mod status;
 
 /// An OpenAI-compatible backend that streams a conversation through a Chat Completions provider
 /// and turns its events into ARIA chunks, enforcing the idle timeout.
@@ -40,6 +41,8 @@ pub struct OpenAIBackend {
     client: Client<OpenAIConfig>,
     model: String,
     idle_timeout: Duration,
+    /// The provider's host, recorded on every call span as `server.address`.
+    server_address: String,
     health_sender: Sender<BackendHealth>,
 }
 
@@ -73,7 +76,9 @@ impl OpenAIBackend {
     /// The one build path: assembles the HTTP client and tower stack with the given backoff base.
     fn build(config: &Config, backoff_base: Duration) -> Result<Self, OpenAIBackendError> {
         let openai_config = OpenAIConfig::new()
-            .with_api_base(config.llm_url().as_str())
+            // The root slash is dropped too (a bare host is `http://host/`), or the route would
+            // be requested as `//chat/completions`.
+            .with_api_base(config.llm_url().as_str().trim_end_matches('/'))
             .with_api_key(config.llm_api_key().expose_secret());
 
         let http_client = reqwest::Client::builder().build()?;
@@ -82,7 +87,7 @@ impl OpenAIBackend {
         let health_sender = watch::channel(health).0;
 
         let stack = tower::ServiceBuilder::new()
-            .layer(spans::StatusCaptureLayer) // outermost
+            .layer(status::StatusCaptureLayer) // outermost
             .layer(RetryLayer::new(RetryPolicy::new(
                 config.llm_max_retries(),
                 backoff_base,
@@ -96,6 +101,7 @@ impl OpenAIBackend {
             client,
             model: config.llm_model().to_owned(),
             idle_timeout: config.llm_idle_timeout(),
+            server_address: config.llm_url().host_str().unwrap_or_default().to_string(),
             health_sender,
         })
     }
@@ -113,9 +119,11 @@ impl Backend for OpenAIBackend {
     /// Streams a conversation to the OpenAI-compatible backend, returning a stream of chunks.
     /// The stream ends cleanly when the backend finishes, or with an error if the backend fails.
     /// The idle timeout covers opening the stream (including retries) and every gap between
-    /// provider events. Any provider event resets it, including reasoning deltas that are never
-    /// emitted as chunks. A stall with no events within the window ends the stream with a timeout
-    /// error.
+    /// provider events. Every parsed event resets it, including reasoning deltas that are never
+    /// emitted as chunks; SSE keep-alive comments do not, because the crate swallows them. A stall
+    /// with no parsed event within the window ends the stream with a timeout error. Once the
+    /// provider has said it finished, a timeout or a later error (such as an unreadable usage
+    /// chunk) no longer fails the reply: it is complete.
     fn stream_conversation(
         &self,
         history: Vec<ConversationPart>,
@@ -125,10 +133,7 @@ impl Backend for OpenAIBackend {
         let model = self.model.clone();
         let idle_timeout_dur = self.idle_timeout;
         let health_sender = self.health_sender.clone();
-        let server_address = reqwest::Url::parse(client.config().api_base())
-            .ok()
-            .and_then(|url| url.host_str().map(str::to_string))
-            .unwrap_or_default();
+        let server_address = self.server_address.clone();
 
         Box::pin(async_stream::stream! {
             // Created on the first poll, which the service makes inside the `decide` span, so the
@@ -229,7 +234,13 @@ impl Backend for OpenAIBackend {
                         }
                     }
                     Some(Some(Err(e))) => {
-                        yield Err(call.fail(classify(e, true)));
+                        // The reply is complete once the provider finished; what breaks after that
+                        // (a transport error, an unreadable usage chunk) does not undo it.
+                        if finished {
+                            call.succeed();
+                        } else {
+                            yield Err(call.fail(classify(e, true)));
+                        }
                         return;
                     }
                     // The stream ended: complete only if the provider said it finished.
@@ -306,7 +317,7 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
     // data; if that data is an error object, it is the provider's own error.
     if streaming
         && let OpenAIError::JSONDeserialize(_, content) = &error
-        && let Some((message, code)) = provider_error_event(content)
+        && let Some(ErrorMessage { message, code }) = provider_error_event(content)
     {
         return CompletionError::StreamError {
             description: format!("provider sent an error event: {message}"),
@@ -320,7 +331,11 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
             Ok(error) => *error,
             Err(other) => CompletionError::UnexpectedError(other),
         },
-        OpenAIError::Reqwest(e) if e.is_connect() => CompletionError::ConnectionError(Box::new(e)),
+        // Opening: the host was not reached or did not answer (refused, reset, closed without a
+        // response). Streaming: only a connect error; a later break is a stream error below.
+        OpenAIError::Reqwest(e) if host_not_reached(&e) && (!streaming || e.is_connect()) => {
+            CompletionError::ConnectionError(Box::new(e))
+        }
         OpenAIError::ApiError(response) if streaming => CompletionError::StreamError {
             description: format!(
                 "provider sent an error event: {}",
@@ -343,16 +358,20 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
     }
 }
 
-/// The message and code of an error event's data, in OpenAI's wrapped `{"error": {..}}` form or
-/// the flat form; `None` if the data is not an error object.
-fn provider_error_event(data: &str) -> Option<(String, Option<String>)> {
-    let value: serde_json::Value = serde_json::from_str(data).ok()?;
-    let fields = value
-        .get("error")
-        .filter(|e| e.is_object())
-        .unwrap_or(&value);
-    let text = |name: &str| fields.get(name)?.as_str().map(str::to_string);
-    Some((text("message")?, text("code")))
+/// A provider error event's message and code.
+struct ErrorMessage {
+    message: String,
+    code: Option<String>,
+}
+
+/// The message and code of an error event's data; `None` if the data is not an error object (it
+/// has no message), in which case the event is just unreadable.
+fn provider_error_event(data: &str) -> Option<ErrorMessage> {
+    let object = parse_error_object(data)?;
+    Some(ErrorMessage {
+        message: object.message?,
+        code: object.code,
+    })
 }
 
 /// The span's `error.type`: the name of the `CompletionError` case.

@@ -557,3 +557,24 @@ and C7 implement.
   Keychain, never typed on a command line. A manual `Decide` through the binary also streamed a
   multi-turn reply, with about 2.3 s to the first text (the reasoning phase, D85) and the usage
   event parsing without error.
+- **Milestone review (2026-10-23), fixed before shipping:**
+  - A provider that accepts the request and then hangs up counts as unreachable, not "never
+    reached".
+  - async-openai's own `async_openai::error` log line, which prints an unparsable event raw (reply
+    text included), is switched off in both the stdout and the export filter, beyond `RUST_LOG`'s
+    reach. The muted target list lives in the shared `crates/telemetry`, so every service gets
+    it; there is no per-service switch.
+  - An error after a `stop` finish completes the turn, like a stall does.
+  - A trailing slash on the base URL is stripped.
+  - The flat/wrapped error-object parser exists once, in a new `status.rs` that holds status
+    capture.
+  - Connection failures use one `error.type` vocabulary on both span levels.
+- **`health.rs` speaks HTTP** (accepted, recorded at review): `UnavailabilityReason` names
+  401/403, 402, 429 and 5xx and carries `http_code`, although Phase 1 kept `BackendError` thin to keep
+  provider concepts out of backend-neutral code. Accepted for now because the reasons are what an
+  operator needs on the diagnostic entry. *Revisit when* a second backend (Ollama, ARIA-54) needs
+  reasons that are not HTTP-shaped.
+- **Workspace-wide OpenTelemetry bump** (in the API-shape commit, 4e4abdd): `tracing-opentelemetry`
+  0.33 → 0.34 and `opentelemetry*` 0.32 → 0.33, kept in step with each other. It touches every
+  service's telemetry, and every service's tests passed with it.
+

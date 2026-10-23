@@ -22,9 +22,9 @@ const MAX_BACKOFF: Duration = Duration::from_secs(30);
 
 /// The C3 retry policy: retries 429, 5xx and connect errors (async-openai's `should_retry`
 /// classification) up to the configured max with jittered exponential backoff. Honours a
-/// `Retry-After` up to the cap and gives up immediately above it (an HTTP-date `Retry-After`
-/// counts as above the cap), passing the response through unchanged. tower clones it per request,
-/// so the attempt counter is per request.
+/// `Retry-After` up to the cap. A `Retry-After` above the cap, or one that is not a number of
+/// seconds (an HTTP date, say), makes it give up at once and pass the response (the 429 or 503)
+/// through unchanged. tower clones it per request, so the attempt counter is per request.
 #[derive(Debug, Clone)]
 pub struct RetryPolicy {
     max_retries: u16,

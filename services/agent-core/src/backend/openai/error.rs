@@ -42,7 +42,9 @@ pub enum CompletionError {
         /// The provider's own error code (a stable string), if it sent one.
         code: Option<String>,
     },
-    /// No connection could be made (DNS, refused, TLS); the cause is in the source chain.
+    /// The provider host could not be reached or did not answer: no connection could be made (DNS,
+    /// refused, TLS), or the connection failed before a response arrived (reset, or closed without
+    /// answering). The cause is in the source chain.
     #[error("Failed to connect to the host")]
     ConnectionError(#[source] BoxError),
     /// The stream started and then failed to complete. Three situations:
@@ -67,10 +69,41 @@ pub enum CompletionError {
     /// becomes a call to a tool that was not in the request.
     #[error("Unexpected tool call")]
     UnexpectedToolCall,
-    /// Anything else, mostly local (e.g. a request the client could not build); the provider was
-    /// not reached.
+    /// Anything else, mostly local (e.g. a request the client could not build). A transport error
+    /// after the request was sent is a `ConnectionError`, not this.
     #[error("Unexpected error: {0}")]
     UnexpectedError(#[source] BoxError),
+}
+
+/// Whether a transport error from sending the request means the provider host could not be
+/// reached or did not answer: any reqwest error but a local builder error (a request the client
+/// could not build).
+pub(crate) fn host_not_reached(error: &reqwest::Error) -> bool {
+    error.is_connect() || !error.is_builder()
+}
+
+/// The message and code of a provider's error object.
+pub(crate) struct ErrorObject {
+    /// The provider's message, if the object has one.
+    pub(crate) message: Option<String>,
+    /// The provider's own error code (a stable string), if it sent one.
+    pub(crate) code: Option<String>,
+}
+
+/// Parses a provider error out of `data`: Cerebras's flat `{"message","type","param","code"}` or
+/// OpenAI's wrapped `{"error": {..}}`. `None` if `data` is not JSON; a JSON value without a
+/// message gives an `ErrorObject` with none, so each caller decides its own fallback.
+pub(crate) fn parse_error_object(data: &str) -> Option<ErrorObject> {
+    let value: serde_json::Value = serde_json::from_str(data).ok()?;
+    let fields = value
+        .get("error")
+        .filter(|e| e.is_object())
+        .unwrap_or(&value);
+    let text = |name: &str| fields.get(name)?.as_str().map(str::to_string);
+    Some(ErrorObject {
+        message: text("message"),
+        code: text("code"),
+    })
 }
 
 /// A result whose error is a [`CompletionError`].

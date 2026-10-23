@@ -802,7 +802,15 @@ async fn readiness_follows_the_configured_flag_whatever_availability_says() {
 
 #[tokio::test]
 async fn shutdown_makes_the_backend_entry_not_serving_whatever_availability_was() {
-    for status in [HostStatus::Unknown, HostStatus::Available, timed_out()] {
+    // Each availability with the backend entry it shows before shutdown. The timed-out entry is
+    // already not-serving, so for it the readiness and overall entries are what prove shutdown had
+    // an effect: they are serving before and not-serving after.
+    let cases = [
+        (HostStatus::Unknown, ServingStatus::Unknown),
+        (HostStatus::Available, ServingStatus::Serving),
+        (timed_out(), ServingStatus::NotServing),
+    ];
+    for (status, before) in cases {
         // The server is not told to stop here, so the entry can be read once shutdown is reported;
         // a status that is already not-serving gets no further watch item.
         let backend = ScriptedBackend::new(vec![]);
@@ -825,16 +833,24 @@ async fn shutdown_makes_the_backend_entry_not_serving_whatever_availability_was(
             .expect("connect");
         let mut health = HealthClient::new(channel);
         backend.set_host_status(status.clone());
+        eventually(&mut health, BACKEND_SERVICE_NAME, before).await;
+        assert_eq!(
+            check(&mut health, SERVICE_NAME).await,
+            ServingStatus::Serving
+        );
+        assert_eq!(check(&mut health, "").await, ServingStatus::Serving);
 
         timeout(LIMIT, monitor.begin_shutdown())
             .await
             .expect("begin_shutdown timed out");
 
-        assert_eq!(
-            check(&mut health, BACKEND_SERVICE_NAME).await,
-            ServingStatus::NotServing,
-            "{status:?}"
-        );
+        for name in [BACKEND_SERVICE_NAME, SERVICE_NAME, ""] {
+            assert_eq!(
+                check(&mut health, name).await,
+                ServingStatus::NotServing,
+                "{name:?} after shutdown, from {status:?}"
+            );
+        }
     }
 }
 

@@ -1,5 +1,7 @@
 //! Service configuration read from the environment.
-//! Covers the listen address, the optional OTLP endpoint and whether gRPC reflection is on.
+//! Covers the listen address, the optional OTLP endpoint, whether gRPC reflection is on, and the
+//! five settings of the OpenAI-compatible LLM backend (`ARIA_LLM_API_KEY`, which is required, and
+//! `ARIA_LLM_BASE_URL`, `ARIA_LLM_MODEL`, `ARIA_LLM_IDLE_TIMEOUT` and `ARIA_LLM_MAX_RETRIES`).
 
 use reqwest::Url;
 use secrecy::SecretString;
@@ -69,8 +71,8 @@ pub enum ConfigError {
         value: String,
         reason: String,
     },
-    /// The value of an environment variable is not a valid u16.
-    #[error("invalid u16 in {variable}: '{value}' ({reason})")]
+    /// The value of an environment variable is not a whole number from 0 to 65535.
+    #[error("{variable} must be a whole number from 0 to 65535, got '{value}' ({reason})")]
     InvalidU16 {
         variable: &'static str,
         value: String,
@@ -122,6 +124,12 @@ impl Config {
     /// A blank value (empty or only whitespace) counts as unset. The listen address defaults to all
     /// interfaces on the default port, no OTLP endpoint means span export is off, and reflection
     /// is off unless set to `true` or `1`.
+    ///
+    /// The LLM backend needs `ARIA_LLM_API_KEY`; a missing or blank key is an error naming the
+    /// variable and the key is never echoed. The base URL, model, idle timeout (a duration with a
+    /// unit, such as `30s`, greater than zero) and retry count (0 to 65535) fall back to their
+    /// defaults when unset or blank, and an invalid value is an error naming the variable and the
+    /// value. Trailing slashes are dropped from the base URL's path.
     pub fn from_lookup(
         lookup: impl Fn(&'static str) -> Result<Option<String>, ConfigError>,
     ) -> Result<Self, ConfigError> {
@@ -148,7 +156,7 @@ impl Config {
             .ok_or(ConfigError::MissingVariable {
                 variable: ARIA_LLM_API_KEY_VAR,
             })?;
-        let llm_api_url = lookup(ARIA_LLM_BASE_URL_VAR)?
+        let mut llm_api_url = lookup(ARIA_LLM_BASE_URL_VAR)?
             .filter(|v| !is_blank(v))
             .map(|v| {
                 Url::parse(&v).map_err(|e| ConfigError::InvalidUrl {
@@ -161,23 +169,31 @@ impl Config {
             .unwrap_or_else(|| {
                 Url::parse(ARIA_LLM_BASE_URL_DEFAULT).expect("default base URL is valid")
             });
+        // `https://host/v1/` and `https://host/v1` are the same base; a trailing slash would
+        // otherwise make the route `.../v1//chat/completions`.
+        let trimmed_path = llm_api_url.path().trim_end_matches('/').to_string();
+        llm_api_url.set_path(&trimmed_path);
         let llm_api_model = lookup(ARIA_LLM_MODEL_VAR)?
             .filter(|v| !is_blank(v))
             .unwrap_or_else(|| ARIA_LLM_MODEL_DEFAULT.to_string());
-        let llm_api_idle_timeout = lookup(ARIA_LLM_IDLE_TIMEOUT_VAR)?
-            .filter(|v| !is_blank(v))
-            .map(|v| {
-                humantime::parse_duration(&v).map_err(|e| ConfigError::InvalidDuration {
+        let llm_api_idle_timeout = match lookup(ARIA_LLM_IDLE_TIMEOUT_VAR)?.filter(|v| !is_blank(v))
+        {
+            Some(raw) => {
+                let invalid = |reason: String| ConfigError::InvalidDuration {
                     variable: ARIA_LLM_IDLE_TIMEOUT_VAR,
-                    value: v,
-                    reason: e.to_string(),
-                })
-            })
-            .transpose()?
-            .unwrap_or_else(|| {
-                humantime::parse_duration(ARIA_LLM_IDLE_TIMEOUT_DEFAULT)
-                    .expect("default duration is valid")
-            });
+                    value: raw.clone(),
+                    reason,
+                };
+                let timeout =
+                    humantime::parse_duration(&raw).map_err(|e| invalid(e.to_string()))?;
+                if timeout == Duration::ZERO {
+                    return Err(invalid("must be greater than 0s".to_string()));
+                }
+                timeout
+            }
+            None => humantime::parse_duration(ARIA_LLM_IDLE_TIMEOUT_DEFAULT)
+                .expect("default duration is valid"),
+        };
         let llm_api_max_retries = lookup(ARIA_LLM_MAX_RETRIES_VAR)?
             .filter(|v| !is_blank(v))
             .map(|v| {
@@ -189,14 +205,6 @@ impl Config {
             })
             .transpose()?
             .unwrap_or(ARIA_LLM_MAX_RETRIES_DEFAULT);
-
-        if llm_api_idle_timeout <= humantime::parse_duration("0s").unwrap() {
-            return Err(ConfigError::InvalidDuration {
-                variable: ARIA_LLM_IDLE_TIMEOUT_VAR,
-                value: humantime::format_duration(llm_api_idle_timeout).to_string(),
-                reason: "must be greater than 0s".to_string(),
-            });
-        }
 
         Ok(Self {
             listen_address,
@@ -557,7 +565,10 @@ mod tests {
                 matches!(err, ConfigError::InvalidDuration { .. }),
                 "{zero}: {err:?}"
             );
-            assert!(err.to_string().contains("ARIA_LLM_IDLE_TIMEOUT"), "{err}");
+            let message = err.to_string();
+            assert!(message.contains("ARIA_LLM_IDLE_TIMEOUT"), "{message}");
+            // The value the operator wrote, not a reformatted duration such as "0ns".
+            assert!(message.contains(&format!("'{zero}'")), "{message}");
         }
     }
 
@@ -596,6 +607,10 @@ mod tests {
             let message = err.to_string();
             assert!(message.contains("ARIA_LLM_MAX_RETRIES"), "{message}");
             assert!(message.contains(bad), "{message}");
+            assert!(
+                message.contains("whole number from 0 to 65535"),
+                "{message}"
+            );
         }
     }
 
@@ -608,6 +623,51 @@ mod tests {
         .expect("zero retries means one attempt");
 
         assert_eq!(config.llm_max_retries(), 0);
+    }
+
+    /// The configured base URL as the backend will use it.
+    fn base_url_from(value: &'static str) -> Url {
+        let lookup = move |name: &'static str| {
+            Ok(match name {
+                ARIA_LLM_API_KEY_VAR => Some(SECRET.to_string()),
+                ARIA_LLM_BASE_URL_VAR => Some(value.to_string()),
+                _ => None,
+            })
+        };
+        Config::from_lookup(lookup)
+            .expect("config")
+            .llm_url()
+            .clone()
+    }
+
+    #[test]
+    fn trailing_slashes_on_the_base_url_path_are_dropped() {
+        for (given, expected) in [
+            (
+                "https://llm.example.test/v1/",
+                "https://llm.example.test/v1",
+            ),
+            (
+                "https://llm.example.test/v1///",
+                "https://llm.example.test/v1",
+            ),
+            (
+                "https://llm.example.test/a/b/",
+                "https://llm.example.test/a/b",
+            ),
+            ("https://llm.example.test/v1", "https://llm.example.test/v1"),
+        ] {
+            assert_eq!(base_url_from(given).as_str(), expected, "{given}");
+        }
+    }
+
+    #[test]
+    fn a_bare_host_base_url_has_an_empty_path_so_the_backend_can_drop_the_root_slash() {
+        let url = base_url_from("http://localhost:11434/");
+
+        assert_eq!(url.path(), "/");
+        // A URL cannot render an empty path, so the consumer trims the root slash it prints.
+        assert_eq!(url.as_str().trim_end_matches('/'), "http://localhost:11434");
     }
 
     #[test]

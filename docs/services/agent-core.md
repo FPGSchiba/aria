@@ -88,17 +88,22 @@ following is an architecture decision.
 
 - **Retries.** A 429, a 5xx or a connection failure is retried on the same provider, up to
   `ARIA_LLM_MAX_RETRIES` times, with exponential backoff and jitter. A provider `Retry-After` of up to
-  10 s is honoured exactly; a longer one, or one given as a date, ends retrying at once and the 429 is
-  reported as is. Nothing is retried once a reply has started streaming. This is not D35's failover,
+  10 s is honoured exactly; a longer one, or one that is not a number of seconds (such as a date),
+  ends retrying at once and that response, a 429 or a 5xx, is reported as is. Nothing is retried once a reply has started streaming. This is not D35's failover,
   which will sit above it.
 - **Idle timeout.** A turn fails as a timeout when the provider sends nothing for
   `ARIA_LLM_IDLE_TIMEOUT`, counted from the request (opening and its retries share the first window)
-  and restarted by every event, reasoning included. A long reply that keeps streaming never trips it.
+  and restarted by every event, reasoning included. Keep-alive comments do not restart it. A long
+  reply that keeps streaming never trips it.
 - **How a reply can end.** A normal finish commits the turn. A reply cut short by the length limit
   after some text ends cleanly; with no text it is an error. A content-filter finish is **always** an
   error, because part of the answer was withheld. A tool call is an error until tool calling lands
   (ARIA-61). A stream that ends without a finish reason is treated as cut off, an error, never a
-  complete reply.
+  complete reply. Once a normal finish has arrived, anything that goes wrong afterwards (a stall, a
+  dropped connection, an unreadable usage event) still commits the turn: the whole answer was
+  already delivered.
+- **Base URL.** A trailing slash on `ARIA_LLM_BASE_URL` is removed, so `…/v1/` and `…/v1` are the
+  same.
 - **Conversation mapping.** History goes first, then the new input. Stored system entries are not
   replayed; whether they ever are is open (below). The current date and time are not injected yet
   (ARIA-222).
@@ -131,7 +136,7 @@ following is an architecture decision.
 | Health service name | Serving when | Kubernetes probe |
 |---|---|---|
 | `""` (the server overall) | the process is up and shutdown has not begun | **liveness** |
-| `aria.agent_core.v1.AgentCore` | the history store **and** the backend both report healthy, and shutdown has not begun | **readiness** |
+| `aria.agent_core.v1.AgentCore` | the history store **and** the backend both report healthy in their *configured* state (observed provider availability is not counted), and shutdown has not begun | **readiness** |
 | `aria.agent_core.v1.AgentCore.history` | the history store reports healthy, and shutdown has not begun | none; for diagnosis |
 | `aria.agent_core.v1.AgentCore.backend` | the provider was last observed **available**; `NOT_SERVING` once observed unavailable (the log names the reason) or once shutdown begins; `UNKNOWN` until the first turn | none; for diagnosis |
 
@@ -146,10 +151,12 @@ calls a dependency to check it. On SIGTERM both statuses become not-serving **be
 starts. Watchers of the health status see the change, and then their streams end, so they do not
 hold up the drain. New connections stop because the listener closes; in-flight turns get up to 20 s
 to finish. A dependency that reports itself as a
-backup (for later failover, D35) still counts as healthy; the flag is only logged. **Accepted cost:**
-a backend outage makes every pod unready at once, so callers see "no endpoints" rather than a
-`Decide` error naming the backend. *Revisit if* that proves worse in practice than serving and
-failing turns.
+backup (for later failover, D35) still counts as healthy; the flag is only logged. **Accepted cost
+(ARIA-131):** a backend that reports itself unhealthy in its configured state makes every pod unready
+at once, so callers see "no endpoints" rather than a `Decide` error naming the backend. The hosted
+backend never does this: its configured state is fixed, and since ARIA-143 a provider outage shows
+only on the backend entry, with pods staying ready and turns failing with `INTERNAL`. *Revisit if*
+either proves worse in practice than the other.
 
 **Calling the real provider (manual, key-gated):** one test calls Cerebras for real, to show the
 first chunk arrives before the reply ends. It is ignored by the CI gate and fails, rather than

@@ -673,6 +673,28 @@ async fn a_connection_failure_carries_the_connection_error_type() {
     assert!(normalize(error_type).contains("connection"), "{error_type}");
 }
 
+#[tokio::test]
+async fn the_attempt_span_and_the_call_span_name_a_connection_failure_the_same() {
+    let (capture, _guard) = Capture::install();
+    let provider = FakeProvider::start().await.expect("provider");
+    let backend = backend_for(&provider, "5s", 0);
+    drop(provider);
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    let mut client = serve(backend).await;
+
+    decide(&mut client, "s1", "hello").await;
+
+    let calls = capture.wait_for_closed_calls(1).await;
+    let attempts = capture.children_of(&calls[0]);
+    assert_eq!(attempts.len(), 1, "{attempts:?}");
+    assert_eq!(
+        attempts[0].field("error.type"),
+        calls[0].field("error.type"),
+        "one vocabulary: {attempts:?} / {calls:?}"
+    );
+    assert_eq!(calls[0].field("error.type"), Some("connection_error"));
+}
+
 // ---------------------------------------------------------------- no secrets
 
 #[tokio::test]
