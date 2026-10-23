@@ -600,7 +600,7 @@ and C7 implement.
     content never lands in a span or log line (the rule D41 relied on and D82 kept). So it is no
     longer part of any error's display, span or exported log. It is logged once, truncated, at
     `debug` under its own target, which the export filter drops. **This is a narrow exception to that
-    rule, made knowingly:** stdout is the cluster's log surface (D82), so enabling `debug` for the
+    rule, made knowingly, recorded as [D88](../decisions/0021-provider-message-debug-log.md):** stdout is the cluster's log surface (D82), so enabling `debug` for the
     service on a pod puts up to 200 characters of provider text into pod logs. It is off by default
     (`info`), never exported, and bounded.
     - *Rejected:* dropping it entirely (loses what diagnosed the `include_obfuscation` failure);

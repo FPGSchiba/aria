@@ -111,7 +111,7 @@ following is an architecture decision.
   the provider's error code and the kind of failure, never the provider's message text, which some
   servers fill with the request's input. The message is logged once, cut to 200 characters, at
   `debug` under its own target, which the OTLP export drops. **This is a deliberate, narrow exception
-  to "conversation content never lands in a log line":** stdout is the cluster's log surface (D82), so
+  to "conversation content never lands in a log line" ([D88](../decisions/0021-provider-message-debug-log.md)):** stdout is the cluster's log surface (D82), so
   enabling `debug` for this service on a pod (`RUST_LOG=agent_core=debug`) puts up to 200 characters
   of provider text into that pod's logs. It stays off by default (`RUST_LOG` defaults to `info`).
 - **Conversation mapping.** History goes first, then the new input. Stored system entries are not

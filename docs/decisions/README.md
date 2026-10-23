@@ -17,7 +17,7 @@ a settled choice or, worse, silently reversing one.
   Do not treat a triggered decision as settled — and do not reopen an untriggered one.
 - **Rejected alternatives are the point.** An entry without them cannot tell a future reader
   whether an option was considered and dismissed or simply never occurred to anyone.
-- Next number to allocate: **D88**.
+- Next number to allocate: **D89**.
 
 ---
 
@@ -193,6 +193,12 @@ Taken 2026-10-05 (planning — ARIA-123).
 Taken 2026-10-05 (first full repo review).
 
 - **D87** — ⚠️ **Supersedes D12's file path**: schemas live at `proto/aria/<service>/v1/<service>.proto` so the directory matches `package aria.<service>.v1;`; D12's dual versioning is unchanged
+
+### [Provider error messages in the debug log](0021-provider-message-debug-log.md) · D88
+
+Taken 2026-10-23 (ARIA-143 milestone review).
+
+- **D88** — A hosted provider's error message is logged once, truncated to 200 characters, at `debug` under its own target that is never exported; a narrow exception to "conversation content never lands in a log line"
 
 ### [Session 1 summary](0008-session-1-summary.md)
 
