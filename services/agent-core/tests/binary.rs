@@ -669,3 +669,86 @@ async fn an_unreadable_event_never_puts_the_reply_text_in_the_logs_whatever_rust
     // The turn did happen, and logging is on at the level asked for.
     assert!(stdout.contains("binary-sentinel"), "{stdout}");
 }
+
+/// Runs one `Decide` turn against the binary at `address` to the end of its stream.
+async fn decide_once(address: &str) {
+    let mut client =
+        tokio::time::timeout(LIMIT, AgentCoreClient::connect(format!("http://{address}")))
+            .await
+            .expect("connect timed out")
+            .expect("connect");
+    let mut stream = client
+        .decide(DecideRequest {
+            session_id: "binary-once".to_string(),
+            speaker_name: None,
+            text: "hello".to_string(),
+        })
+        .await
+        .expect("decide")
+        .into_inner();
+    while tokio::time::timeout(LIMIT, stream.next())
+        .await
+        .expect("stream timed out")
+        .is_some()
+    {}
+}
+
+#[tokio::test]
+async fn a_key_with_a_trailing_newline_is_trimmed_and_still_serves_a_turn() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(default_happy_path());
+    let key = format!("{TEST_KEY}\n");
+    let mut server = Server::spawn_against_with(
+        &provider,
+        "127.0.0.1:0",
+        &[("ARIA_LLM_API_KEY", key.as_str())],
+    );
+    let startup = server.wait_for_line("backend on");
+
+    decide_once(&address_in(&startup)).await;
+
+    let recorded = provider.requests();
+    assert_eq!(recorded.len(), 1);
+    assert_eq!(
+        recorded[0].header("authorization"),
+        Some(format!("Bearer {TEST_KEY}").as_str())
+    );
+}
+
+#[tokio::test]
+async fn the_openai_environment_never_reaches_the_provider() {
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(default_happy_path());
+    let mut server = Server::spawn_against_with(
+        &provider,
+        "127.0.0.1:0",
+        &[
+            ("OPENAI_ORG_ID", "org-must-not-leak"),
+            ("OPENAI_PROJECT_ID", "proj-must-not-leak"),
+            ("OPENAI_API_KEY", "sk-openai-env-key"),
+            ("OPENAI_ADMIN_KEY", "sk-openai-admin-key"),
+            ("OPENAI_BASE_URL", "http://127.0.0.1:1/v1"),
+        ],
+    );
+    let startup = server.wait_for_line("backend on");
+
+    decide_once(&address_in(&startup)).await;
+
+    // The turn reached the configured provider, not the OPENAI_BASE_URL one.
+    let recorded = provider.requests();
+    assert_eq!(recorded.len(), 1);
+    let request = &recorded[0];
+    assert_eq!(request.header("openai-organization"), None);
+    assert_eq!(request.header("openai-project"), None);
+    assert_eq!(
+        request.header("authorization"),
+        Some(format!("Bearer {TEST_KEY}").as_str())
+    );
+    let headers = format!("{:?}", request.headers);
+    for leaked in ["org-must-not-leak", "proj-must-not-leak", "sk-openai"] {
+        assert!(
+            !headers.contains(leaked),
+            "{leaked} reached the provider: {headers}"
+        );
+    }
+}

@@ -143,7 +143,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
         version = agent_core::version::VERSION,
         git_sha = agent_core::version::GIT_SHA.unwrap_or("unknown"),
         model = config.llm_model(),
-        llm_host = config.llm_url().host_str().unwrap_or("unknown"),
+        llm_host = config.llm_host(),
         "Starting agent-core service with '{backend_name}' backend on '{}'",
         listener.local_addr()?
     );

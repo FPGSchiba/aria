@@ -2,9 +2,10 @@
 //! provider (D85) and turns its events into ARIA chunks, enforcing the idle timeout.
 
 use crate::backend::openai::error::{
-    CompletionError, GenerationFailure, host_not_reached, map_completion_error_to_availability,
-    parse_error_object,
+    CompletionError, ErrorObject, GenerationFailure, connection_failed,
+    map_completion_error_to_availability, parse_error_object,
 };
+use crate::backend::openai::provider_config::ProviderConfig;
 use crate::backend::openai::request::map_conversation_to_request;
 use crate::backend::openai::retry::RetryPolicy;
 use crate::backend::{Backend, BackendError, Chunk};
@@ -12,12 +13,10 @@ use crate::config::Config;
 use crate::conversation::ConversationPart;
 use crate::health::{BackendHealth, HostStatus};
 use async_openai::Client;
-use async_openai::config::OpenAIConfig;
 use async_openai::error::OpenAIError;
 use async_openai::middleware::ReqwestService;
 use async_openai::types::chat::{CreateChatCompletionStreamResponse, FinishReason};
 use futures_core::Stream;
-use secrecy::ExposeSecret;
 use std::pin::Pin;
 use std::time::Duration;
 use tokio::sync::watch;
@@ -29,20 +28,25 @@ use tracing::{Instrument, Span};
 pub mod error;
 #[cfg(feature = "test-util")]
 pub mod fake_provider;
+pub(crate) mod provider_config;
 pub(crate) mod request;
 pub(crate) mod retry;
 pub(crate) mod spans;
 pub(crate) mod status;
+#[cfg(test)]
+pub(crate) mod test_support;
 
 /// An OpenAI-compatible backend that streams a conversation through a Chat Completions provider
 /// and turns its events into ARIA chunks, enforcing the idle timeout.
 #[derive(Debug, Clone)]
 pub struct OpenAIBackend {
-    client: Client<OpenAIConfig>,
+    client: Client<ProviderConfig>,
     model: String,
     idle_timeout: Duration,
-    /// The provider's host, recorded on every call span as `server.address`.
+    /// The provider's host and port, recorded on every call span as `server.address` and
+    /// `server.port`.
     server_address: String,
+    server_port: Option<u16>,
     health_sender: Sender<BackendHealth>,
 }
 
@@ -75,11 +79,13 @@ impl OpenAIBackend {
 
     /// The one build path: assembles the HTTP client and tower stack with the given backoff base.
     fn build(config: &Config, backoff_base: Duration) -> Result<Self, OpenAIBackendError> {
-        let openai_config = OpenAIConfig::new()
-            // The root slash is dropped too (a bare host is `http://host/`), or the route would
-            // be requested as `//chat/completions`.
-            .with_api_base(config.llm_url().as_str().trim_end_matches('/'))
-            .with_api_key(config.llm_api_key().expose_secret());
+        // Built from the ARIA_LLM_* settings alone, never from the OPENAI_* environment. The root
+        // slash of the base URL is dropped too (a bare host is `http://host/`), or the route
+        // would be requested as `//chat/completions`.
+        let provider_config = ProviderConfig::new(
+            config.llm_url().as_str().trim_end_matches('/'),
+            config.llm_api_key().clone(),
+        );
 
         let http_client = reqwest::Client::builder().build()?;
 
@@ -95,13 +101,14 @@ impl OpenAIBackend {
             .layer(spans::AttemptTracingLayer)
             .service(ReqwestService::new(http_client)); // innermost
 
-        let client = Client::with_config(openai_config).with_http_service(stack);
+        let client = Client::with_config(provider_config).with_http_service(stack);
 
         Ok(Self {
             client,
             model: config.llm_model().to_owned(),
             idle_timeout: config.llm_idle_timeout(),
-            server_address: config.llm_url().host_str().unwrap_or_default().to_string(),
+            server_address: config.llm_host().to_string(),
+            server_port: config.llm_port(),
             health_sender,
         })
     }
@@ -134,6 +141,7 @@ impl Backend for OpenAIBackend {
         let idle_timeout_dur = self.idle_timeout;
         let health_sender = self.health_sender.clone();
         let server_address = self.server_address.clone();
+        let server_port = self.server_port;
 
         Box::pin(async_stream::stream! {
             // Created on the first poll, which the service makes inside the `decide` span, so the
@@ -144,13 +152,18 @@ impl Backend for OpenAIBackend {
                 "gen_ai.operation.name" = "chat",
                 "gen_ai.provider.name" = "openai",
                 "server.address" = %server_address,
+                "server.port" = tracing::field::Empty,
                 "gen_ai.request.model" = %model,
                 "gen_ai.response.model" = tracing::field::Empty,
                 "gen_ai.response.finish_reasons" = tracing::field::Empty,
                 "gen_ai.usage.input_tokens" = tracing::field::Empty,
                 "gen_ai.usage.output_tokens" = tracing::field::Empty,
                 "error.type" = tracing::field::Empty,
+                "otel.status_code" = tracing::field::Empty,
             );
+            if let Some(port) = server_port {
+                call_span.record("server.port", u64::from(port));
+            }
             let call = Call { span: call_span.clone(), health: health_sender };
             let request = map_conversation_to_request(&history, &input, &model);
 
@@ -281,7 +294,8 @@ impl Call {
     /// The single error exit: records the error's kind on the span, publishes the availability it
     /// implies, and returns the error the stream yields (its cause stays downcastable).
     fn fail(&self, error: CompletionError) -> BackendError {
-        self.span.record("error.type", error_type(&error));
+        self.span.record("error.type", error.error_type());
+        self.span.record("otel.status_code", "ERROR");
         self.publish(Some(&error));
         BackendError::unexpected(error)
     }
@@ -317,7 +331,10 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
     // data; if that data is an error object, it is the provider's own error.
     if streaming
         && let OpenAIError::JSONDeserialize(_, content) = &error
-        && let Some(ErrorMessage { message, code }) = provider_error_event(content)
+        && let Some(ErrorObject {
+            message: Some(message),
+            code,
+        }) = parse_error_object(content)
     {
         return CompletionError::StreamError {
             description: format!("provider sent an error event: {message}"),
@@ -331,59 +348,16 @@ fn classify(error: OpenAIError, streaming: bool) -> CompletionError {
             Ok(error) => *error,
             Err(other) => CompletionError::UnexpectedError(other),
         },
-        // Opening: the host was not reached or did not answer (refused, reset, closed without a
-        // response). Streaming: only a connect error; a later break is a stream error below.
-        OpenAIError::Reqwest(e) if host_not_reached(&e) && (!streaming || e.is_connect()) => {
+        // The request got no response: refused, reset, or closed without an answer.
+        OpenAIError::Reqwest(e) if connection_failed(&e) => {
             CompletionError::ConnectionError(Box::new(e))
         }
-        OpenAIError::ApiError(response) if streaming => CompletionError::StreamError {
-            description: format!(
-                "provider sent an error event: {}",
-                response.api_error.message
-            ),
-            cause: None,
-            provider_code: response.api_error.code,
-        },
-        OpenAIError::ApiError(response) => CompletionError::HttpError {
-            status: response.status_code,
-            message: response.api_error.message,
-            code: response.api_error.code,
-        },
         other if streaming => CompletionError::StreamError {
             description: "the stream broke".to_string(),
             cause: Some(Box::new(other)),
             provider_code: None,
         },
         other => CompletionError::UnexpectedError(Box::new(other)),
-    }
-}
-
-/// A provider error event's message and code.
-struct ErrorMessage {
-    message: String,
-    code: Option<String>,
-}
-
-/// The message and code of an error event's data; `None` if the data is not an error object (it
-/// has no message), in which case the event is just unreadable.
-fn provider_error_event(data: &str) -> Option<ErrorMessage> {
-    let object = parse_error_object(data)?;
-    Some(ErrorMessage {
-        message: object.message?,
-        code: object.code,
-    })
-}
-
-/// The span's `error.type`: the name of the `CompletionError` case.
-fn error_type(error: &CompletionError) -> &'static str {
-    match error {
-        CompletionError::Timeout => "timeout",
-        CompletionError::HttpError { .. } => "http_error",
-        CompletionError::ConnectionError(_) => "connection_error",
-        CompletionError::StreamError { .. } => "stream_error",
-        CompletionError::GenerationFailed(_) => "generation_failed",
-        CompletionError::UnexpectedToolCall => "unexpected_tool_call",
-        CompletionError::UnexpectedError(_) => "unexpected_error",
     }
 }
 

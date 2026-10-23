@@ -86,11 +86,13 @@ provider) pointed at Cerebras by default. Startup logs the backend, model and ho
 missing key or an invalid setting stops the binary at startup with the variable named. None of the
 following is an architecture decision.
 
-- **Retries.** A 429, a 5xx or a connection failure is retried on the same provider, up to
+- **Retries.** A 429, a 5xx or a failure to connect is retried on the same provider, up to
   `ARIA_LLM_MAX_RETRIES` times, with exponential backoff and jitter. A provider `Retry-After` of up to
   10 s is honoured exactly; a longer one, or one that is not a number of seconds (such as a date),
   ends retrying at once and that response, a 429 or a 5xx, is reported as is. Nothing is retried once a reply has started streaming. This is not D35's failover,
-  which will sit above it.
+  which will sit above it. A host that accepts the connection and then closes it without answering
+  is not retried, because the request may already have reached it; the turn fails and the provider is
+  marked unreachable.
 - **Idle timeout.** A turn fails as a timeout when the provider sends nothing for
   `ARIA_LLM_IDLE_TIMEOUT`, counted from the request (opening and its retries share the first window)
   and restarted by every event, reasoning included. Keep-alive comments do not restart it. A long
@@ -125,11 +127,15 @@ following is an architecture decision.
 | Span export | `OTEL_EXPORTER_OTLP_ENDPOINT` | unset, so export is off |
 | Stdout log level | `RUST_LOG` | `info` |
 | gRPC server reflection (v1 and v1alpha, for grpcurl/Postman) | `ARIA_AGENT_CORE_REFLECTION` | off. `true`/`1` turns it on; blank means off. |
-| Hosted backend API key | `ARIA_LLM_API_KEY` | **required**; no default. Held as a secret and never logged. |
+| Hosted backend API key | `ARIA_LLM_API_KEY` | **required**; no default. Held as a secret and never logged. Surrounding whitespace, such as the trailing newline of a secret made from a file, is trimmed; a key that still cannot be sent as a header stops startup. |
 | Hosted backend base URL (including `/v1`) | `ARIA_LLM_BASE_URL` | `https://api.cerebras.ai/v1` |
 | Hosted model | `ARIA_LLM_MODEL` | `qwen-3.8-27b` |
 | Idle timeout (a duration such as `30s`; zero is rejected) | `ARIA_LLM_IDLE_TIMEOUT` | `30s` |
 | Retries per request (`0` turns retrying off) | `ARIA_LLM_MAX_RETRIES` | `3` |
+
+The five `ARIA_LLM_*` settings are the hosted client's only configuration: `OPENAI_*` variables in
+the environment (`OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, …) are
+ignored and never sent to the provider.
 
 **Health (`grpc.health.v1`, same port):**
 

@@ -95,36 +95,9 @@ mod tests {
     use crate::backend::openai::fake_provider::{
         ErrorScript, FakeProvider, Step, StreamScript, flat_error_body,
     };
+    use crate::backend::openai::test_support::{factory, transport};
     use axum::http::StatusCode;
-    use tower::{ServiceExt, service_fn};
-
-    /// A request factory the layer never builds from; the inner service below ignores it.
-    fn factory() -> HttpRequestFactory {
-        HttpRequestFactory::new(|| async {
-            Err(OpenAIError::InvalidArgument("never built".to_string()))
-        })
-    }
-
-    /// An inner service that posts to the fake provider with a plain reqwest client, standing in
-    /// for the bottom of the real stack.
-    fn transport(
-        base_url: String,
-    ) -> impl Service<
-        HttpRequestFactory,
-        Response = Response,
-        Error = OpenAIError,
-        Future = impl Future<Output = Result<Response, OpenAIError>> + Send,
-    > + Clone
-    + Send
-    + 'static {
-        let client = reqwest::Client::new();
-        let url = format!("{base_url}/chat/completions");
-        service_fn(move |_request: HttpRequestFactory| {
-            let client = client.clone();
-            let url = url.clone();
-            async move { client.post(url).send().await.map_err(OpenAIError::Reqwest) }
-        })
-    }
+    use tower::ServiceExt;
 
     /// The classified error a failed call carries.
     fn completion_error(error: OpenAIError) -> CompletionError {

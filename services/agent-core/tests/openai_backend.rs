@@ -622,6 +622,38 @@ async fn a_host_that_closes_without_answering_is_a_connection_error_and_unreacha
 }
 
 #[tokio::test]
+async fn a_redirect_loop_is_not_an_unreachable_provider() {
+    // The host answers, every time with a redirect to itself: that is a misconfigured URL, not a
+    // host that cannot be reached. It maps to an unexpected error, which leaves availability as
+    // it was (any answer from the provider is not evidence that it is down).
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind");
+    let addr = listener.local_addr().expect("addr");
+    let app = axum::Router::new().route(
+        "/v1/chat/completions",
+        axum::routing::post(|| async {
+            axum::response::Redirect::temporary("/v1/chat/completions")
+        }),
+    );
+    tokio::spawn(async move {
+        let _ = axum::serve(listener, app).await;
+    });
+    let config = llm_config(&format!("http://{addr}/v1"), "5s", 0);
+    let backend = OpenAIBackend::with_backoff_base(&config, TEST_BACKOFF).expect("backend");
+
+    let run = run(&backend).await;
+
+    assert!(
+        matches!(run.cause(), CompletionError::UnexpectedError(_)),
+        "{:?}",
+        run.cause()
+    );
+    assert_eq!(
+        *backend.subscribe_health().borrow().host_status(),
+        HostStatus::Unknown
+    );
+}
+
+#[tokio::test]
 async fn a_host_that_closes_without_answering_is_not_retried() {
     // Only connect errors are retried; a host that was reached and then hung up is not.
     let (base_url, accepted) = closing_server().await;

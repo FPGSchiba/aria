@@ -3,7 +3,6 @@
 
 use crate::BoxError;
 use crate::health::{HostStatus, UnavailabilityReason};
-use std::cmp::PartialEq;
 use std::fmt::Display;
 
 /// Why the provider finished a reply without producing text.
@@ -75,11 +74,38 @@ pub enum CompletionError {
     UnexpectedError(#[source] BoxError),
 }
 
-/// Whether a transport error from sending the request means the provider host could not be
-/// reached or did not answer: any reqwest error but a local builder error (a request the client
-/// could not build).
-pub(crate) fn host_not_reached(error: &reqwest::Error) -> bool {
-    error.is_connect() || !error.is_builder()
+/// Whether sending the request failed without any response: the connection could not be made,
+/// was reset, or was closed before an answer. Redirect, decode, body, status and builder errors
+/// are not this: the provider answered, or the request was never sent.
+pub(crate) fn connection_failed(error: &reqwest::Error) -> bool {
+    error.is_connect() || error.is_request()
+}
+
+/// The `error.type` of a failed call, as the name of the `CompletionError` case. One vocabulary
+/// for the call span and the attempt spans.
+pub(crate) mod error_type {
+    pub(crate) const TIMEOUT: &str = "timeout";
+    pub(crate) const HTTP_ERROR: &str = "http_error";
+    pub(crate) const CONNECTION_ERROR: &str = "connection_error";
+    pub(crate) const STREAM_ERROR: &str = "stream_error";
+    pub(crate) const GENERATION_FAILED: &str = "generation_failed";
+    pub(crate) const UNEXPECTED_TOOL_CALL: &str = "unexpected_tool_call";
+    pub(crate) const UNEXPECTED_ERROR: &str = "unexpected_error";
+}
+
+impl CompletionError {
+    /// The span's `error.type`: the name of this case.
+    pub(crate) fn error_type(&self) -> &'static str {
+        match self {
+            CompletionError::Timeout => error_type::TIMEOUT,
+            CompletionError::HttpError { .. } => error_type::HTTP_ERROR,
+            CompletionError::ConnectionError(_) => error_type::CONNECTION_ERROR,
+            CompletionError::StreamError { .. } => error_type::STREAM_ERROR,
+            CompletionError::GenerationFailed(_) => error_type::GENERATION_FAILED,
+            CompletionError::UnexpectedToolCall => error_type::UNEXPECTED_TOOL_CALL,
+            CompletionError::UnexpectedError(_) => error_type::UNEXPECTED_ERROR,
+        }
+    }
 }
 
 /// The message and code of a provider's error object.
@@ -106,9 +132,6 @@ pub(crate) fn parse_error_object(data: &str) -> Option<ErrorObject> {
     })
 }
 
-/// A result whose error is a [`CompletionError`].
-pub type CompletionResult<T> = Result<T, CompletionError>;
-
 /// Maps a failure to the availability update it implies, or `None` for no update.
 ///
 /// Any answer from the provider means it is available, including ordinary 4xx statuses and
@@ -120,65 +143,39 @@ pub fn map_completion_error_to_availability(
     error: &CompletionError,
     current: &HostStatus,
 ) -> Option<HostStatus> {
-    let new_status: HostStatus;
-    match error {
-        CompletionError::Timeout => {
-            new_status = HostStatus::Unavailable(UnavailabilityReason::TimedOut)
-        }
-        CompletionError::HttpError {
-            status,
-            message: _,
-            code,
-        } => {
-            match status.as_u16() {
-                400 => new_status = HostStatus::Available,
-                401 => {
-                    new_status = HostStatus::Unavailable(UnavailabilityReason::KeyRejected {
-                        host_code: code.to_owned(),
-                    })
-                }
-                402 => {
-                    new_status = HostStatus::Unavailable(UnavailabilityReason::PaymentRequired {
-                        host_code: code.to_owned(),
-                    })
-                }
-                403 => {
-                    new_status = HostStatus::Unavailable(UnavailabilityReason::KeyRejected {
-                        host_code: code.to_owned(),
-                    })
-                }
-                404 => new_status = HostStatus::Available,
-                413 => new_status = HostStatus::Available,
-                422 => new_status = HostStatus::Available,
-                429 => {
-                    new_status = HostStatus::Unavailable(UnavailabilityReason::RateLimited {
-                        host_code: code.to_owned(),
-                    })
-                }
-                500..=599 => {
-                    new_status = HostStatus::Unavailable(UnavailabilityReason::ServerError {
-                        http_code: status.as_u16(),
-                        host_code: code.to_owned(),
-                    })
-                }
-                _ => {
-                    // Any other answer from the provider counts as available
-                    new_status = HostStatus::Available;
-                }
-            }
-        }
+    let new_status = match error {
+        CompletionError::Timeout => HostStatus::Unavailable(UnavailabilityReason::TimedOut),
+        CompletionError::HttpError { status, code, .. } => match status.as_u16() {
+            401 | 403 => HostStatus::Unavailable(UnavailabilityReason::KeyRejected {
+                host_code: code.to_owned(),
+            }),
+            402 => HostStatus::Unavailable(UnavailabilityReason::PaymentRequired {
+                host_code: code.to_owned(),
+            }),
+            429 => HostStatus::Unavailable(UnavailabilityReason::RateLimited {
+                host_code: code.to_owned(),
+            }),
+            500..=599 => HostStatus::Unavailable(UnavailabilityReason::ServerError {
+                http_code: status.as_u16(),
+                host_code: code.to_owned(),
+            }),
+            // Any other answer from the provider counts as available.
+            _ => HostStatus::Available,
+        },
         CompletionError::ConnectionError(_) => {
-            new_status = HostStatus::Unavailable(UnavailabilityReason::Unreachable)
+            HostStatus::Unavailable(UnavailabilityReason::Unreachable)
         }
         CompletionError::StreamError { provider_code, .. } => {
-            new_status = HostStatus::Unavailable(UnavailabilityReason::StreamInterrupted {
+            HostStatus::Unavailable(UnavailabilityReason::StreamInterrupted {
                 host_code: provider_code.to_owned(),
             })
         }
-        CompletionError::GenerationFailed(_) => new_status = HostStatus::Available,
-        CompletionError::UnexpectedToolCall => new_status = HostStatus::Available,
-        CompletionError::UnexpectedError(_) => return None, // For unexpected errors, we don't change the status
-    }
+        CompletionError::GenerationFailed(_) | CompletionError::UnexpectedToolCall => {
+            HostStatus::Available
+        }
+        // The provider was not reached, so nothing is learned about it.
+        CompletionError::UnexpectedError(_) => return None,
+    };
 
     if &new_status == current {
         None

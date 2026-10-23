@@ -120,17 +120,11 @@ impl Policy<HttpRequestFactory, Response, OpenAIError> for RetryPolicy {
 mod tests {
     use super::*;
     use crate::backend::openai::fake_provider::{ErrorScript, FakeProvider, StreamScript};
+    use crate::backend::openai::test_support::factory;
     use axum::http::StatusCode;
     use tokio::time::Instant;
 
     const BASE: Duration = Duration::from_millis(10);
-
-    /// A request factory the policy never builds from; it only needs something to hold.
-    fn factory() -> HttpRequestFactory {
-        HttpRequestFactory::new(|| async {
-            Err(OpenAIError::InvalidArgument("never built".to_string()))
-        })
-    }
 
     /// A real response with the scripted status and optional `Retry-After`, fetched from a fake
     /// provider so the policy sees exactly what a client would.

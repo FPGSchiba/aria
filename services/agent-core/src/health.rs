@@ -47,7 +47,8 @@ pub enum UnavailabilityReason {
         /// The provider's own error code (a stable string such as `wrong_api_key`) when it sent one.
         host_code: Option<String>,
     },
-    /// No connection could be made (DNS, refused, TLS or connect error) after retries.
+    /// The connection failed or was closed without an answer (DNS, refused, TLS, reset, or closed
+    /// before a response), after retries. Only connect failures are retried.
     Unreachable,
     /// Nothing arrived within the idle timeout, while opening (including retries) or mid-stream.
     TimedOut,

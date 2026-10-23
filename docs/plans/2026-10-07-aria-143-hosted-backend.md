@@ -577,4 +577,17 @@ and C7 implement.
 - **Workspace-wide OpenTelemetry bump** (in the API-shape commit, 4e4abdd): `tracing-opentelemetry`
   0.33 → 0.34 and `opentelemetry*` 0.32 → 0.33, kept in step with each other. It touches every
   service's telemetry, and every service's tests passed with it.
+- **Second milestone review (2026-10-23), fixed before shipping:**
+  - **The key is trimmed** (Jann's call: trim rather than reject), so the trailing newline of a secret
+    made from a file is harmless. It is wrapped as a secret where it is read. A key that still cannot
+    form an `Authorization` header stops startup with `InvalidSecret`, naming the variable and never
+    the value. Before this, async-openai panicked on every turn.
+  - **async-openai's `OpenAIConfig` reads `OPENAI_*` from the environment** (org and project became
+    headers to Cerebras). It is replaced by our own `ProviderConfig`, implementing the crate's
+    `Config` trait with base URL and key only. Its `Authorization` header is marked sensitive.
+  - **"Connection failed" is narrowed** to a connect failure or a request that got no response. A
+    redirect loop is `UnexpectedError` and leaves availability unchanged: the provider answered,
+    but with nothing that says whether it can serve (code-agent's choice, accepted).
+  - **Spans:** the call span gets `otel.status_code = ERROR` on failure and a `server.port`, which
+    falls back to the scheme's default port.
 

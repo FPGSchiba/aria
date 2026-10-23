@@ -405,6 +405,70 @@ async fn the_call_span_closes_only_after_the_last_chunk() {
     capture.wait_for_closed_calls(1).await;
 }
 
+#[tokio::test]
+async fn the_call_span_records_the_server_address_and_port() {
+    let (capture, _guard) = Capture::install();
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(reply());
+    let port = reqwest::Url::parse(&provider.base_url())
+        .expect("url")
+        .port()
+        .expect("the fake provider listens on an explicit port");
+    let mut client = serve(backend_for(&provider, "5s", 0)).await;
+
+    decide(&mut client, "s1", "hello").await;
+
+    let calls = capture.wait_for_closed_calls(1).await;
+    assert_eq!(
+        calls[0].field("server.address"),
+        Some("127.0.0.1"),
+        "{:?}",
+        calls[0]
+    );
+    assert_eq!(
+        calls[0].field("server.port"),
+        Some(port.to_string().as_str()),
+        "{:?}",
+        calls[0]
+    );
+}
+
+#[tokio::test]
+async fn a_failed_call_marks_its_span_error_and_a_successful_one_does_not() {
+    let (capture, _guard) = Capture::install();
+    let provider = FakeProvider::start().await.expect("provider");
+    provider.enqueue(reply());
+    provider.enqueue(ErrorScript::new(StatusCode::UNAUTHORIZED));
+    let mut client = serve(backend_for(&provider, "5s", 0)).await;
+
+    decide(&mut client, "ok", "hello").await;
+    decide(&mut client, "failing", "hello").await;
+
+    let calls = capture.wait_for_closed_calls(2).await;
+    let failed: Vec<_> = calls
+        .iter()
+        .filter(|c| c.field("error.type").is_some())
+        .collect();
+    let succeeded: Vec<_> = calls
+        .iter()
+        .filter(|c| c.field("error.type").is_none())
+        .collect();
+    assert_eq!(failed.len(), 1, "{calls:?}");
+    assert_eq!(
+        failed[0].field("otel.status_code"),
+        Some("ERROR"),
+        "{:?}",
+        failed[0]
+    );
+    assert_eq!(succeeded.len(), 1, "{calls:?}");
+    assert_eq!(
+        succeeded[0].field("otel.status_code"),
+        None,
+        "{:?}",
+        succeeded[0]
+    );
+}
+
 // ---------------------------------------------------------------- the first-text event
 
 #[tokio::test]

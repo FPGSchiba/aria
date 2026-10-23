@@ -4,7 +4,8 @@
 //! `ARIA_LLM_BASE_URL`, `ARIA_LLM_MODEL`, `ARIA_LLM_IDLE_TIMEOUT` and `ARIA_LLM_MAX_RETRIES`).
 
 use reqwest::Url;
-use secrecy::SecretString;
+use reqwest::header::HeaderValue;
+use secrecy::{ExposeSecret, SecretString};
 use std::env;
 use std::net::{Ipv4Addr, SocketAddr};
 use std::str::FromStr;
@@ -81,6 +82,12 @@ pub enum ConfigError {
     /// Missing required environment variable.
     #[error("missing required environment variable {variable}")]
     MissingVariable { variable: &'static str },
+    /// A secret cannot be used as given. The value is deliberately not part of the error.
+    #[error(
+        "{variable} is not a usable key: after trimming it must be a valid HTTP header value, \
+         with no control characters or line breaks"
+    )]
+    InvalidSecret { variable: &'static str },
 }
 
 /// Parses `true`, `false`, `1` or `0`, ignoring case and surrounding whitespace.
@@ -90,6 +97,12 @@ fn parse_bool(value: &str) -> Option<bool> {
         "false" | "0" => Some(false),
         _ => None,
     }
+}
+
+/// The key without the whitespace around it, which is easily pasted in (a trailing newline from
+/// `echo` or a secret file).
+fn trimmed_key(key: SecretString) -> SecretString {
+    SecretString::from(key.expose_secret().trim())
 }
 
 /// Whether an environment value is empty or only whitespace.
@@ -151,11 +164,20 @@ impl Config {
             })?,
             None => false,
         };
+        // Wrapped as soon as it is read, so the plain text is never held in a `String` here.
         let llm_api_key = lookup(ARIA_LLM_API_KEY_VAR)?
-            .filter(|v| !is_blank(v))
+            .map(SecretString::from)
+            .filter(|key| !is_blank(key.expose_secret()))
+            .map(trimmed_key)
             .ok_or(ConfigError::MissingVariable {
                 variable: ARIA_LLM_API_KEY_VAR,
             })?;
+        // Checked once here, so the client never fails building its header on every turn.
+        if HeaderValue::from_str(&format!("Bearer {}", llm_api_key.expose_secret())).is_err() {
+            return Err(ConfigError::InvalidSecret {
+                variable: ARIA_LLM_API_KEY_VAR,
+            });
+        }
         let mut llm_api_url = lookup(ARIA_LLM_BASE_URL_VAR)?
             .filter(|v| !is_blank(v))
             .map(|v| {
@@ -210,7 +232,7 @@ impl Config {
             listen_address,
             otlp_endpoint,
             reflection,
-            llm_api_key: llm_api_key.into(),
+            llm_api_key,
             llm_url: llm_api_url,
             llm_model: llm_api_model,
             llm_idle_timeout: llm_api_idle_timeout,
@@ -241,6 +263,16 @@ impl Config {
     /// The base URL for the OpenAI-compatible LLM backend.
     pub fn llm_url(&self) -> &Url {
         &self.llm_url
+    }
+
+    /// The host of the base URL, for logs and traces; "unknown" for a URL without one.
+    pub fn llm_host(&self) -> &str {
+        self.llm_url.host_str().unwrap_or("unknown")
+    }
+
+    /// The port of the base URL, or the scheme's default (443 for https, 80 for http).
+    pub fn llm_port(&self) -> Option<u16> {
+        self.llm_url.port_or_known_default()
     }
 
     /// The model name for the OpenAI-compatible LLM backend.
@@ -466,6 +498,52 @@ mod tests {
                 "{blank:?}: {err:?}"
             );
             assert!(err.to_string().contains("ARIA_LLM_API_KEY"), "{err}");
+        }
+    }
+
+    /// The key as the configuration holds it, or the error for the given raw value.
+    fn key_from(raw: &'static str) -> Result<Config, ConfigError> {
+        Config::from_lookup(move |name| Ok((name == ARIA_LLM_API_KEY_VAR).then(|| raw.to_string())))
+    }
+
+    #[test]
+    fn whitespace_around_the_key_is_trimmed() {
+        for raw in ["sk-abc\n", "sk-abc\r\n", "  sk-abc", "\tsk-abc \n\n"] {
+            let config = key_from(raw).expect("a trimmed key is accepted");
+
+            assert_eq!(config.llm_api_key().expose_secret(), "sk-abc", "{raw:?}");
+        }
+    }
+
+    #[test]
+    fn a_key_that_cannot_be_a_header_value_is_rejected_without_echoing_it() {
+        for raw in ["sk-ab\ncd", "sk-ab\rcd", "sk-\u{7}abc", "sk-ab\u{7f}cd"] {
+            let err = key_from(raw).expect_err("an unusable key");
+
+            assert!(
+                matches!(err, ConfigError::InvalidSecret { variable } if variable == "ARIA_LLM_API_KEY"),
+                "{raw:?}: {err:?}"
+            );
+            let message = format!("{err} {err:?}");
+            assert!(message.contains("ARIA_LLM_API_KEY"), "{message}");
+            for part in ["sk-", "abc", "cd"] {
+                assert!(
+                    !message.contains(part),
+                    "{raw:?} leaked {part:?}: {message}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_whitespace_only_key_is_missing() {
+        for raw in [" ", "\n", " \t\r\n "] {
+            let err = key_from(raw).expect_err("blank");
+
+            assert!(
+                matches!(err, ConfigError::MissingVariable { variable } if variable == "ARIA_LLM_API_KEY"),
+                "{raw:?}: {err:?}"
+            );
         }
     }
 
