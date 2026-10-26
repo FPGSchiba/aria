@@ -3,7 +3,8 @@
 //! Serves the standard gRPC health service (`grpc.health.v1.Health`: Check, List and Watch). The
 //! history store and the backend push their own
 //! health through watch channels, and a [`HealthMonitor`] task turns the two into the Agent Core
-//! service's status: serving only while both are healthy and shutdown has not begun. The overall
+//! service's status: serving only while both are healthy (for the backend, its configured flag)
+//! and shutdown has not begun. The overall
 //! server status (the empty service name) stays serving until shutdown begins, so liveness probes
 //! point at it and readiness probes at the Agent Core service. The monitor never probes a
 //! dependency; a dependency reports a change itself.
@@ -11,9 +12,11 @@
 //! The statuses, by service name:
 //! - `""`: the process, serving until shutdown begins.
 //! - [`SERVICE_NAME`]: serving only while both dependencies are healthy and shutdown has not begun.
-//! - [`HISTORY_SERVICE_NAME`] and [`BACKEND_SERVICE_NAME`]: whether that one dependency is
-//!   healthy, so an operator can see which one makes the Agent Core unready. `is_backup` does not
-//!   change them.
+//! - [`HISTORY_SERVICE_NAME`]: whether the history store is healthy, so an operator can see when
+//!   it makes the Agent Core unready. `is_backup` does not change it.
+//! - [`BACKEND_SERVICE_NAME`]: a diagnostic entry reporting the backend's observed availability:
+//!   available is serving, unavailable (including a rejected key) is not serving, unknown is
+//!   unknown. Readiness uses the configured flag, not this entry.
 //!
 //! Shutdown sets all four to not-serving, and every `Watch` stream ends after its last update.
 
@@ -36,12 +39,65 @@ pub const HISTORY_SERVICE_NAME: &str = "aria.agent_core.v1.AgentCore.history";
 /// The backend's own status: `aria.agent_core.v1.AgentCore` plus `.backend`.
 pub const BACKEND_SERVICE_NAME: &str = "aria.agent_core.v1.AgentCore.backend";
 
+/// The reason a backend host is unavailable, as the host itself reports it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum UnavailabilityReason {
+    /// The provider is up but refuses the credential (401/403). A new key and a redeploy fix it, not a retry.
+    KeyRejected {
+        /// The provider's own error code (a stable string such as `wrong_api_key`) when it sent one.
+        host_code: Option<String>,
+    },
+    /// The connection failed or was closed without an answer (DNS, refused, TLS, reset, or closed
+    /// before a response), after retries. Only connect failures are retried.
+    Unreachable,
+    /// Nothing arrived within the idle timeout, while opening (including retries) or mid-stream.
+    TimedOut,
+    /// The provider rate-limited us (429) after retries, or asked to wait longer than the retry cap.
+    RateLimited {
+        /// The provider's own error code (a stable string such as `rate_limit_exceeded`) when it sent one.
+        host_code: Option<String>,
+    },
+    /// The provider is up but refuses the account (402, e.g. out of credit). Topping up the account fixes it,
+    /// not a redeploy or a retry.
+    PaymentRequired {
+        /// The provider's own error code (a stable string such as `insufficient_credit`) when it sent one.
+        host_code: Option<String>,
+    },
+    /// The provider failed (5xx) after retries.
+    ServerError {
+        /// The HTTP status the provider answered with.
+        http_code: u16,
+        /// The provider's own error code (a stable string such as `internal_server_error`) when it sent one.
+        host_code: Option<String>,
+    },
+    /// The reply started streaming and then broke: a reset, unparsable data, or an end without a finish
+    /// reason (truncated).
+    StreamInterrupted {
+        /// The provider's own error code (a stable string), usually absent for a broken stream.
+        host_code: Option<String>,
+    },
+}
+
+/// The provider availability a backend has observed. It is `Unknown` until the first turn ends,
+/// then updated once per turn, after retries are exhausted. It is reported on the diagnostic
+/// backend health entry and never affects readiness.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HostStatus {
+    /// Nothing observed since start.
+    Unknown,
+    /// The last observed call reached the provider.
+    Available,
+    /// The last observed call failed for the given reason.
+    Unavailable(UnavailabilityReason),
+}
+
 /// Health of an LLM backend, as the backend itself reports it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BackendHealth {
     healthy: bool,
     is_backup: bool,
     service: String,
+    host_status: HostStatus,
 }
 
 impl BackendHealth {
@@ -52,6 +108,7 @@ impl BackendHealth {
             healthy,
             is_backup,
             service: service.into(),
+            host_status: HostStatus::Unknown,
         }
     }
 
@@ -68,6 +125,31 @@ impl BackendHealth {
     /// The backend's name, used in log lines.
     pub fn service(&self) -> &str {
         &self.service
+    }
+
+    /// The backend's host status, as the backend itself reports it.
+    pub fn host_status(&self) -> &HostStatus {
+        &self.host_status
+    }
+
+    /// Sets the backend's health, as the backend itself reports it.
+    pub fn with_healthy(&self, healthy: bool) -> Self {
+        Self {
+            healthy,
+            is_backup: self.is_backup,
+            service: self.service.clone(),
+            host_status: self.host_status.clone(),
+        }
+    }
+
+    /// Sets the backend's host status, as the backend itself reports it.
+    pub fn with_host_status(&self, status: HostStatus) -> Self {
+        Self {
+            healthy: self.healthy,
+            is_backup: self.is_backup,
+            service: self.service.clone(),
+            host_status: status,
+        }
     }
 }
 
@@ -208,10 +290,23 @@ impl MonitorState {
         let backend = self.backend.borrow_and_update().clone();
         let history = self.history.borrow_and_update().clone();
 
-        if self.last_backend.as_ref() != Some(&backend) {
+        // The configured part and the observed host status are logged on their own, so a change
+        // of one does not repeat a line about the other.
+        let without_host_status =
+            |health: &BackendHealth| health.with_host_status(HostStatus::Unknown);
+        if self
+            .last_backend
+            .as_ref()
+            .is_none_or(|last| without_host_status(last) != without_host_status(&backend))
+        {
             log_backend(&backend);
-            self.last_backend = Some(backend.clone());
         }
+        if let Some(last) = &self.last_backend
+            && last.host_status() != backend.host_status()
+        {
+            log_host_status(&backend);
+        }
+        self.last_backend = Some(backend.clone());
         if self.last_history.as_ref() != Some(&history) {
             log_history(&history);
             self.last_history = Some(history.clone());
@@ -222,13 +317,17 @@ impl MonitorState {
             tracing::info!(serving, shutting_down, "agent core health status changed");
             self.last_serving = Some(serving);
         }
-        // Each dependency's own status reflects only its `healthy`; every status is not-serving
-        // at shutdown.
+        // The history entry reflects its `healthy`; the backend entry reflects what was observed of
+        // the provider. Every status is not-serving at shutdown.
         self.published.send_replace(Statuses {
             overall: status(!shutting_down),
             agent_core: status(serving),
             history: status(history.is_healthy() && !shutting_down),
-            backend: status(backend.is_healthy() && !shutting_down),
+            backend: if shutting_down {
+                ServingStatus::NotServing
+            } else {
+                host_serving_status(backend.host_status())
+            },
         });
         shutting_down
     }
@@ -268,6 +367,16 @@ fn status(serving: bool) -> ServingStatus {
     }
 }
 
+/// The backend entry's status for the observed provider: available serves, unavailable does not,
+/// and a provider not yet observed is unknown.
+fn host_serving_status(host_status: &HostStatus) -> ServingStatus {
+    match host_status {
+        HostStatus::Available => ServingStatus::Serving,
+        HostStatus::Unavailable(_) => ServingStatus::NotServing,
+        HostStatus::Unknown => ServingStatus::Unknown,
+    }
+}
+
 fn response(status: ServingStatus) -> HealthCheckResponse {
     HealthCheckResponse {
         status: status.into(),
@@ -287,6 +396,24 @@ fn log_backend(health: &BackendHealth) {
             is_backup = health.is_backup(),
             "backend is unhealthy"
         );
+    }
+}
+
+/// Logs a change of the observed provider availability, naming its kind when unavailable.
+fn log_host_status(health: &BackendHealth) {
+    match health.host_status() {
+        HostStatus::Unavailable(reason) => tracing::warn!(
+            service = health.service(),
+            reason = ?reason,
+            "provider is unavailable"
+        ),
+        HostStatus::Available => {
+            tracing::info!(service = health.service(), "provider is available")
+        }
+        HostStatus::Unknown => tracing::info!(
+            service = health.service(),
+            "provider availability is unknown"
+        ),
     }
 }
 

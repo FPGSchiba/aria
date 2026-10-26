@@ -15,6 +15,7 @@ use opentelemetry_sdk::error::OTelSdkError;
 use opentelemetry_sdk::trace::SdkTracerProvider;
 use std::io::IsTerminal;
 use tracing::Level;
+use tracing::level_filters::LevelFilter;
 use tracing::subscriber::SetGlobalDefaultError;
 use tracing_subscriber::filter::Targets;
 use tracing_subscriber::layer::SubscriberExt;
@@ -149,6 +150,7 @@ pub fn __init(
             Err(_) => (EnvFilter::new("info"), Some(value)),
         },
     };
+    let filter = mute_payload_targets(filter);
     let stdout_layer = tracing_subscriber::fmt::layer()
         .with_writer(std::io::stdout)
         .with_ansi(std::io::stdout().is_terminal())
@@ -208,17 +210,41 @@ fn resource(service_name: &str, service_version: &str) -> opentelemetry_sdk::Res
         .build()
 }
 
+/// Targets that log payloads (an unparsable event with the raw reply text in it) and are therefore
+/// switched off, both on stdout and in the export. `RUST_LOG` cannot turn them back on.
+const PAYLOAD_TARGETS: &[&str] = &["async_openai::error"];
+
+/// Targets that are only for stdout: they stay visible there when the log filter enables them, but
+/// are never exported as span events. The Agent Core's provider error messages are provider text.
+const EXPORT_MUTED_TARGETS: &[&str] = &["agent_core::provider_message"];
+
+/// `filter` with every payload target switched off. A directive for a target replaces an earlier
+/// one for the same target, so this wins over whatever `RUST_LOG` said about it.
+fn mute_payload_targets(filter: EnvFilter) -> EnvFilter {
+    PAYLOAD_TARGETS.iter().fold(filter, |filter, target| {
+        filter.add_directive(
+            format!("{target}=off")
+                .parse()
+                .expect("a target directive is valid"),
+        )
+    })
+}
+
 /// The endpoint to export to: `None` when unset or blank, otherwise the trimmed value.
 fn resolve_endpoint(endpoint: Option<&str>) -> Option<&str> {
     endpoint.map(str::trim).filter(|e| !e.is_empty())
 }
 
 /// The filter on span export: spans from `own_target` down to `debug`, everything else only at
-/// `warn`, so dependencies' per-request spans do not flood the collector.
+/// `warn`, so dependencies' per-request spans do not flood the collector. The payload targets and
+/// the stdout-only targets are off.
 fn export_filter(own_target: &str) -> Targets {
-    Targets::new()
-        .with_default(Level::WARN)
-        .with_target(own_target.to_owned(), Level::DEBUG)
+    PAYLOAD_TARGETS.iter().chain(EXPORT_MUTED_TARGETS).fold(
+        Targets::new()
+            .with_default(Level::WARN)
+            .with_target(own_target.to_owned(), Level::DEBUG),
+        |filter, target| filter.with_target(*target, LevelFilter::OFF),
+    )
 }
 
 #[cfg(test)]
@@ -254,6 +280,90 @@ mod tests {
         assert!(filter.would_enable("other_service::handler", &Level::DEBUG));
         assert!(!filter.would_enable("agent_core::service", &Level::INFO));
         assert!(!filter.would_enable("agent_core::service", &Level::DEBUG));
+    }
+
+    #[test]
+    fn export_filter_drops_the_payload_targets_even_at_error() {
+        let filter = export_filter("agent_core");
+
+        assert!(!filter.would_enable("async_openai::error", &Level::ERROR));
+        // Narrow: another async_openai target is only filtered like any dependency.
+        assert!(filter.would_enable("async_openai::client", &Level::WARN));
+    }
+
+    #[test]
+    fn export_filter_drops_the_provider_message_target_at_debug_but_keeps_the_rest_of_agent_core() {
+        let filter = export_filter("agent_core");
+
+        assert!(!filter.would_enable("agent_core::provider_message", &Level::DEBUG));
+        assert!(!filter.would_enable("agent_core::provider_message", &Level::ERROR));
+        assert!(filter.would_enable("agent_core::service", &Level::DEBUG));
+    }
+
+    #[test]
+    fn the_provider_message_target_stays_visible_on_stdout_when_the_log_filter_asks_for_it() {
+        let filter = mute_payload_targets(EnvFilter::new("debug"));
+
+        let output = captured(filter, || {
+            tracing::debug!(target: "agent_core::provider_message", "visible on stdout");
+        });
+
+        assert!(output.contains("visible"), "{output}");
+    }
+
+    /// Output of a subscriber built on `filter`, for one error event on each given target.
+    fn logged(filter: EnvFilter, targets: [&'static str; 2]) -> String {
+        captured(filter, || {
+            tracing::error!(target: "async_openai::error", "payload {}", targets[0]);
+            tracing::error!(target: "async_openai::client", "other {}", targets[1]);
+        })
+    }
+
+    /// Output of a subscriber built on `filter` while `emit` runs.
+    fn captured(filter: EnvFilter, emit: impl FnOnce()) -> String {
+        use std::sync::{Arc, Mutex};
+        #[derive(Clone, Default)]
+        struct Buffer(Arc<Mutex<Vec<u8>>>);
+        impl std::io::Write for Buffer {
+            fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+                self.0.lock().expect("buffer").extend_from_slice(bytes);
+                Ok(bytes.len())
+            }
+            fn flush(&mut self) -> std::io::Result<()> {
+                Ok(())
+            }
+        }
+        impl<'a> tracing_subscriber::fmt::MakeWriter<'a> for Buffer {
+            type Writer = Buffer;
+            fn make_writer(&'a self) -> Buffer {
+                self.clone()
+            }
+        }
+        let buffer = Buffer::default();
+        let subscriber = tracing_subscriber::fmt()
+            .with_writer(buffer.clone())
+            .with_ansi(false)
+            .with_env_filter(filter)
+            .finish();
+        tracing::subscriber::with_default(subscriber, emit);
+        String::from_utf8_lossy(&buffer.0.lock().expect("buffer")).into_owned()
+    }
+
+    #[test]
+    fn the_payload_targets_are_off_on_stdout_whatever_rust_log_says() {
+        for rust_log in [
+            "info",
+            "trace",
+            "async_openai=trace",
+            "info,async_openai::error=trace",
+        ] {
+            let filter = mute_payload_targets(EnvFilter::new(rust_log));
+
+            let output = logged(filter, ["SECRET-A", "KEPT-B"]);
+
+            assert!(!output.contains("SECRET-A"), "{rust_log}: {output}");
+            assert!(output.contains("KEPT-B"), "{rust_log}: {output}");
+        }
     }
 
     #[test]

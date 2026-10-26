@@ -9,7 +9,7 @@ use futures_core::Stream;
 use std::pin::Pin;
 use tokio::sync::watch;
 
-pub mod echo;
+pub mod openai;
 #[cfg(feature = "test-util")]
 pub mod scripted;
 
@@ -64,7 +64,8 @@ pub trait Backend: Send + Sync {
     /// * The stream ending (`None`) means the reply is complete. A truncated or
     ///   interrupted reply must be reported as an `Err` item, never as a clean end.
     /// * An `Err` item is final: nothing may follow it.
-    /// * Do not retry: a failed call fails the turn.
+    /// * A stream that yields an `Err` ends the turn, and the caller does not retry it. A backend
+    ///   may retry transient provider failures internally before it yields that `Err`.
     fn stream_conversation(
         &self,
         history: Vec<ConversationPart>,
